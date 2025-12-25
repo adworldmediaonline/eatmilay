@@ -1,0 +1,12 @@
+export { default as PromotionalStrip } from './promotional-strip';
+export { default as HeroBanner } from './hero-banner';
+export { default as HeroBannerV2 } from './hero-banner-v2';
+export { default as HeroContent } from './hero-content';
+export { default as FeaturedProducts } from './featured-products';
+export { default as FeaturedProductsV3 } from './featured-products-v3';
+export { default as BestSellersGrid } from './best-sellers-grid';
+export { default as PromotionalBanner } from './promotional-banner';
+export { default as CategoriesSection } from './categories-section';
+export { default as DealsSection } from './deals-section';
+export { default as TestimonialsSection } from './testimonials-section';
+export { default as TrustBadges } from './trust-badges';
