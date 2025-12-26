@@ -130,7 +130,7 @@ export default function Footer({ className = '' }: FooterProps) {
               <div className="flex items-center mb-6">
                 <Link href="/" className="block">
                   <h2 className="text-xl font-bold text-white tracking-tight">
-                    <span className="text-white font-bold">Sum</span>NSubstance
+                    <span className="text-white font-bold">Eatmilay</span>
                   </h2>
                 </Link>
               </div>

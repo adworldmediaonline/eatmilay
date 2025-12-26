@@ -24,7 +24,7 @@ export default function ContactPage() {
         {/* Introduction */}
         <div className="prose prose-lg max-w-none mb-12">
           <p className="text-gray-700 leading-relaxed text-base lg:text-lg text-center">
-            We would love to hear from you! At Sum N Substance, your feedback, questions, and concerns are important to us. Please feel free to reach out via any of the methods below:
+            We would love to hear from you! At eatmilay, your feedback, questions, and concerns are important to us. Please feel free to reach out via any of the methods below:
           </p>
         </div>
 

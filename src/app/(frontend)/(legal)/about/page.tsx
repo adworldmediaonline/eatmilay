@@ -14,7 +14,7 @@ export default function AboutPage() {
             Our Story
           </h1>
           <p className="text-lg lg:text-xl text-white/90 text-center max-w-2xl mx-auto">
-            Discover the passion and purpose behind Sum N Substance.
+            Discover the passion and purpose behind eatmilay.
           </p>
         </div>
       </div>
@@ -25,7 +25,7 @@ export default function AboutPage() {
         <section className="mb-12">
           <div className="prose prose-lg max-w-none space-y-6">
             <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              Sum N Substance was born out of a passion for creating effective, natural skincare solutions that truly nourish and enhance your skin's health. We believe that beauty comes not just from appearance but from the quality and purity of the products you use every day.
+              eatmilay was born out of a passion for creating effective, natural skincare solutions that truly nourish and enhance your skin's health. We believe that beauty comes not just from appearance but from the quality and purity of the products you use every day.
             </p>
 
             <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
@@ -33,11 +33,11 @@ export default function AboutPage() {
             </p>
 
             <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              At Sum N Substance, we value transparency, quality, and sustainability. We strive to empower our customers with products that are gentle yet powerful, helping you embrace your natural beauty with confidence.
+              At eatmilay, we value transparency, quality, and sustainability. We strive to empower our customers with products that are gentle yet powerful, helping you embrace your natural beauty with confidence.
             </p>
 
             <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              Join us on this journey to healthier skin and a happier you. Because at Sum N Substance, it's not just about what we make, it's about the story behind every bottle.
+              Join us on this journey to healthier skin and a happier you. Because at eatmilay, it's not just about what we make, it's about the story behind every bottle.
             </p>
           </div>
         </section>
