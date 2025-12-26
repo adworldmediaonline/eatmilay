@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { OrderEmailTemplate } from './templates/order-confirmation-react';
 import { OrderProcessingEmailTemplate } from './templates/order-processing';
@@ -7,7 +7,18 @@ import { OrderDeliveredEmailTemplate } from './templates/order-delivered';
 import { OrderCancelledEmailTemplate } from './templates/order-cancelled';
 import { retryEmail, validateEmailConfig, logEmailAttempt, formatEmailSubject } from './email-utils';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create reusable transporter
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_PORT === '465', // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
 
 // Helper function to safely convert Decimal or number to number
 function toNumber(value: { toNumber?: () => number } | number): number {
@@ -82,20 +93,16 @@ export async function sendOrderConfirmationEmail({
       })
     );
 
-    const { data, error } = await resend.emails.send({
-      from: `SumnSubstance <${process.env.EMAIL_FROM}>`,
-      to: [customerEmail],
+    const transporter = createTransporter();
+    const info = await transporter.sendMail({
+      from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+      to: customerEmail,
       subject: `Order Confirmation - ${order.orderNumber}`,
       html: emailHtml,
     });
 
-    if (error) {
-      console.error('Email sending error:', error);
-      throw new Error('Failed to send confirmation email');
-    }
-
-    console.log('Order confirmation email sent:', data?.id);
-    return data;
+    console.log('Order confirmation email sent:', info.messageId);
+    return { id: info.messageId, success: true };
   } catch (error) {
     console.error('Order confirmation email error:', error);
     throw error;
@@ -143,19 +150,15 @@ export async function sendOrderProcessingEmail({
     );
 
     const sendEmail = async () => {
-      const { data, error } = await resend.emails.send({
-        from: `SumnSubstance <${process.env.EMAIL_FROM}>`,
-        to: [customerEmail],
+      const transporter = createTransporter();
+      const info = await transporter.sendMail({
+        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        to: customerEmail,
         subject: formatEmailSubject('processing', order.orderNumber),
         html: emailHtml,
       });
 
-      if (error) {
-        console.error('Email sending error:', error);
-        throw new Error('Failed to send processing email');
-      }
-
-      return data;
+      return { id: info.messageId, success: true };
     };
 
     const result = await retryEmail(sendEmail);
@@ -212,19 +215,15 @@ export async function sendOrderShippedEmail({
     );
 
     const sendEmail = async () => {
-      const { data, error } = await resend.emails.send({
-        from: `SumnSubstance <${process.env.EMAIL_FROM}>`,
-        to: [customerEmail],
+      const transporter = createTransporter();
+      const info = await transporter.sendMail({
+        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        to: customerEmail,
         subject: formatEmailSubject('shipped', order.orderNumber),
         html: emailHtml,
       });
 
-      if (error) {
-        console.error('Email sending error:', error);
-        throw new Error('Failed to send shipped email');
-      }
-
-      return data;
+      return { id: info.messageId, success: true };
     };
 
     const result = await retryEmail(sendEmail);
@@ -280,19 +279,15 @@ export async function sendOrderDeliveredEmail({
     );
 
     const sendEmail = async () => {
-      const { data, error } = await resend.emails.send({
-        from: `SumnSubstance <${process.env.EMAIL_FROM}>`,
-        to: [customerEmail],
+      const transporter = createTransporter();
+      const info = await transporter.sendMail({
+        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        to: customerEmail,
         subject: formatEmailSubject('delivered', order.orderNumber),
         html: emailHtml,
       });
 
-      if (error) {
-        console.error('Email sending error:', error);
-        throw new Error('Failed to send delivered email');
-      }
-
-      return data;
+      return { id: info.messageId, success: true };
     };
 
     const result = await retryEmail(sendEmail);
@@ -351,19 +346,15 @@ export async function sendOrderCancelledEmail({
     );
 
     const sendEmail = async () => {
-      const { data, error } = await resend.emails.send({
-        from: `SumnSubstance <${process.env.EMAIL_FROM}>`,
-        to: [customerEmail],
+      const transporter = createTransporter();
+      const info = await transporter.sendMail({
+        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        to: customerEmail,
         subject: formatEmailSubject('cancelled', order.orderNumber),
         html: emailHtml,
       });
 
-      if (error) {
-        console.error('Email sending error:', error);
-        throw new Error('Failed to send cancelled email');
-      }
-
-      return data;
+      return { id: info.messageId, success: true };
     };
 
     const result = await retryEmail(sendEmail);
@@ -404,9 +395,10 @@ export async function sendAdminOrderNotification(order: {
       return;
     }
 
-    const { data, error } = await resend.emails.send({
-      from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM}>`,
-      to: [adminEmail],
+    const transporter = createTransporter();
+    const info = await transporter.sendMail({
+      from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+      to: adminEmail,
       subject: `New Order Received - ${order.orderNumber}`,
       html: `
         <h2>New Order Alert</h2>
@@ -432,11 +424,7 @@ export async function sendAdminOrderNotification(order: {
       `,
     });
 
-    if (error) {
-      console.error('Admin notification error:', error);
-    }
-
-    return data;
+    return { id: info.messageId, success: true };
   } catch (error) {
     console.error('Admin order notification error:', error);
     // Don't throw error for admin notifications

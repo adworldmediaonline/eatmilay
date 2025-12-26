@@ -1,10 +1,8 @@
 'use client';
 
 import ProductReviews from '@/components/products/product-reviews';
-import RelatedProducts from '@/components/products/RelatedProducts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockRelatedProducts } from '@/constants/product-mock-data';
 import type { SerializedProductWithCategory } from '@/server/queries/product';
 import type { ReviewData, ReviewAggregates } from '@/types/review';
 import { useAddItem } from '@/store/cart-store';
@@ -131,9 +129,8 @@ export default function ProductDetailsClient({
             {/* Main Image */}
             <div className="relative w-full aspect-square bg-gray-50 rounded-2xl lg:rounded-3xl overflow-hidden group">
               <div
-                className={`relative w-full h-full transition-transform duration-300 ${
-                  showImageZoom ? 'scale-150' : 'group-hover:scale-105'
-                }`}
+                className={`relative w-full h-full transition-transform duration-300 ${showImageZoom ? 'scale-150' : 'group-hover:scale-105'
+                  }`}
                 onClick={() => setShowImageZoom(!showImageZoom)}
               >
                 <Image
@@ -186,11 +183,10 @@ export default function ProductDetailsClient({
                   >
                     <button
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`w-full h-full rounded-lg overflow-hidden border-2 transition-all duration-300 touch-manipulation relative ${
-                        selectedImageIndex === index
-                          ? 'border-primary shadow-sm scale-105'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`w-full h-full rounded-lg overflow-hidden border-2 transition-all duration-300 touch-manipulation relative ${selectedImageIndex === index
+                        ? 'border-primary shadow-sm scale-105'
+                        : 'border-gray-200 hover:border-gray-300'
+                        }`}
                     >
                       <Image
                         src={image?.url || ''}
@@ -249,11 +245,10 @@ export default function ProductDetailsClient({
                   <SwiperSlide key={index} className="!w-20 !h-20">
                     <button
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`w-full h-full rounded-lg overflow-hidden border-2 transition-all relative ${
-                        selectedImageIndex === index
-                          ? 'border-primary shadow-sm'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`w-full h-full rounded-lg overflow-hidden border-2 transition-all relative ${selectedImageIndex === index
+                        ? 'border-primary shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300'
+                        }`}
                     >
                       <Image
                         src={image?.url || ''}
@@ -302,11 +297,10 @@ export default function ProductDetailsClient({
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.round(reviewAggregates.averageRating)
-                          ? 'text-yellow-500 fill-current'
-                          : 'text-gray-300'
-                      }`}
+                      className={`w-4 h-4 ${i < Math.round(reviewAggregates.averageRating)
+                        ? 'text-yellow-500 fill-current'
+                        : 'text-gray-300'
+                        }`}
                     />
                   ))}
                   <span className="text-gray-600 ml-2 text-sm">
@@ -424,11 +418,10 @@ export default function ProductDetailsClient({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-3 lg:py-4 px-4 lg:px-2 border-b-2 font-medium text-sm lg:text-base transition-colors whitespace-nowrap touch-manipulation ${
-                    activeTab === tab.id
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
-                  }`}
+                  className={`py-3 lg:py-4 px-4 lg:px-2 border-b-2 font-medium text-sm lg:text-base transition-colors whitespace-nowrap touch-manipulation ${activeTab === tab.id
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -534,14 +527,13 @@ export default function ProductDetailsClient({
         </div>
 
         {/* Related Products */}
-        <RelatedProducts products={mockRelatedProducts} />
+
       </main>
 
       {/* Enhanced Sticky Mobile Add to Cart */}
       <div
-        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50 transition-all duration-300 lg:hidden ${
-          showStickyCart ? 'translate-y-0' : 'translate-y-full'
-        }`}
+        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50 transition-all duration-300 lg:hidden ${showStickyCart ? 'translate-y-0' : 'translate-y-full'
+          }`}
       >
         <div className="px-4 py-3">
           <div className="flex items-center gap-3">

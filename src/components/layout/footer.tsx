@@ -69,33 +69,19 @@ export default function Footer({ className = '' }: FooterProps) {
     },
   ];
 
-  const topCategories = [
-    { name: 'Serums & Oils', href: '/categories/serums' },
-    { name: 'Face Care', href: '/categories/face-care' },
-    { name: 'Hair Care', href: '/categories/hair-care' },
-    { name: 'Body Care', href: '/categories/body-care' },
-    { name: 'Combos', href: '/categories/combos' },
-  ];
+
 
   const policies = [
-    { name: 'Privacy Policy', href: '/privacy-policy' },
-    { name: 'Terms & Conditions', href: '/terms-conditions' },
-    { name: 'Shipping & Cancellation', href: '/shipping-cancellation' },
-    { name: 'Returns & Refund', href: '/returns-refund' },
+    { name: 'Privacy Policy', href: '/privacy' },
+    { name: 'Terms & Conditions', href: '/terms-and-conditions' },
+    { name: 'Shipping', href: '/shipping' },
+    { name: 'Cancellation & Refunds', href: '/cancellation-and-refunds' },
   ];
 
-  const bestSellers = [
-    { name: 'Brightening Serum', href: '/products/brightening-serum' },
-    { name: 'Under Eye Cream', href: '/products/under-eye-cream' },
-    { name: 'Night Repair Combo', href: '/products/night-repair-combo' },
-    { name: 'Face Wash', href: '/products/face-wash' },
-    { name: 'Hair Growth Oil', href: '/products/hair-growth-oil' },
-    { name: 'Body Lotion', href: '/products/body-lotion' },
-  ];
 
   const info = [
     { name: 'Our Story', href: '/about' },
-    { name: 'Contact Us', href: '/contact' },
+    { name: 'Contact Us', href: '/contact-us' },
     { name: 'Track Your Order', href: '/track-order' },
     { name: 'FAQs', href: '/faqs' },
   ];
@@ -212,7 +198,7 @@ export default function Footer({ className = '' }: FooterProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Copyright */}
           <div className="text-center">
-            <p className="text-white/60 text-sm">© 2025, Rev Skin Store</p>
+            <p className="text-white/60 text-sm">© 2025, EatMilay</p>
           </div>
         </div>
       </div>

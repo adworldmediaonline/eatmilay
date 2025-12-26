@@ -90,6 +90,7 @@ interface RichTextEditorProps
     VariantProps<typeof richTextEditorVariants> {
   value?: string;
   onChange?: (value: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   disabled?: boolean;
   showToolbar?: boolean;
@@ -680,6 +681,7 @@ function RichTextEditor({
   size,
   value = '',
   onChange,
+  onBlur,
   placeholder = 'Start writing...',
   disabled = false,
   showToolbar = true,
@@ -724,6 +726,9 @@ function RichTextEditor({
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange?.(html);
+    },
+    onBlur: () => {
+      onBlur?.();
     },
     editorProps: {
       attributes: {

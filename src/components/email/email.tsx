@@ -1,8 +1,19 @@
 import { EmailTemplate } from './email-template';
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create reusable transporter
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_PORT === '465', // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
 
 export async function sendOTP({
   otp,
@@ -17,16 +28,19 @@ export async function sendOTP({
 }) {
   const emailHtml = await render(EmailTemplate({ otp, appName }));
 
-  const { data, error } = await resend.emails.send({
-    from: `${appName} <${process.env.RESEND_FROM_EMAIL}>`,
-    to: [email],
-    subject: subject,
-    html: emailHtml,
-  });
+  const transporter = createTransporter();
 
-  if (error) {
-    return error;
+  try {
+    const info = await transporter.sendMail({
+      from: `${appName} <${process.env.EMAIL_FROM || process.env.SMTP_USER}>`,
+      to: email,
+      subject: subject,
+      html: emailHtml,
+    });
+
+    return { id: info.messageId, success: true };
+  } catch (error) {
+    console.error('Email sending error:', error);
+    return { error, success: false };
   }
-
-  return data;
 }

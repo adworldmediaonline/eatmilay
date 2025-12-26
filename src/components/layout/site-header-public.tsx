@@ -26,8 +26,8 @@ import {
   UserIcon
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-import logo from '../../../public/brand/S&S Logo-01.png';
+// import Image from 'next/image';
+// import logo from '../../../public/brand/S&S Logo-01.png';
 
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { CartDropdown } from '@/components/cart/cart-dropdown';
@@ -78,7 +78,7 @@ export default function SiteHeaderPublic() {
       }`}>
       {/* Logo */}
       <Link href="/" className="flex items-center">
-        <Image
+        {/* <Image
           src={logo}
           alt="SumNSubstance Logo"
           className={`w-auto transition-all duration-300 ${isHomePage && !isScrolled
@@ -87,7 +87,11 @@ export default function SiteHeaderPublic() {
             }`}
           style={{ height: 'auto', width: '200px' }}
           priority
-        />
+        /> */}
+        <span className={`text-2xl font-bold transition-colors duration-300 ${isHomePage && !isScrolled
+          ? 'text-white'
+          : 'text-primary'
+          }`}>EatMilay</span>
       </Link>
 
       <div className="hidden lg:flex items-center">
@@ -97,45 +101,31 @@ export default function SiteHeaderPublic() {
               <NavigationMenuLink asChild>
                 <Link
                   href="/"
-                className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
-                  ? (isScrolled
-                    ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                    : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
-                  : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                  }`}
-              >
-                Home
-              </Link>
+                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
+                    ? (isScrolled
+                      ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
+                      : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
+                    : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
+                    }`}
+                >
+                  Home
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                href="/about"
-                className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
-                  ? (isScrolled
-                    ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                    : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
-                  : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                  }`}
-              >
-                About
-              </Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/contact"
-                className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
-                  ? (isScrolled
-                    ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                    : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
-                  : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                  }`}
-              >
-                Contact
-              </Link>
+                  href="/contact-us"
+                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
+                    ? (isScrolled
+                      ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
+                      : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
+                    : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
+                    }`}
+                >
+                  Contact
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -273,24 +263,25 @@ export default function SiteHeaderPublic() {
                 <div className="flex flex-col h-full">
                   {/* Mobile Header */}
                   <div className="flex items-center mb-8">
-                    <Image
+                    {/* <Image
                       src={logo}
                       alt="SumNSubstance Logo"
                       className="brightness-0 invert"
                       style={{ height: 'auto', width: '180px' }}
-                    />
+                    /> */}
+                    <span className="text-2xl font-bold text-white">EatMilay</span>
                   </div>
 
                   {/* User Info (Mobile) */}
                   {session && (
                     <div className="mb-6 p-4 bg-white/10 backdrop-blur-sm rounded-lg">
                       <div className="flex items-center gap-3">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={session.user.image ?? ''} alt={''} />
-                        <AvatarFallback className="bg-white text-primary font-semibold">
-                          {session.user.initials ?? ''}
-                        </AvatarFallback>
-                      </Avatar>
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={session.user.image ?? ''} alt={''} />
+                          <AvatarFallback className="bg-white text-primary font-semibold">
+                            {session.user.initials ?? ''}
+                          </AvatarFallback>
+                        </Avatar>
                         <div>
                           <p className="text-white font-medium">{session.user.name}</p>
                           <p className="text-white/70 text-sm">{session.user.email}</p>
@@ -308,15 +299,9 @@ export default function SiteHeaderPublic() {
                     >
                       <span className="font-medium">Home</span>
                     </Link>
+
                     <Link
-                      href="/about"
-                      className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <span className="font-medium">About</span>
-                    </Link>
-                    <Link
-                      href="/contact"
+                      href="/contact-us"
                       className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

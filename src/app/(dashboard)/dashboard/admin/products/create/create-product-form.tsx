@@ -44,6 +44,7 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
 
   const form = useForm<FormData>({
     resolver: zodResolver(createProductSchema),
+    mode: 'onChange', // Trigger validation on change
     defaultValues: {
       name: '',
       excerpt: '',
@@ -96,7 +97,9 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Name</FormLabel>
+              <FormLabel className="flex items-center gap-1">
+                Product Name <span className="text-red-500 font-semibold">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter product name"
@@ -146,10 +149,18 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Description</FormLabel>
+              <FormLabel className="flex items-center gap-1">
+                Product Description <span className="text-red-500 font-semibold">*</span>
+              </FormLabel>
               <FormControl>
                 <RichTextEditor
-                  {...field}
+                  value={field.value || ''}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    // Trigger validation after change
+                    form.trigger('description');
+                  }}
+                  onBlur={field.onBlur}
                   placeholder="Write your blog content here..."
                   size="lg"
                 />
@@ -197,7 +208,12 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
                   <FormLabel>Why You'll Love It</FormLabel>
                   <FormControl>
                     <RichTextEditor
-                      {...field}
+                      value={field.value || ''}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        form.trigger('whyLoveIt');
+                      }}
+                      onBlur={field.onBlur}
                       placeholder="Describe why customers will love this product..."
                       size="lg"
                     />
@@ -218,7 +234,12 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
                   <FormLabel>What's Inside</FormLabel>
                   <FormControl>
                     <RichTextEditor
-                      {...field}
+                      value={field.value || ''}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        form.trigger('whatsInside');
+                      }}
+                      onBlur={field.onBlur}
                       placeholder="Describe what's included in the product..."
                       size="lg"
                     />
@@ -239,7 +260,12 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
                   <FormLabel>How to Use</FormLabel>
                   <FormControl>
                     <RichTextEditor
-                      {...field}
+                      value={field.value || ''}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        form.trigger('howToUse');
+                      }}
+                      onBlur={field.onBlur}
                       placeholder="Provide usage instructions and tips..."
                       size="lg"
                     />
@@ -260,7 +286,12 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
                   <FormLabel>Ingredients</FormLabel>
                   <FormControl>
                     <RichTextEditor
-                      {...field}
+                      value={field.value || ''}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        form.trigger('ingredients');
+                      }}
+                      onBlur={field.onBlur}
                       placeholder="List the ingredients and their benefits..."
                       size="lg"
                     />
@@ -280,7 +311,9 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
+              <FormLabel className="flex items-center gap-1">
+                Price <span className="text-red-500 font-semibold">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -288,9 +321,11 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
                   min="0"
                   placeholder="0.00"
                   {...field}
-                  onChange={e =>
-                    field.onChange(parseFloat(e.target.value) || 0)
-                  }
+                  onChange={e => {
+                    const value = parseFloat(e.target.value) || 0;
+                    field.onChange(value);
+                    form.trigger('price');
+                  }}
                   disabled={isSubmitting}
                 />
               </FormControl>
@@ -307,10 +342,15 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
           name="categoryId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel className="flex items-center gap-1">
+                Category <span className="text-red-500 font-semibold">*</span>
+              </FormLabel>
               <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  form.trigger('categoryId');
+                }}
+                value={field.value}
                 disabled={isSubmitting}
               >
                 <FormControl>

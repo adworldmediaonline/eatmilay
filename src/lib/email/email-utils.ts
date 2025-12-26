@@ -40,8 +40,21 @@ export async function retryEmail<T>(
 export function validateEmailConfig(): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
 
-  if (!process.env.RESEND_API_KEY) {
-    errors.push('RESEND_API_KEY is not configured');
+  // Validate SMTP configuration
+  if (!process.env.SMTP_HOST) {
+    errors.push('SMTP_HOST is not configured');
+  }
+
+  if (!process.env.SMTP_PORT) {
+    errors.push('SMTP_PORT is not configured');
+  }
+
+  if (!process.env.SMTP_USER) {
+    errors.push('SMTP_USER is not configured');
+  }
+
+  if (!process.env.SMTP_PASS) {
+    errors.push('SMTP_PASS is not configured');
   }
 
   if (!process.env.EMAIL_FROM) {

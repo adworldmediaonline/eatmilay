@@ -1,5 +1,17 @@
 import { z } from 'zod';
 
+// Helper function to check if HTML content is empty
+function isHtmlContentEmpty(html: string): boolean {
+  if (!html) return true;
+  // Remove HTML tags and check if there's actual content
+  const textContent = html
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .trim();
+  return textContent.length === 0;
+}
+
 // Image schema
 const imageSchema = z.object({
   id: z.string().optional(),
@@ -18,20 +30,26 @@ export const createProductSchema = z.object({
     .string()
     .max(300, 'Excerpt must be less than 300 characters')
     .optional(),
-  description: z.string().optional(),
-  
+  description: z
+    .string()
+    .min(1, 'Product description is required')
+    .refine(
+      (val) => !isHtmlContentEmpty(val),
+      { message: 'Product description is required' }
+    ),
+
   // New Content Fields
   tagline: z.string().max(100, 'Tagline must be less than 100 characters').optional(),
   whyLoveIt: z.string().optional(),
   whatsInside: z.string().optional(),
   howToUse: z.string().optional(),
   ingredients: z.string().optional(),
-  
+
   // SEO Fields
   metaTitle: z.string().max(60, 'Meta title must be less than 60 characters').optional(),
   metaDescription: z.string().max(160, 'Meta description must be less than 160 characters').optional(),
   metaKeywords: z.string().optional(),
-  
+
   price: z
     .number()
     .min(0.01, 'Price must be greater than 0')
@@ -52,20 +70,26 @@ export const updateProductSchema = z.object({
     .string()
     .max(300, 'Excerpt must be less than 300 characters')
     .optional(),
-  description: z.string().optional(),
-  
+  description: z
+    .string()
+    .min(1, 'Product description is required')
+    .refine(
+      (val) => !isHtmlContentEmpty(val),
+      { message: 'Product description is required' }
+    ),
+
   // New Content Fields
   tagline: z.string().max(100, 'Tagline must be less than 100 characters').optional(),
   whyLoveIt: z.string().optional(),
   whatsInside: z.string().optional(),
   howToUse: z.string().optional(),
   ingredients: z.string().optional(),
-  
+
   // SEO Fields
   metaTitle: z.string().max(60, 'Meta title must be less than 60 characters').optional(),
   metaDescription: z.string().max(160, 'Meta description must be less than 160 characters').optional(),
   metaKeywords: z.string().optional(),
-  
+
   price: z
     .number()
     .min(0.01, 'Price must be greater than 0')
