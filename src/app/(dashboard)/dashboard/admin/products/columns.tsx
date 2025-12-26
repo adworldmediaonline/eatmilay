@@ -102,7 +102,7 @@ export const productColumns: ColumnDef<SerializedProductWithCategory>[] = [
       const price = row.getValue('price') as number;
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'INR',
       }).format(price);
 
       return <div className="text-right font-medium">{formatted}</div>;
