@@ -201,7 +201,7 @@ export function OrderCancelledEmailTemplate({
               </Link>
             </Text>
             <Text style={footerText}>
-              This email was sent from SumnSubstance. We apologize for any inconvenience caused.
+              This email was sent from eatmilay. We apologize for any inconvenience caused.
             </Text>
           </Section>
         </Container>

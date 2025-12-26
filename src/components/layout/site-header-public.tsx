@@ -52,11 +52,11 @@ export default function SiteHeaderPublic() {
       <Link href="/" className="flex items-center">
         {/* <Image
           src={logo}
-          alt="SumNSubstance Logo"
+          alt="eatmilay Logo"
           style={{ height: 'auto', width: '200px' }}
           priority
         /> */}
-        <span className="text-2xl font-bold text-primary">EatMilay</span>
+        <span className="text-2xl font-bold text-primary">Eatmilay</span>
       </Link>
 
       <div className="hidden lg:flex items-center">
@@ -211,7 +211,7 @@ export default function SiteHeaderPublic() {
                   <div className="flex items-center mb-8">
                     {/* <Image
                       src={logo}
-                      alt="SumNSubstance Logo"
+                      alt="eatmilay Logo"
                       className="brightness-0 invert"
                       style={{ height: 'auto', width: '180px' }}
                     /> */}

@@ -37,11 +37,11 @@ export default async function TermsConditionsPage() {
           {/* Introduction */}
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Welcome to SumNSubstance
+              Welcome to eatmilay
             </h2>
             <p className="text-gray-700 leading-relaxed">
               These Terms and Conditions ("Terms") govern your use of the
-              SumNSubstance website and your purchase of our skincare products.
+              eatmilay website and your purchase of our skincare products.
               By accessing our website or making a purchase, you agree to comply
               with and be bound by these Terms. Please read them carefully
               before using our services.
@@ -61,7 +61,7 @@ export default async function TermsConditionsPage() {
                 <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                 <span>
                   These Terms constitute a legally binding agreement between you
-                  and SumNSubstance
+                  and eatmilay
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -103,7 +103,7 @@ export default async function TermsConditionsPage() {
                       "Company" / "We" / "Us" / "Our"
                     </h3>
                     <p className="text-gray-700">
-                      Refers to SumNSubstance Private Limited, the owner and
+                      Refers to eatmilay Private Limited, the owner and
                       operator of this website
                     </p>
                   </div>
@@ -133,7 +133,7 @@ export default async function TermsConditionsPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900">"Website"</h3>
                     <p className="text-gray-700">
-                      Refers to sumnsubstance.com and all associated domains and
+                      Refers to eatmilay.com and all associated domains and
                       subdomains
                     </p>
                   </div>
@@ -493,7 +493,7 @@ export default async function TermsConditionsPage() {
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                 <span>
-                  All content on this website is owned by SumNSubstance and
+                  All content on this website is owned by eatmilay and
                   protected by copyright laws
                 </span>
               </li>
@@ -501,7 +501,7 @@ export default async function TermsConditionsPage() {
                 <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                 <span>
                   Trademarks, logos, and brand names are the property of
-                  SumNSubstance
+                  eatmilay
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -730,16 +730,16 @@ export default async function TermsConditionsPage() {
             </p>
             <div className="space-y-3 text-gray-700">
               <p>
-                <strong>Email:</strong> legal@sumnsubstance.com
+                <strong>Email:</strong> legal@eatmilay.com
               </p>
               <p>
-                <strong>Customer Support:</strong> support@sumnsubstance.com
+                <strong>Customer Support:</strong> support@eatmilay.com
               </p>
               <p>
                 <strong>Phone:</strong> +91-XXXXXXXXXX
               </p>
               <p>
-                <strong>Business Address:</strong> SumNSubstance Private
+                <strong>Business Address:</strong> eatmilay Private
                 Limited, [Your Business Address], India
               </p>
               <p>
@@ -751,7 +751,7 @@ export default async function TermsConditionsPage() {
               <p className="text-blue-700">
                 <strong>Note:</strong> For urgent matters related to product
                 safety or adverse reactions, please contact us immediately at
-                support@sumnsubstance.com or call our customer service line.
+                support@eatmilay.com or call our customer service line.
               </p>
             </div>
           </section>

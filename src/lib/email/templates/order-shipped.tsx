@@ -210,7 +210,7 @@ export function OrderShippedEmailTemplate({
               </Link>
             </Text>
             <Text style={footerText}>
-              This email was sent from SumnSubstance. We'll notify you when your order is delivered.
+              This email was sent from eatmilay. We'll notify you when your order is delivered.
             </Text>
           </Section>
         </Container>

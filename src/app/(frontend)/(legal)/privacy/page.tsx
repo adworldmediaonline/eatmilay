@@ -40,10 +40,10 @@ export default async function PrivacyPolicyPage() {
               Privacy Policy
             </h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              This privacy policy sets out how SumNSubstance ("we", "us", or
+              This privacy policy sets out how eatmilay ("we", "us", or
               "our") collects, uses, and discloses any personal information that
               you give us or that we collect when you use our website or
-              Services. SumNSubstance offers skincare products and services for
+              Services. eatmilay offers skincare products and services for
               customers looking to improve their skin health and appearance.
             </p>
             <p className="text-gray-700 leading-relaxed mb-4">
@@ -55,7 +55,7 @@ export default async function PrivacyPolicyPage() {
               and do not give us any personal information.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              SumNSubstance may change this policy from time to time by updating
+              eatmilay may change this policy from time to time by updating
               this page. You should check this page from time to time to ensure
               that you are happy with any changes. Your continued access to
               and/or use of our website or Services after any such changes
@@ -403,16 +403,16 @@ export default async function PrivacyPolicyPage() {
             </p>
             <div className="space-y-2 text-gray-700">
               <p>
-                <strong>Email:</strong> privacy@sumnsubstance.com
+                <strong>Email:</strong> privacy@eatmilay.com
               </p>
               <p>
-                <strong>Customer Service:</strong> support@sumnsubstance.com
+                <strong>Customer Service:</strong> support@eatmilay.com
               </p>
               <p>
                 <strong>Phone:</strong> +91-XXXXXXXXXX
               </p>
               <p>
-                <strong>Address:</strong> SumNSubstance Private Limited, [Your
+                <strong>Address:</strong> eatmilay Private Limited, [Your
                 Business Address], India
               </p>
             </div>

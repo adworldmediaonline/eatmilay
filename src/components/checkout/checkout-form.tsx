@@ -149,7 +149,7 @@ export function CheckoutForm({
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: Math.round(order.total * 100),
           currency: 'INR',
-          name: 'SumnSubstance',
+          name: 'eatmilay',
           description: `Order #${order.orderNumber}`,
           order_id: order.razorpayOrderId,
           handler: async (response: {

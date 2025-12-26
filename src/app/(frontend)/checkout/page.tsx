@@ -4,7 +4,7 @@ import { CheckoutPageContent } from '@/components/checkout/checkout-page-content
 import { CheckoutPageSkeleton } from '@/components/checkout/checkout-page-skeleton';
 
 export const metadata: Metadata = {
-  title: 'Checkout | SumnSubstance',
+  title: 'Checkout | eatmilay',
   description:
     'Complete your order securely with our streamlined checkout process',
 };

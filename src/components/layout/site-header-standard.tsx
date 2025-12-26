@@ -55,7 +55,7 @@ export default function SiteHeaderStandard() {
       <Link href="/" className="flex items-center">
         {/* <Image
           src={logo}
-          alt="SumNSubstance Logo"
+          alt="eatmilay Logo"
           style={{ height: 'auto', width: '200px' }}
           priority
         /> */}
@@ -215,7 +215,7 @@ export default function SiteHeaderStandard() {
                   <div className="flex items-center mb-8">
                     {/* <Image
                       src={logo}
-                      alt="SumNSubstance Logo"
+                      alt="eatmilay Logo"
                       className="brightness-0 invert"
                       style={{ height: 'auto', width: '180px' }}
                     /> */}

@@ -4,7 +4,7 @@ import { OrderSuccessContent } from '@/components/checkout/order-success-content
 import { OrderSuccessSkeleton } from '@/components/checkout/order-success-skeleton';
 
 export const metadata: Metadata = {
-  title: 'Order Successful | SumnSubstance',
+  title: 'Order Successful | eatmilay',
   description: 'Your order has been placed successfully',
 };
 

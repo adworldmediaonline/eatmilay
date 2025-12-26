@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { OrderFailureContent } from '@/components/checkout/order-failure-content';
 
 export const metadata: Metadata = {
-  title: 'Payment Failed | SumnSubstance',
+  title: 'Payment Failed | eatmilay',
   description: 'Payment failed - please try again',
 };
 

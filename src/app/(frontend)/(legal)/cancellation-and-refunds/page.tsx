@@ -34,7 +34,7 @@ export default async function ReturnsRefundPage() {
               Your Satisfaction is Our Priority
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              At SumNSubstance, we stand behind the quality of our skincare
+              At eatmilay, we stand behind the quality of our skincare
               products. We understand that skincare is personal, and what works
               for one person may not work for another. That's why we offer a
               comprehensive return and refund policy to ensure you're completely
@@ -167,7 +167,7 @@ export default async function ReturnsRefundPage() {
                     Contact Customer Service
                   </h3>
                   <p className="text-gray-700">
-                    Email us at returns@sumnsubstance.com or call our support
+                    Email us at returns@eatmilay.com or call our support
                     team to initiate the return process and receive a return
                     authorization number.
                   </p>
@@ -527,10 +527,10 @@ export default async function ReturnsRefundPage() {
             </p>
             <div className="space-y-3 text-gray-700">
               <p>
-                <strong>Returns Email:</strong> returns@sumnsubstance.com
+                <strong>Returns Email:</strong> returns@eatmilay.com
               </p>
               <p>
-                <strong>Customer Support:</strong> support@sumnsubstance.com
+                <strong>Customer Support:</strong> support@eatmilay.com
               </p>
               <p>
                 <strong>Phone:</strong> +91-XXXXXXXXXX
@@ -543,7 +543,7 @@ export default async function ReturnsRefundPage() {
                 7:00 PM
               </p>
               <p>
-                <strong>Returns Address:</strong> SumNSubstance Returns Center,
+                <strong>Returns Address:</strong> eatmilay Returns Center,
                 [Your Returns Address], India
               </p>
             </div>

@@ -303,7 +303,7 @@ export function OrderEmailTemplate({
             </a>
           </p>
           <p style={{ margin: '0', color: '#666', fontSize: '12px' }}>
-            This email was sent from SumnSubstance. If you have any questions,
+            This email was sent from eatmilay. If you have any questions,
             please don't hesitate to contact us.
           </p>
         </div>

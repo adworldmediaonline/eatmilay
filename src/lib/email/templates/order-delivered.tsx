@@ -83,11 +83,11 @@ export function OrderDeliveredEmailTemplate({
               Delivered on:{' '}
               {deliveryDate
                 ? new Date(deliveryDate).toLocaleDateString('en-IN', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
                 : 'Today'}
             </Text>
           </Section>
@@ -180,7 +180,7 @@ export function OrderDeliveredEmailTemplate({
             <Heading style={h3}>What's Next?</Heading>
             <Text style={listItem}>✓ <strong>Enjoy your products!</strong> We hope you love what you ordered</Text>
             <Text style={listItem}>✓ <strong>Leave a review</strong> to help other customers and earn rewards</Text>
-            <Text style={listItem}>✓ <strong>Share your experience</strong> on social media with #SumnSubstance</Text>
+            <Text style={listItem}>✓ <strong>Share your experience</strong> on social media with #eatmilay</Text>
             <Text style={listItem}>✓ <strong>Shop again</strong> - we have more amazing products waiting for you</Text>
           </Section>
 
@@ -204,7 +204,7 @@ export function OrderDeliveredEmailTemplate({
               </Link>
             </Text>
             <Text style={footerText}>
-              Thank you for choosing SumnSubstance! We appreciate your business.
+              Thank you for choosing eatmilay! We appreciate your business.
             </Text>
           </Section>
         </Container>

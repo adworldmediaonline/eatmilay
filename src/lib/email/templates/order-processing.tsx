@@ -199,7 +199,7 @@ export function OrderProcessingEmailTemplate({
               </Link>
             </Text>
             <Text style={footerText}>
-              This email was sent from SumnSubstance. We'll keep you updated on your order status.
+              This email was sent from eatmilay. We'll keep you updated on your order status.
             </Text>
           </Section>
         </Container>

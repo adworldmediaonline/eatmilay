@@ -95,7 +95,7 @@ export async function sendOrderConfirmationEmail({
 
     const transporter = createTransporter();
     const info = await transporter.sendMail({
-      from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+      from: `${process.env.EMAIL_FROM_NAME || 'eatmilay'} <${process.env.EMAIL_FROM}>`,
       to: customerEmail,
       subject: `Order Confirmation - ${order.orderNumber}`,
       html: emailHtml,
@@ -152,7 +152,7 @@ export async function sendOrderProcessingEmail({
     const sendEmail = async () => {
       const transporter = createTransporter();
       const info = await transporter.sendMail({
-        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        from: `${process.env.EMAIL_FROM_NAME || 'eatmilay'} <${process.env.EMAIL_FROM}>`,
         to: customerEmail,
         subject: formatEmailSubject('processing', order.orderNumber),
         html: emailHtml,
@@ -217,7 +217,7 @@ export async function sendOrderShippedEmail({
     const sendEmail = async () => {
       const transporter = createTransporter();
       const info = await transporter.sendMail({
-        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        from: `${process.env.EMAIL_FROM_NAME || 'eatmilay'} <${process.env.EMAIL_FROM}>`,
         to: customerEmail,
         subject: formatEmailSubject('shipped', order.orderNumber),
         html: emailHtml,
@@ -281,7 +281,7 @@ export async function sendOrderDeliveredEmail({
     const sendEmail = async () => {
       const transporter = createTransporter();
       const info = await transporter.sendMail({
-        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        from: `${process.env.EMAIL_FROM_NAME || 'eatmilay'} <${process.env.EMAIL_FROM}>`,
         to: customerEmail,
         subject: formatEmailSubject('delivered', order.orderNumber),
         html: emailHtml,
@@ -348,7 +348,7 @@ export async function sendOrderCancelledEmail({
     const sendEmail = async () => {
       const transporter = createTransporter();
       const info = await transporter.sendMail({
-        from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+        from: `${process.env.EMAIL_FROM_NAME || 'eatmilay'} <${process.env.EMAIL_FROM}>`,
         to: customerEmail,
         subject: formatEmailSubject('cancelled', order.orderNumber),
         html: emailHtml,
@@ -397,7 +397,7 @@ export async function sendAdminOrderNotification(order: {
 
     const transporter = createTransporter();
     const info = await transporter.sendMail({
-      from: `${process.env.EMAIL_FROM_NAME || 'SumnSubstance'} <${process.env.EMAIL_FROM}>`,
+      from: `${process.env.EMAIL_FROM_NAME || 'eatmilay'} <${process.env.EMAIL_FROM}>`,
       to: adminEmail,
       subject: `New Order Received - ${order.orderNumber}`,
       html: `

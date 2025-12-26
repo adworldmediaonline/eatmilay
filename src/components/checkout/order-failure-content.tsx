@@ -127,10 +127,10 @@ export function OrderFailureContent() {
                 Send us your query
               </p>
               <a
-                href="mailto:support@sumnsubstance.com"
+                href="mailto:support@eatmilay.com"
                 className="text-primary hover:underline font-medium"
               >
-                support@sumnsubstance.com
+                support@eatmilay.com
               </a>
               <p className="text-xs text-muted-foreground mt-1">
                 We'll respond within 24 hours

@@ -4,7 +4,7 @@ import { CartPageContent } from '@/components/cart/cart-page-content';
 import { CartPageSkeleton } from '@/components/cart/cart-page-skeleton';
 
 export const metadata: Metadata = {
-  title: 'Shopping Cart | SumnSubstance',
+  title: 'Shopping Cart | eatmilay',
   description: 'Review and manage items in your shopping cart',
 };
 

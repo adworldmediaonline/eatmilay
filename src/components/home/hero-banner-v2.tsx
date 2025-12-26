@@ -83,7 +83,7 @@ export default function HeroBannerV2() {
               }`} />
           </div>
           <span className={`font-bold text-xl transition-colors duration-300 ${isScrolled ? 'text-[hsl(var(--primary))]' : 'text-white'
-            }`}>SumNSubstance</span>
+            }`}>eatmilay</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -309,7 +309,7 @@ export default function HeroBannerV2() {
                           <Leaf className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-white font-bold text-xl">
-                          SumNSubstance
+                          eatmilay
                         </span>
                       </div>
 

@@ -34,7 +34,7 @@ export default async function ShippingCancellationPage() {
               Fast & Reliable Delivery
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              At SumNSubstance, we are committed to delivering your skincare
+              At eatmilay, we are committed to delivering your skincare
               products safely and on time. We work with trusted logistics
               partners to ensure your products reach you in perfect condition.
               Learn more about our shipping options and cancellation policy
@@ -463,10 +463,10 @@ export default async function ShippingCancellationPage() {
             </p>
             <div className="space-y-3 text-gray-700">
               <p>
-                <strong>Email:</strong> shipping@sumnsubstance.com
+                <strong>Email:</strong> shipping@eatmilay.com
               </p>
               <p>
-                <strong>Customer Support:</strong> support@sumnsubstance.com
+                <strong>Customer Support:</strong> support@eatmilay.com
               </p>
               <p>
                 <strong>Phone:</strong> +91-XXXXXXXXXX
@@ -479,7 +479,7 @@ export default async function ShippingCancellationPage() {
                 7:00 PM
               </p>
               <p>
-                <strong>Address:</strong> SumNSubstance Private Limited, [Your
+                <strong>Address:</strong> eatmilay Private Limited, [Your
                 Business Address], India
               </p>
             </div>

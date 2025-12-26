@@ -179,7 +179,7 @@ export function OrderEmailTemplate({
               </a>
             </Text>
             <Text style={footerText}>
-              This email was sent from SumnSubstance. If you have any questions,
+              This email was sent from eatmilay. If you have any questions,
               please don't hesitate to contact us.
             </Text>
           </Section>

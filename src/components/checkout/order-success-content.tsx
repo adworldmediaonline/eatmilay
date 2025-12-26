@@ -102,7 +102,7 @@ export function OrderSuccessContent() {
     if (navigator.share && orderData) {
       navigator.share({
         title: `Order Confirmation - ${orderData.orderNumber}`,
-        text: `I just placed an order with SumnSubstance! Order #${orderData.orderNumber}`,
+        text: `I just placed an order with eatmilay! Order #${orderData.orderNumber}`,
         url: window.location.href,
       });
     } else {

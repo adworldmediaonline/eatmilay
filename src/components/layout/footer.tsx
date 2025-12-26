@@ -40,7 +40,7 @@ export default function Footer({ className = '' }: FooterProps) {
     //   'Thank you for subscribing! Check your email for 10% off coupon.'
     // );
     toast.success(
-      'Thank you for subscribing! Welcome to SumNSubstance community.'
+      'Thank you for subscribing! Welcome to eatmilay community.'
     );
     setEmail('');
     setIsSubscribing(false);
