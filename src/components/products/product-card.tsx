@@ -1,9 +1,9 @@
 'use client';
 
-import { Eye, Heart, Share, ShoppingCart, Star } from 'lucide-react';
+import { Eye, Heart, Share, ShoppingCart, Star, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Product {
   id: string;
@@ -14,7 +14,7 @@ interface Product {
   images: { url: string; alt?: string }[];
   rating?: number;
   reviewCount?: number;
-  category?: string;
+  category?: string | { id: string; name: string; slug: string };
   badges?: string[];
   isWishlisted?: boolean;
   inStock?: boolean;
@@ -28,7 +28,7 @@ interface ProductCardProps {
   variant?: 'default' | 'compact' | 'showcase' | 'elegant' | 'horizontal';
   showQuickActions?: boolean;
   showWishlist?: boolean;
-  onAddToCart?: (productId: string) => void;
+  onAddToCart?: (productId: string, quantity?: number) => void;
   onToggleWishlist?: (productId: string) => void;
   onQuickView?: (productId: string) => void;
   className?: string;
@@ -44,11 +44,19 @@ export default function ProductCard({
   onQuickView,
   className = '',
 }: ProductCardProps) {
+  const [quantity, setQuantity] = useState(1);
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    onAddToCart?.(product.id);
+    onAddToCart?.(product.id, quantity);
+    // Reset quantity after adding to cart
+    setQuantity(1);
+  };
+
+  const handleQuantityChange = (change: number) => {
+    setQuantity(prev => Math.max(1, prev + change));
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -91,28 +99,7 @@ export default function ProductCard({
               />
             </Link>
 
-            {/* Action Buttons */}
-            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-5 lg:right-5 flex gap-2">
-              <button
-                onClick={handleToggleWishlist}
-                className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
-                aria-label="Add to wishlist"
-              >
-                <Heart
-                  className={`w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 ${product.isWishlisted
-                    ? 'fill-red-500 text-red-500'
-                    : 'text-gray-600'
-                    }`}
-                />
-              </button>
-              <button
-                onClick={handleShare}
-                className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
-                aria-label="Share product"
-              >
-                <Share className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-gray-600" />
-              </button>
-            </div>
+
           </div>
 
           {/* Content Section - Beautifully spaced */}
@@ -122,9 +109,7 @@ export default function ProductCard({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                    <span className="text-xs font-bold text-primary uppercase tracking-widest bg-secondary/20 px-2 py-1 rounded-md w-fit">
-                      SumNSubstance
-                    </span>
+
                     {product.rating && product.reviewCount && (
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
@@ -461,8 +446,8 @@ export default function ProductCard({
   const isCompact = variant === 'compact';
   const isShowcase = variant === 'showcase';
 
-  // Dynamic sizing and styling
-  const imageHeight = isCompact ? 'h-40' : isShowcase ? 'h-56' : 'h-48';
+  // Dynamic sizing and styling - taller for portrait product images (1261x2000 ratio)
+  const imageHeight = isCompact ? 'h-56' : isShowcase ? 'h-80' : 'h-72';
   const padding = isCompact ? 'p-3' : 'p-4';
   const titleSize = isShowcase
     ? 'text-lg font-semibold'
@@ -473,18 +458,23 @@ export default function ProductCard({
 
   // const originalPrice = product.price / (1 - discount / 100);
 
+  // Calculate discount if originalPrice exists
+  const discount = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : null;
+
   return (
     <div
-      className={`relative bg-white rounded-2xl overflow-hidden shadow-sm font-sans flex flex-col h-full ${className}`}
+      className={`relative bg-white rounded-lg overflow-hidden shadow-sm font-sans flex flex-col h-full border border-gray-200 hover:shadow-md transition-shadow ${className}`}
     >
-      {/* Image Container */}
-      <div className={`relative ${imageHeight} w-full overflow-hidden bg-gradient-to-br from-gray-50 to-white flex-shrink-0`}>
-        <Link href={`/products/${product.slug}`} className="block h-full">
+      {/* Image Container - Aspect ratio matches portrait images (1261x2000) */}
+      <div className={`relative w-full overflow-hidden bg-gradient-to-br from-gray-50 to-white flex-shrink-0`} style={{ aspectRatio: '1261 / 2000' }}>
+        <Link href={`/products/${product.slug}`} className="block h-full w-full absolute inset-0">
           <Image
             src={displayImage}
             alt={product.name}
             fill
-            className="object-cover transition-transform hover:scale-105"
+            className="object-contain transition-transform hover:scale-105"
             sizes={
               isCompact
                 ? '(max-width: 768px) 50vw, 25vw'
@@ -494,25 +484,17 @@ export default function ProductCard({
           />
         </Link>
 
-        {/* Modern Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
-          {/* Deal badge commented out - uncomment when deals are back */}
-          {/* <div className="flex items-center gap-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-2.5 py-1 rounded-full text-xs font-bold shadow-lg">
-            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-            FLAT {discount}% OFF
-          </div> */}
-          {product.featured && (
-            <div className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))] text-white px-2.5 py-1 rounded-full text-xs font-semibold shadow-lg">
-              ⭐ Featured
-            </div>
-          )}
-        </div>
-
+        {/* Discount Badge */}
+        {discount && discount > 0 && (
+          <div className="absolute top-2 left-2 bg-yellow-400 text-gray-900 px-2 py-1 rounded text-xs font-bold z-10">
+            SAVE {discount}%
+          </div>
+        )}
 
         {/* Stock Status */}
         {!product.inStock && (
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-            <div className="bg-white/95 px-4 py-2 rounded-full">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-20">
+            <div className="bg-white px-4 py-2 rounded">
               <span className="text-gray-800 font-semibold text-sm">
                 Out of Stock
               </span>
@@ -526,52 +508,97 @@ export default function ProductCard({
         {/* Product Name */}
         <Link href={`/products/${product.slug}`}>
           <h3
-            className={`${titleSize} text-gray-900 mb-2 line-clamp-2 leading-snug`}
+            className={`${titleSize} text-gray-900 mb-2 line-clamp-2 leading-snug hover:text-primary transition-colors`}
           >
             {product.name}
           </h3>
         </Link>
 
+        {/* Key Features - Simple tags */}
+        {product.badges && product.badges.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {product.badges.slice(0, 3).map((badge, idx) => (
+              <span
+                key={idx}
+                className="text-xs text-gray-600 bg-gray-50 px-2 py-0.5 rounded"
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Rating & Reviews */}
         {product.rating && product.reviewCount && (
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-1 mb-2">
             <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
                   className={`w-3.5 h-3.5 ${i < Math.floor(product.rating!)
                     ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-200'
+                    : 'text-gray-300'
                     }`}
                 />
               ))}
             </div>
-            <span className="text-xs text-gray-500 font-medium">
+            <span className="text-xs text-gray-600">
               ({product.reviewCount})
             </span>
           </div>
         )}
 
         {/* Price Section */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-baseline gap-2 mb-3">
           <span className="text-lg font-bold text-gray-900">
             ₹{product.price.toLocaleString()}
           </span>
-          {/* Deal pricing commented out - uncomment when deals are back */}
-          {/* <span className="text-sm text-gray-500 line-through">
-            ₹{originalPrice.toLocaleString()}
-          </span>
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">
-            {discount}% OFF
-          </span> */}
+          {product.originalPrice && product.originalPrice > product.price && (
+            <span className="text-sm text-gray-500 line-through">
+              ₹{product.originalPrice.toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {/* Quantity Selector */}
+        <div className="mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Quantity:</span>
+            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleQuantityChange(-1);
+                }}
+                disabled={quantity <= 1}
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <div className="w-10 h-8 flex items-center justify-center bg-white border-x border-gray-300">
+                <span className="text-sm font-medium">{quantity}</span>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleQuantityChange(1);
+                }}
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Add to Cart Button */}
-        <div className="mt-auto pt-3">
+        <div className="mt-auto pt-2">
           <button
             onClick={handleAddToCart}
             disabled={!product.inStock}
-            className="w-full bg-[hsl(var(--primary))] disabled:bg-gray-200 disabled:text-gray-500 text-white font-semibold py-2.5 rounded-xl disabled:cursor-not-allowed"
+            className="w-full bg-primary hover:bg-primary/90 disabled:bg-gray-200 disabled:text-gray-500 text-white font-semibold py-2 rounded-lg disabled:cursor-not-allowed transition-colors"
           >
             <div className="flex items-center justify-center gap-2">
               <ShoppingCart className="w-4 h-4" />
@@ -580,12 +607,6 @@ export default function ProductCard({
           </button>
         </div>
       </div>
-
-      {/* Modern Border Effect */}
-      <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-200 pointer-events-none"></div>
-
-      {/* Focus Ring for Accessibility */}
-      <div className="absolute inset-0 rounded-2xl ring-2 ring-[hsl(var(--primary))] ring-offset-2 ring-offset-white opacity-0 focus-within:opacity-100 pointer-events-none"></div>
     </div>
   );
 }

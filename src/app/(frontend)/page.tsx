@@ -1,34 +1,58 @@
 import { getProducts } from '@/server/queries/product';
+import { getCategories } from '@/server/queries/category';
 import { getReviewAggregates } from '@/server/queries/review';
-import { FeaturedProductsV3 } from '../../components/home';
-import HeroContent from '../../components/home/hero-content';
+import CategoriesCarousel from '../../components/home/categories-carousel';
+import ProductsGridClient from '../../components/home/products-grid-client';
 
 export default async function Home() {
-  // Fetch real products from database
-  const allProducts = await getProducts();
+  // Fetch categories and products in parallel
+  const [categories, allProducts] = await Promise.all([
+    getCategories(),
+    getProducts(),
+  ]);
 
-  // Take first 4 products for featured section
-  const topProducts = allProducts.slice(0, 4);
+  // Take first 8 products for home page
+  const featuredProducts = allProducts.slice(0, 8);
 
   // Fetch review aggregates for each product in parallel
-  const reviewAggregatesPromises = topProducts.map(product =>
+  const reviewAggregatesPromises = featuredProducts.map(product =>
     getReviewAggregates(product.id)
   );
   const reviewAggregates = await Promise.all(reviewAggregatesPromises);
 
   // Combine products with their review data
-  const featuredProducts = topProducts.map((product, index) => ({
-    ...product,
-    isWishlisted: false, // Default values for frontend-only fields
+  const productsWithReviews = featuredProducts.map((product, index) => ({
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    originalPrice: undefined, // Can be added if you have discount pricing
+    images: product.mainImage ? [{ url: product.mainImage.url, alt: product.mainImage.altText }] : [],
+    rating: reviewAggregates[index]?.averageRating || 0,
+    reviewCount: reviewAggregates[index]?.totalReviews || 0,
+    category: {
+      id: product.category.id,
+      name: product.category.name,
+      slug: product.category.slug,
+    },
+    badges: [], // Can add product badges/features here
+    isWishlisted: false,
     inStock: true,
-    featured: true,
-    reviewStats: reviewAggregates[index],
+    shortDescription: product.excerpt || undefined,
   }));
 
   return (
-    <>
-      <HeroContent />
-      <FeaturedProductsV3 products={featuredProducts} />
-    </>
+    <div className="bg-white">
+      {/* Categories Carousel */}
+      <CategoriesCarousel categories={categories} />
+
+      {/* Products Grid */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Products</h2>
+          <ProductsGridClient products={productsWithReviews} />
+        </div>
+      </section>
+    </div>
   );
 }

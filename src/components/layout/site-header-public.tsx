@@ -38,60 +38,25 @@ import { authClient } from '@/lib/auth-client';
 
 export default function SiteHeaderPublic() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [isHomePage, setIsHomePage] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
-
-    // Check if we're on the home page (which has a hero banner)
-    const currentPath = window.location.pathname;
-    const isHome = currentPath === '/';
-    setIsHomePage(isHome);
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    // Set initial scroll state based on page type
-    if (!isHome) {
-      // On non-home pages, start with scrolled state (dark text on white background)
-      setIsScrolled(true);
-    } else {
-      // On home page, start with non-scrolled state (white text on hero banner)
-      setIsScrolled(false);
-    }
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 transition-all duration-300 ease-in-out ${isHomePage
-      ? (isScrolled
-        ? 'bg-white/95 backdrop-blur-md shadow-lg py-3'
-        : 'bg-transparent py-6')
-      : 'bg-white/95 backdrop-blur-md shadow-lg py-3'
-      }`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 bg-white/95 backdrop-blur-md shadow-lg py-3">
       {/* Logo */}
       <Link href="/" className="flex items-center">
         {/* <Image
           src={logo}
           alt="SumNSubstance Logo"
-          className={`w-auto transition-all duration-300 ${isHomePage && !isScrolled
-            ? 'brightness-0 invert'
-            : ''
-            }`}
           style={{ height: 'auto', width: '200px' }}
           priority
         /> */}
-        <span className={`text-2xl font-bold transition-colors duration-300 ${isHomePage && !isScrolled
-          ? 'text-white'
-          : 'text-primary'
-          }`}>EatMilay</span>
+        <span className="text-2xl font-bold text-primary">EatMilay</span>
       </Link>
 
       <div className="hidden lg:flex items-center">
@@ -101,12 +66,7 @@ export default function SiteHeaderPublic() {
               <NavigationMenuLink asChild>
                 <Link
                   href="/"
-                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
-                    ? (isScrolled
-                      ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                      : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
-                    : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                    }`}
+                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-primary hover:text-primary/80 bg-transparent hover:bg-muted`}
                 >
                   Home
                 </Link>
@@ -117,12 +77,7 @@ export default function SiteHeaderPublic() {
               <NavigationMenuLink asChild>
                 <Link
                   href="/contact-us"
-                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium ${isHomePage
-                    ? (isScrolled
-                      ? 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                      : 'text-white hover:text-white/80 bg-transparent hover:bg-white/10')
-                    : 'text-primary hover:text-primary/80 bg-transparent hover:bg-muted'
-                    }`}
+                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-primary hover:text-primary/80 bg-transparent hover:bg-muted`}
                 >
                   Contact
                 </Link>
@@ -135,7 +90,7 @@ export default function SiteHeaderPublic() {
       {/* Right Side Icons */}
       <div className="flex items-center space-x-2 sm:space-x-3">
         {/* Cart */}
-        {isMounted && <CartDropdown isScrolled={isScrolled} />}
+        {isMounted && <CartDropdown isScrolled={true} />}
 
         {/* User Account - Desktop */}
         {!isPending && session ? (
@@ -144,7 +99,7 @@ export default function SiteHeaderPublic() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-9 w-9 rounded-full hover:bg-white/10"
+                  className="relative h-9 w-9 rounded-full hover:bg-gray-100"
                 >
                   <Avatar className="h-9 w-9">
                     <AvatarImage src={session.user.image ?? ''} alt={''} />
@@ -222,15 +177,9 @@ export default function SiteHeaderPublic() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`relative p-2 rounded-full transition-all duration-300 ${isHomePage
-                      ? (isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/10')
-                      : 'hover:bg-gray-100'
-                      }`}
+                    className="relative p-2 rounded-full transition-all duration-300 hover:bg-gray-100"
                   >
-                    <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-300 ${isHomePage
-                      ? (isScrolled ? 'bg-primary text-white' : 'bg-white text-primary')
-                      : 'bg-primary text-white'
-                      }`}>
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-300 bg-primary text-white">
                       <User className="w-5 h-5" />
                     </div>
                   </Button>
@@ -248,10 +197,7 @@ export default function SiteHeaderPublic() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`p-2 transition-colors duration-300 ${isHomePage
-                    ? (isScrolled ? 'text-primary hover:bg-muted' : 'text-white hover:bg-white/10')
-                    : 'text-primary hover:bg-muted'
-                    }`}
+                  className="p-2 transition-colors duration-300 text-primary hover:bg-muted"
                 >
                   <Menu className="w-6 h-6" />
                 </Button>

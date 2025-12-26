@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+
 import ProductCard from './product-card';
 
 interface Product {
@@ -12,7 +12,7 @@ interface Product {
   images: { url: string; alt?: string }[];
   rating?: number;
   reviewCount?: number;
-  category?: string;
+  category?: string | { id: string; name: string; slug: string };
   badges?: string[];
   isWishlisted?: boolean;
   inStock?: boolean;
@@ -24,7 +24,7 @@ interface ProductGridProps {
   columns?: 2 | 3 | 4 | 5;
   variant?: 'default' | 'compact' | 'featured' | 'showcase';
   showQuickActions?: boolean;
-  onAddToCart?: (productId: string) => void;
+  onAddToCart?: (productId: string, quantity?: number) => void;
   onToggleWishlist?: (productId: string) => void;
   onQuickView?: (productId: string) => void;
   className?: string;
