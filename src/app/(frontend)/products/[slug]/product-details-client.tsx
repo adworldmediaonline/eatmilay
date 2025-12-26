@@ -127,7 +127,7 @@ export default function ProductDetailsClient({
           {/* Product Images - Sticky on desktop */}
           <div className="space-y-3 lg:space-y-4 lg:sticky lg:top-4 lg:self-start">
             {/* Main Image */}
-            <div className="relative w-full aspect-square bg-gray-50 rounded-2xl lg:rounded-3xl overflow-hidden group">
+            <div className="relative w-full bg-gray-50 rounded-2xl lg:rounded-3xl overflow-hidden group" style={{ aspectRatio: '1261 / 2000' }}>
               <div
                 className={`relative w-full h-full transition-transform duration-300 ${showImageZoom ? 'scale-150' : 'group-hover:scale-105'
                   }`}
@@ -137,7 +137,7 @@ export default function ProductDetailsClient({
                   src={allImages[selectedImageIndex]?.url || ''}
                   alt={allImages[selectedImageIndex]?.altText || product.name}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   quality={90}
@@ -331,7 +331,7 @@ export default function ProductDetailsClient({
                   ₹{product.price}
                 </span>
               </div>
-              <p className="text-xs text-gray-600">Inclusive of all taxes</p>
+
             </div>
 
             {/* Key Benefits / Why You'll Love It - Mobile optimized */}
