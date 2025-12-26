@@ -334,7 +334,7 @@ export default function ProductCard({
 
           {/* Product Name - Larger, more prominent */}
           <Link href={`/products/${product.slug}`} className="block">
-            <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 line-clamp-2 leading-tight">
+            <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 line-clamp-2 leading-tight">
               {product.name}
             </h3>
           </Link>
@@ -508,7 +508,7 @@ export default function ProductCard({
         {/* Product Name */}
         <Link href={`/products/${product.slug}`}>
           <h3
-            className={`${titleSize} text-gray-900 mb-2 line-clamp-2 leading-snug hover:text-primary transition-colors`}
+            className={`${titleSize} font-bold text-gray-900 mb-2 line-clamp-2 leading-snug hover:text-primary transition-colors`}
           >
             {product.name}
           </h3>
@@ -529,24 +529,26 @@ export default function ProductCard({
         )}
 
         {/* Rating & Reviews */}
-        {product.rating && product.reviewCount && (
-          <div className="flex items-center gap-1 mb-2">
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => (
+        <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-0.5">
+            {[...Array(5)].map((_, i) => {
+              const rating = product.rating || 0;
+              const isFilled = i < Math.floor(rating);
+              return (
                 <Star
                   key={i}
-                  className={`w-3.5 h-3.5 ${i < Math.floor(product.rating!)
+                  className={`w-4 h-4 ${isFilled
                     ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300'
+                    : 'text-gray-300 fill-gray-300'
                     }`}
                 />
-              ))}
-            </div>
-            <span className="text-xs text-gray-600">
-              ({product.reviewCount})
-            </span>
+              );
+            })}
           </div>
-        )}
+          <span className="text-xs text-gray-600">
+            ({product.reviewCount || 0})
+          </span>
+        </div>
 
         {/* Price Section */}
         <div className="flex items-baseline gap-2 mb-3">

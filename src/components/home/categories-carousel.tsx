@@ -58,7 +58,7 @@ export default function CategoriesCarousel({
                   className="flex flex-col items-center gap-3 min-w-[120px] group"
                 >
                   {/* Circular Image */}
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-red-500 group-hover:border-red-600 transition-colors">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-primary group-hover:border-primary/80 transition-colors">
                     <Image
                       src={imageUrl}
                       alt={category.name}
@@ -69,7 +69,7 @@ export default function CategoriesCarousel({
                   </div>
 
                   {/* Category Name */}
-                  <span className="text-sm font-medium text-gray-900 text-center group-hover:text-red-600 transition-colors">
+                  <span className="text-sm font-medium text-gray-900 text-center group-hover:text-primary transition-colors">
                     {category.name}
                   </span>
                 </Link>
