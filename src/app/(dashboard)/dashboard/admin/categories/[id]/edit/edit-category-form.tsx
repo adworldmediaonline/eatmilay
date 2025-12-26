@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import slugify from 'slugify';
 import type { SerializedCategoryWithProducts } from '@/server/queries/category';
 import { updateCategorySchema } from '@/lib/validations/category';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 type FormData = z.infer<typeof updateCategorySchema>;
 
@@ -35,9 +36,17 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
 
   const form = useForm<FormData>({
     resolver: zodResolver(updateCategorySchema),
+    mode: 'onChange',
     defaultValues: {
       id: category.id,
       name: category.name,
+      image: category.imageUrl
+        ? {
+            url: category.imageUrl,
+            publicId: category.imagePublicId || '',
+            altText: category.imageAlt,
+          }
+        : undefined,
     },
   });
 
@@ -100,6 +109,31 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
                     </span>
                   )}
                 </span>
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Category Image Upload */}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category Image</FormLabel>
+              <FormControl>
+                <ImageUpload
+                  variant="single"
+                  value={field.value}
+                  onChange={field.onChange}
+                  maxFileSize={5 * 1024 * 1024} // 5MB
+                  disabled={isSubmitting}
+                  folder="categories"
+                />
+              </FormControl>
+              <FormDescription>
+                Upload an image for this category (optional, max 5MB)
               </FormDescription>
               <FormMessage />
             </FormItem>

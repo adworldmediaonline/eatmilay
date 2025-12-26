@@ -46,6 +46,7 @@ interface ImageUploadProps {
   limit?: number;
   className?: string;
   disabled?: boolean;
+  folder?: string; // Folder name for Cloudinary upload (default: 'products')
 }
 
 interface UploadProgress {
@@ -193,6 +194,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
       limit = 10,
       className,
       disabled = false,
+      folder = 'products', // Default folder
     },
     ref
   ) => {
@@ -234,7 +236,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
           const uploadPromises = filesToUpload.map(async file => {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('folder', 'products');
+            formData.append('folder', folder);
 
             const fileId = `${file.name}-${Date.now()}`;
 
@@ -287,7 +289,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
           setIsUploading(false);
         }
       },
-      [variant, currentImages, limit, onChange, disabled]
+      [variant, currentImages, limit, onChange, disabled, folder]
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -21,6 +21,7 @@ import { createCategory } from '@/app/actions/category';
 import { toast } from 'sonner';
 import slugify from 'slugify';
 import { createCategorySchema } from '@/lib/validations/category';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 type FormData = z.infer<typeof createCategorySchema>;
 
@@ -30,8 +31,10 @@ export function CreateCategoryForm() {
 
   const form = useForm<FormData>({
     resolver: zodResolver(createCategorySchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
+      image: undefined,
     },
   });
 
@@ -85,6 +88,31 @@ export function CreateCategoryForm() {
                     </code>
                   </span>
                 )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Category Image Upload */}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category Image</FormLabel>
+              <FormControl>
+                <ImageUpload
+                  variant="single"
+                  value={field.value}
+                  onChange={field.onChange}
+                  maxFileSize={5 * 1024 * 1024} // 5MB
+                  disabled={isSubmitting}
+                  folder="categories"
+                />
+              </FormControl>
+              <FormDescription>
+                Upload an image for this category (optional, max 5MB)
               </FormDescription>
               <FormMessage />
             </FormItem>

@@ -17,7 +17,7 @@ export async function createCategory(
   try {
     // Validate input
     const validatedData = createCategorySchema.parse(data);
-    const { name } = validatedData;
+    const { name, image } = validatedData;
 
     // Generate slug
     const baseSlug = slugify(name, { lower: true, strict: true });
@@ -52,6 +52,9 @@ export async function createCategory(
       data: {
         name,
         slug,
+        imageUrl: image?.url,
+        imagePublicId: image?.publicId,
+        imageAlt: image?.altText,
       },
     });
 
@@ -83,7 +86,7 @@ export async function updateCategory(
   try {
     // Validate input
     const validatedData = updateCategorySchema.parse(data);
-    const { id, name } = validatedData;
+    const { id, name, image } = validatedData;
 
     // Check if category exists
     const existingCategory = await prisma.category.findUnique({
@@ -138,13 +141,35 @@ export async function updateCategory(
       }
     }
 
+    // Prepare update data
+    const updateData: {
+      name: string;
+      slug: string;
+      imageUrl?: string | null;
+      imagePublicId?: string | null;
+      imageAlt?: string | null;
+    } = {
+      name,
+      slug,
+    };
+
+    // Handle image update
+    if (image) {
+      updateData.imageUrl = image.url;
+      updateData.imagePublicId = image.publicId;
+      updateData.imageAlt = image.altText;
+    } else if (image === null) {
+      // Explicitly set to null to remove image
+      updateData.imageUrl = null;
+      updateData.imagePublicId = null;
+      updateData.imageAlt = null;
+    }
+    // If image is undefined, don't update image fields
+
     // Update category
     const updatedCategory = await prisma.category.update({
       where: { id },
-      data: {
-        name,
-        slug,
-      },
+      data: updateData,
     });
 
     revalidatePath('/dashboard/admin/categories');

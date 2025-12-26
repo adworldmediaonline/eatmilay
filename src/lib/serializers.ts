@@ -45,9 +45,12 @@ export type SerializedProductWithCategory = Omit<
 
 export type SerializedCategoryWithProducts = Omit<
   CategoryWithProducts,
-  'products'
+  'products' | 'imageUrl' | 'imagePublicId' | 'imageAlt'
 > & {
   products: SerializedProduct[];
+  imageUrl?: string | null;
+  imagePublicId?: string | null;
+  imageAlt?: string | null;
 };
 
 // Helper function to parse additional images safely
