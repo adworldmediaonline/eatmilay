@@ -3,28 +3,28 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
-    useCartItemCount,
-    useCartItems,
-    useCartTotalPrice,
-    useClearCart,
-    useRemoveItem,
-    useUpdateQuantity,
+  useCartItemCount,
+  useCartItems,
+  useCartTotalPrice,
+  useClearCart,
+  useRemoveItem,
+  useUpdateQuantity,
 } from '@/store/cart-store';
 import type { CartItem } from '@/types/cart';
 import {
-    Minus,
-    Plus,
-    ShoppingBag,
-    ShoppingCart,
-    Trash2,
-    X,
+  Minus,
+  Plus,
+  ShoppingBag,
+  ShoppingCart,
+  Trash2,
+  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -78,7 +78,7 @@ function CartItemComponent({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0 text-destructive hover:text-destructive flex-shrink-0"
+          className="h-8 w-8 p-0 hover:text-destructive flex-shrink-0"
           onClick={onRemove}
           disabled={disabled}
         >
@@ -153,11 +153,10 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
         <Button
           variant="ghost"
           size="sm"
-          className={`relative p-2 transition-colors duration-300 ${
-            isScrolled
-              ? 'text-gray-700 hover:text-[hsl(var(--primary))] hover:bg-gray-100'
-              : 'text-white hover:text-[#ffffff] hover:bg-white/10'
-          } ${className}`}
+          className={`relative p-2 transition-colors duration-300 ${isScrolled
+            ? 'text-gray-700 hover:text-[hsl(var(--primary))] hover:bg-gray-100'
+            : 'text-white hover:text-[#ffffff] hover:bg-white/10'
+            } ${className}`}
         >
           <ShoppingCart className="h-5 w-5" />
           {isHydrated && itemCount > 0 && (
@@ -184,7 +183,7 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
                 variant="ghost"
                 size="sm"
                 onClick={handleClearCart}
-                className="text-destructive hover:text-destructive"
+                className="hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4 mr-1" />
                 Clear

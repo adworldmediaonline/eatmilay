@@ -198,18 +198,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-2">
-              {/* Save for Later / Wishlist - Placeholder for future feature */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-                disabled={isDisabled}
-              >
-                <Heart className="h-4 w-4" />
-                <span className="hidden sm:inline">Save for Later</span>
-              </Button>
-            </div>
+
           </div>
         </div>
       </CardContent>
