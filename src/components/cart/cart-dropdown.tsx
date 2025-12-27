@@ -43,74 +43,77 @@ function CartItemComponent({
   disabled?: boolean;
 }) {
   return (
-    <div className="p-3 hover:bg-muted/50 rounded-lg transition-colors space-y-2">
-      {/* Top Row: Image, Info, and Remove Button */}
-      <div className="flex items-center gap-3">
+    <div className="p-2 hover:bg-muted/30 rounded-lg transition-colors">
+      <div className="flex items-start gap-2">
         {/* Product Image */}
-        <div className="relative h-12 w-12 rounded-md overflow-hidden bg-muted flex-shrink-0">
+        <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
           {item.product.mainImage ? (
             <Image
               src={item.product.mainImage.url}
               alt={item.product.mainImage.altText || item.product.name}
               fill
               className="object-cover"
-              sizes="48px"
+              sizes="64px"
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center">
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <ShoppingBag className="h-5 w-5 text-muted-foreground" />
             </div>
           )}
         </div>
 
-        {/* Product Info */}
-        <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-sm truncate">{item.product.name}</h4>
-          <p className="text-xs text-muted-foreground">
-            {item.product.category.name}
-          </p>
-          <p className="text-sm font-medium">
-            ₹{item.product.price.toLocaleString()}
-          </p>
-        </div>
+        {/* Product Info & Controls */}
+        <div className="flex-1 min-w-0 space-y-2">
+          {/* Name and Remove */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-sm leading-tight line-clamp-2 text-primary">
+                {item.product.name}
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {item.product.category.name}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-white hover:bg-primary/10 hover:text-white flex-shrink-0"
+              onClick={onRemove}
+              disabled={disabled}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
 
-        {/* Remove Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 hover:text-destructive flex-shrink-0"
-          onClick={onRemove}
-          disabled={disabled}
-        >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-
-      {/* Bottom Row: Quantity Controls */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">Quantity:</span>
-        <div className="flex items-center border rounded-md">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-muted"
-            onClick={() => onUpdateQuantity(item.quantity - 1)}
-            disabled={disabled || item.quantity <= 1}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-          <span className="px-3 text-sm font-medium min-w-[2.5rem] text-center">
-            {item.quantity}
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-muted"
-            onClick={() => onUpdateQuantity(item.quantity + 1)}
-            disabled={disabled}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+          {/* Price and Quantity */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-primary">
+              ₹{(item.product.price * item.quantity).toLocaleString()}
+            </span>
+            <div className="flex items-center border border-primary/20 rounded-md bg-white">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-primary/10 text-white"
+                onClick={() => onUpdateQuantity(item.quantity - 1)}
+                disabled={disabled || item.quantity <= 1}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="px-2 text-sm font-semibold min-w-[2rem] text-center text-primary">
+                {item.quantity}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-primary/10 text-white"
+                onClick={() => onUpdateQuantity(item.quantity + 1)}
+                disabled={disabled}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -154,15 +157,15 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
           variant="ghost"
           size="sm"
           className={`relative p-2 transition-colors duration-300 ${isScrolled
-            ? 'text-gray-700 hover:text-[hsl(var(--primary))] hover:bg-gray-100'
-            : 'text-white hover:text-[#ffffff] hover:bg-white/10'
+            ? 'text-primary hover:text-primary/80 hover:bg-gray-100'
+            : 'text-white hover:text-white/80 hover:bg-white/10'
             } ${className}`}
         >
           <ShoppingCart className="h-5 w-5" />
           {isHydrated && itemCount > 0 && (
             <Badge
               variant="destructive"
-              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-[#ffffff] text-[hsl(var(--primary))] hover:bg-[#ffffff]/90"
+              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-white text-primary hover:bg-white/90"
             >
               {itemCount}
             </Badge>
@@ -172,25 +175,28 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
 
       <DropdownMenuContent
         align="end"
-        className="w-96 max-w-[90vw]"
+        className="w-[380px] max-w-[calc(100vw-1rem)]"
         sideOffset={8}
       >
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-lg">Shopping Cart</h3>
+        {/* Header */}
+        <div className="px-4 py-3 border-b">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-lg text-primary">Shopping Cart</h3>
             {isHydrated && items.length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleClearCart}
-                className="hover:text-destructive"
+                className="text-white hover:bg-primary/10 h-8 px-2 -mr-2"
               >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Clear
+                <Trash2 className="h-4 w-4" />
               </Button>
             )}
           </div>
+        </div>
 
+        {/* Content */}
+        <div className="px-4 py-3">
           {!isHydrated ? (
             <div className="text-center py-8">
               <div className="animate-pulse">
@@ -203,15 +209,15 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
             <div className="text-center py-8">
               <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground mb-4">Your cart is empty</p>
-              <Button asChild onClick={() => setIsOpen(false)}>
-                <Link href="/products">Browse Products</Link>
+              <Button asChild onClick={() => setIsOpen(false)} className="bg-primary hover:bg-primary/90">
+                <Link href="/">Browse Products</Link>
               </Button>
             </div>
           ) : (
             <>
               {/* Cart Items */}
-              <ScrollArea className="max-h-[400px]">
-                <div className="space-y-2">
+              <ScrollArea className="max-h-[320px] -mx-4 px-4">
+                <div className="space-y-2 pr-2">
                   {items.map(item => (
                     <CartItemComponent
                       key={item.product.id}
@@ -225,39 +231,41 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
                 </div>
               </ScrollArea>
 
-              <Separator className="my-4" />
+              <Separator className="my-3" />
 
               {/* Cart Summary */}
               {isHydrated && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="font-semibold text-sm text-gray-700">
                       Total ({itemCount} item{itemCount !== 1 ? 's' : ''})
                     </span>
-                    <span className="font-bold text-lg">
+                    <span className="font-bold text-xl text-primary">
                       ₹{totalPrice.toLocaleString()}
                     </span>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 pt-2">
                     <Button
                       asChild
-                      className="w-full"
+                      className="w-full bg-primary hover:bg-primary/90 text-white h-11"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Link href="/cart">
-                        <ShoppingCart className="mr-2 h-4 w-4" />
+                      <Link href="/cart" className="flex items-center justify-center gap-2">
+                        <ShoppingCart className="h-4 w-4" />
                         View Cart
                       </Link>
                     </Button>
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full"
+                      className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-white h-11"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Link href="/checkout">Checkout</Link>
+                      <Link href="/checkout" className="flex items-center justify-center">
+                        Checkout
+                      </Link>
                     </Button>
                   </div>
                 </div>

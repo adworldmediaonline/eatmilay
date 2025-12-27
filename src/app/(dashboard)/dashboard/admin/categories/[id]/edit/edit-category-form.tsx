@@ -44,7 +44,7 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
         ? {
             url: category.imageUrl,
             publicId: category.imagePublicId || '',
-            altText: category.imageAlt,
+            altText: category.imageAlt || undefined,
           }
         : undefined,
     },

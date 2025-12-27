@@ -44,13 +44,13 @@ export default async function Home() {
   return (
     <div className="bg-white">
       {/* Categories Carousel */}
-      <CategoriesCarousel categories={categories} />
+      {/* <CategoriesCarousel categories={categories} /> */}
 
       {/* Products Grid */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Products</h2>
-          <ProductsGridClient products={productsWithReviews} />
+          {/* <ProductsGridClient products={productsWithReviews} /> */}
         </div>
       </section>
     </div>

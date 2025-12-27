@@ -176,29 +176,7 @@ export function CartSummary() {
           </Link>
         </div>
 
-        {/* Trust Indicators */}
-        <div className="space-y-3 pt-4 border-t">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            Why shop with us?
-          </h4>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 text-sm">
-              <Shield className="h-4 w-4 text-green-600 flex-shrink-0" />
-              <span>Secure payment & data protection</span>
-            </div>
-
-            <div className="flex items-center gap-3 text-sm">
-              <Truck className="h-4 w-4 text-blue-600 flex-shrink-0" />
-              <span>Fast & reliable shipping</span>
-            </div>
-
-            <div className="flex items-center gap-3 text-sm">
-              <CreditCard className="h-4 w-4 text-purple-600 flex-shrink-0" />
-              <span>Multiple payment options available</span>
-            </div>
-          </div>
-        </div>
 
       </CardContent>
     </Card>

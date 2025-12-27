@@ -107,7 +107,7 @@ export function CartPageContent() {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleClearCart}
-                      className="bg-destructive "
+                      className="bg-destructive text-white hover:bg-destructive/90"
                     >
                       Clear Cart
                     </AlertDialogAction>
