@@ -19,6 +19,7 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
     const validatedData = createProductSchema.parse(data);
     const {
       name,
+      sku,
       excerpt,
       description,
       tagline,
@@ -58,10 +59,24 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       counter++;
     }
 
+    // Check if SKU is provided and unique
+    if (sku) {
+      const existingSku = await prisma.product.findUnique({
+        where: { sku },
+      });
+      if (existingSku) {
+        return {
+          success: false,
+          error: 'SKU already exists. Please use a unique SKU.',
+        };
+      }
+    }
+
     // Create product
     const product = await prisma.product.create({
       data: {
         name,
+        sku: sku || null,
         excerpt,
         description,
         tagline,
@@ -118,6 +133,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
     const {
       id,
       name,
+      sku,
       excerpt,
       description,
       tagline,
@@ -184,6 +200,22 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
       };
     }
 
+    // Check if SKU is provided and unique (excluding current product)
+    if (sku) {
+      const existingSku = await prisma.product.findFirst({
+        where: {
+          sku,
+          id: { not: id },
+        },
+      });
+      if (existingSku) {
+        return {
+          success: false,
+          error: 'SKU already exists. Please use a unique SKU.',
+        };
+      }
+    }
+
     // Generate new slug if name changed
     let slug = existingProduct.slug;
     if (existingProduct.name !== name) {
@@ -212,6 +244,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
         where: { id },
         data: {
           name,
+          sku: sku || null,
           excerpt,
           description,
           tagline,

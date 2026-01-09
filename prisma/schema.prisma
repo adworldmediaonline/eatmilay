@@ -97,6 +97,7 @@ model Product {
   excerpt          String?  // Short description for listings/cards
   description      String?  // Full description for product details
   slug             String   @unique
+  sku              String?  @unique // Stock Keeping Unit
   price            Decimal  @db.Decimal(10, 2)
   categoryId       String
   category         Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)

@@ -47,6 +47,7 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
     mode: 'onChange', // Trigger validation on change
     defaultValues: {
       name: '',
+      sku: '',
       excerpt: '',
       description: '',
       tagline: '',
@@ -116,6 +117,28 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
                     </code>
                   </span>
                 )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="sku"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>SKU (Stock Keeping Unit)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter SKU (e.g., PROD-001)"
+                  {...field}
+                  value={field.value || ''}
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormDescription>
+                Unique product identifier for inventory management (optional)
               </FormDescription>
               <FormMessage />
             </FormItem>
