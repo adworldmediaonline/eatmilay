@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import prisma from '@/lib/prisma';
 import { razorpayPaymentSchema } from '@/lib/validations/order';
 import { sendOrderConfirmationEmail } from '@/lib/email/order-emails';
+import { createShiprocketOrder } from '@/app/actions/shiprocket';
 
 // Helper function to serialize order data for email
 function serializeOrderData(order: {
@@ -86,6 +87,21 @@ export async function POST(request: NextRequest) {
         user: true,
       },
     });
+
+    // Create Shiprocket order (non-blocking - don't fail payment if this fails)
+    try {
+      const shiprocketResult = await createShiprocketOrder({
+        orderId: order.id,
+      });
+
+      if (!shiprocketResult.success) {
+        console.error('Failed to create Shiprocket order:', shiprocketResult.error);
+        // Continue anyway - payment is still valid
+      }
+    } catch (shiprocketError) {
+      console.error('Shiprocket order creation error:', shiprocketError);
+      // Don't fail the payment verification if Shiprocket fails
+    }
 
     // Send order confirmation email
     try {
