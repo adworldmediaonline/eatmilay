@@ -27,6 +27,8 @@ interface OrderEmailTemplateProps {
     phone: string;
   };
   estimatedDelivery: string;
+  shippingCourierName?: string;
+  shippingEstimatedDelivery?: string;
 }
 
 export function OrderEmailTemplate({
@@ -265,6 +267,41 @@ export function OrderEmailTemplate({
             </p>
           </div>
         </div>
+
+        {/* Shipping Courier Details */}
+        {(shippingCourierName || shippingEstimatedDelivery) && (
+          <div style={{ marginBottom: '24px' }}>
+            <h3
+              style={{ margin: '0 0 16px', fontSize: '18px', color: '#233f1c' }}
+            >
+              Shipping Details
+            </h3>
+            <div
+              style={{
+                padding: '16px',
+                border: '1px solid #eee',
+                borderRadius: '8px',
+                backgroundColor: '#f9f9f9',
+              }}
+            >
+              {shippingCourierName && (
+                <p style={{ margin: '0 0 8px' }}>
+                  <strong>Courier:</strong> {shippingCourierName}
+                </p>
+              )}
+              {shippingEstimatedDelivery && (
+                <p style={{ margin: '0 0 8px' }}>
+                  <strong>Estimated Delivery:</strong> {shippingEstimatedDelivery}
+                </p>
+              )}
+              {shipping > 0 && (
+                <p style={{ margin: '0' }}>
+                  <strong>Shipping Cost:</strong> ₹{shipping.toLocaleString()}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>

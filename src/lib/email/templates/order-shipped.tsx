@@ -54,6 +54,8 @@ export function OrderShippedEmailTemplate({
   shippingAddress,
   estimatedDelivery,
   trackingNumber,
+  shippingCourierName,
+  shippingEstimatedDelivery,
 }: OrderShippedEmailTemplateProps) {
   return (
     <Html>

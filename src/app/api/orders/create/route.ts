@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
       paymentMethod,
       shippingCost = 0,
       courierId,
+      courierName,
+      estimatedDelivery,
       orderNotes,
       userId,
     } = validatedData;
@@ -110,7 +112,6 @@ export async function POST(request: NextRequest) {
         shipping: new Decimal(shippingCost),
         discount: new Decimal(0),
         total: new Decimal(totalAmount),
-        notes: orderNotes || (courierId ? `Courier ID: ${courierId}` : null),
         paymentStatus: 'PENDING',
         paymentMethod,
         razorpayOrderId,
@@ -118,7 +119,10 @@ export async function POST(request: NextRequest) {
         billingAddress: billingAddress
           ? JSON.stringify(billingAddress)
           : undefined,
-        notes: orderNotes || (courierId ? `Courier ID: ${courierId}` : null),
+        notes: orderNotes || null,
+        shippingCourierId: courierId || null,
+        shippingCourierName: courierName || null,
+        shippingEstimatedDelivery: estimatedDelivery || null,
         items: {
           create: orderItems,
         },

@@ -206,6 +206,9 @@ export function CheckoutForm({
 
   const processOrder = async (data: CheckoutFormData) => {
     try {
+      // Get selected courier details
+      const selectedCourier = shippingRates.find(c => c.courier_company_id === selectedCourierId);
+
       // Create order payload
       const orderPayload = {
         items: cartItems.map(item => ({
@@ -224,6 +227,8 @@ export function CheckoutForm({
         shippingMethod: data.shippingMethod,
         shippingCost: shippingCost,
         courierId: selectedCourierId,
+        courierName: selectedCourier?.courier_name,
+        estimatedDelivery: selectedCourier?.etd,
         orderNotes: data.orderNotes,
         userId: user?.id,
       };

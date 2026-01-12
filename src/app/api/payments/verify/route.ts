@@ -20,8 +20,11 @@ function serializeOrderData(order: {
     total: { toNumber: () => number };
     name: string;
     quantity: number;
+    productSnapshot?: { mainImage?: { url?: string } };
   }>;
   shippingAddress?: unknown;
+  shippingCourierName?: string | null;
+  shippingEstimatedDelivery?: string | null;
   [key: string]: unknown;
 }) {
   return {
@@ -36,10 +39,13 @@ function serializeOrderData(order: {
         ...item,
         price: item.price.toNumber(),
         total: item.total.toNumber(),
+        productSnapshot: (item as { productSnapshot?: { mainImage?: { url?: string } } }).productSnapshot,
       })) || [],
     shippingAddress: order.shippingAddress
       ? JSON.parse(order.shippingAddress as string)
       : null,
+    shippingCourierName: order.shippingCourierName || undefined,
+    shippingEstimatedDelivery: order.shippingEstimatedDelivery || undefined,
   };
 }
 
