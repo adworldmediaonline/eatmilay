@@ -115,6 +115,8 @@ export const createOrderSchema = z.object({
   billingAddress: billingAddressSchema.optional(),
   paymentMethod: z.string().min(1, 'Payment method is required'),
   shippingMethod: z.string().min(1, 'Shipping method is required'),
+  shippingCost: z.number().min(0).optional().default(0),
+  courierId: z.number().optional(),
   orderNotes: z.string().max(500).optional(),
   userId: z.string().optional(),
 });

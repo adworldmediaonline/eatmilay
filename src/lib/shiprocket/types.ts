@@ -109,3 +109,20 @@ export interface ShiprocketTrackingResponse {
     }>;
   };
 }
+
+export interface ShiprocketCourierCompany {
+  courier_company_id: number;
+  courier_name: string;
+  rate: number;
+  estimated_delivery_days: number;
+  etd: string;
+  company_name: string;
+}
+
+export interface ShiprocketServiceabilityResponse {
+  status: number;
+  data: {
+    available_courier_companies: ShiprocketCourierCompany[];
+    recommended_courier_company_id: number;
+  };
+}

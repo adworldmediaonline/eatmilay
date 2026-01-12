@@ -104,14 +104,21 @@ export async function createShiprocketOrder({
 
     const shipmentData = response.data as ShiprocketOrderResponse;
 
-    // Update order with Shiprocket shipment ID and AWB code
+    // Update order with Shiprocket shipment ID, order ID, and AWB code
+    // Store Shiprocket order_id for tracking API calls
+    const shiprocketNotes = [
+      `Shiprocket Order ID: ${shipmentData.order_id}`,
+      `Shiprocket Shipment ID: ${shipmentData.shipment_id}`,
+      shipmentData.channel_order_id ? `Channel Order ID: ${shipmentData.channel_order_id}` : null,
+    ].filter(Boolean).join('\n');
+
     await prisma.order.update({
       where: { id: orderId },
       data: {
         trackingNumber: shipmentData.awb_code || `SR-${shipmentData.shipment_id}`,
         notes: order.notes
-          ? `${order.notes}\n\nShiprocket Shipment ID: ${shipmentData.shipment_id}`
-          : `Shiprocket Shipment ID: ${shipmentData.shipment_id}`,
+          ? `${order.notes}\n\n${shiprocketNotes}`
+          : shiprocketNotes,
       },
     });
 

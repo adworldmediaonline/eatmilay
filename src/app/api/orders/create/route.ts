@@ -23,6 +23,8 @@ export async function POST(request: NextRequest) {
       shippingAddress,
       billingAddress,
       paymentMethod,
+      shippingCost = 0,
+      courierId,
       orderNotes,
       userId,
     } = validatedData;
@@ -73,10 +75,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Total is just subtotal (GST and shipping managed from dashboard)
-    const shippingCost = 0;
+    // Calculate total with shipping cost
     const taxAmount = 0;
-    const totalAmount = subtotal;
+    const totalAmount = subtotal + shippingCost;
 
     // Generate unique order number
     const orderNumber = await generateOrderNumber();
@@ -109,6 +110,7 @@ export async function POST(request: NextRequest) {
         shipping: new Decimal(shippingCost),
         discount: new Decimal(0),
         total: new Decimal(totalAmount),
+        notes: orderNotes || (courierId ? `Courier ID: ${courierId}` : null),
         paymentStatus: 'PENDING',
         paymentMethod,
         razorpayOrderId,
@@ -116,7 +118,7 @@ export async function POST(request: NextRequest) {
         billingAddress: billingAddress
           ? JSON.stringify(billingAddress)
           : undefined,
-        notes: orderNotes,
+        notes: orderNotes || (courierId ? `Courier ID: ${courierId}` : null),
         items: {
           create: orderItems,
         },
