@@ -1,56 +1,36 @@
-import { getProducts } from '@/server/queries/product';
-import { getCategories } from '@/server/queries/category';
+import { getFilteredProducts } from '@/server/queries/product';
 import { getReviewAggregates } from '@/server/queries/review';
-import CategoriesCarousel from '../../components/home/categories-carousel';
-import ProductsGridClient from '../../components/home/products-grid-client';
+import HomeProductsSection from '../../components/home/home-products-section';
 
 export default async function Home() {
-  // Fetch categories and products in parallel
-  const [categories, allProducts] = await Promise.all([
-    getCategories(),
-    getProducts(),
-  ]);
-
-  // Take first 8 products for home page
-  const featuredProducts = allProducts.slice(0, 8);
+  // Fetch initial products with default filters
+  const { products, totalCount } = await getFilteredProducts({
+    sortBy: 'featured',
+    availability: 'all',
+    page: 1,
+    limit: 12,
+  });
 
   // Fetch review aggregates for each product in parallel
-  const reviewAggregatesPromises = featuredProducts.map(product =>
-    getReviewAggregates(product.id)
+  const productsWithReviews = await Promise.all(
+    products.map(async (product) => {
+      const reviewAggregates = await getReviewAggregates(product.id);
+      return {
+        ...product,
+        reviewStats: reviewAggregates,
+      };
+    })
   );
-  const reviewAggregates = await Promise.all(reviewAggregatesPromises);
-
-  // Combine products with their review data
-  const productsWithReviews = featuredProducts.map((product, index) => ({
-    id: product.id,
-    name: product.name,
-    slug: product.slug,
-    price: product.price,
-    originalPrice: undefined, // Can be added if you have discount pricing
-    images: product.mainImage ? [{ url: product.mainImage.url, alt: product.mainImage.altText }] : [],
-    rating: reviewAggregates[index]?.averageRating || 0,
-    reviewCount: reviewAggregates[index]?.totalReviews || 0,
-    category: {
-      id: product.category.id,
-      name: product.category.name,
-      slug: product.category.slug,
-    },
-    badges: [], // Can add product badges/features here
-    isWishlisted: false,
-    inStock: true,
-    shortDescription: product.excerpt || undefined,
-  }));
 
   return (
-    <div className="bg-white">
-      {/* Categories Carousel */}
-      <CategoriesCarousel categories={categories} />
-
+    <div className="bg-white pt-28">
       {/* Products Grid */}
-      <section className="py-12 bg-white">
+      <section className="pb-12 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Products</h2>
-          <ProductsGridClient products={productsWithReviews} />
+          <HomeProductsSection
+            initialProducts={productsWithReviews}
+            initialTotal={totalCount}
+          />
         </div>
       </section>
     </div>

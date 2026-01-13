@@ -66,6 +66,8 @@ export default function ProductsContent({
     categories: parseAsArrayOf(parseAsString).withDefault([]),
     minPrice: parseAsInteger,
     maxPrice: parseAsInteger,
+    sortBy: parseAsString.withDefault('featured'),
+    availability: parseAsString.withDefault('all'),
   });
 
   // Initialize temp filters when drawer opens
@@ -107,6 +109,8 @@ export default function ProductsContent({
           params.set('minPrice', filters.minPrice.toString());
         if (filters.maxPrice !== null)
           params.set('maxPrice', filters.maxPrice.toString());
+        if (filters.sortBy) params.set('sortBy', filters.sortBy);
+        if (filters.availability) params.set('availability', filters.availability);
         params.set('page', '1');
 
         const response = await fetch(`/api/products/filter?${params.toString()}`);
@@ -126,7 +130,7 @@ export default function ProductsContent({
     // Optimized debounce for instant search feel
     const timeoutId = setTimeout(refetchProducts, 400);
     return () => clearTimeout(timeoutId);
-  }, [filters.search, filters.categories, filters.minPrice, filters.maxPrice]);
+  }, [filters.search, filters.categories, filters.minPrice, filters.maxPrice, filters.sortBy, filters.availability]);
 
   const loadMore = async () => {
     setLoading(true);
@@ -139,6 +143,8 @@ export default function ProductsContent({
       params.set('minPrice', filters.minPrice.toString());
     if (filters.maxPrice !== null)
       params.set('maxPrice', filters.maxPrice.toString());
+    if (filters.sortBy) params.set('sortBy', filters.sortBy);
+    if (filters.availability) params.set('availability', filters.availability);
     params.set('page', nextPage.toString());
 
     const response = await fetch(`/api/products/filter?${params.toString()}`);
@@ -243,6 +249,10 @@ export default function ProductsContent({
             hasMore={hasMoreProducts}
             loading={loading}
             onLoadMore={loadMore}
+            sortBy={filters.sortBy || 'featured'}
+            availability={filters.availability || 'all'}
+            onSortChange={(value) => setFilters({ sortBy: value })}
+            onAvailabilityChange={(value) => setFilters({ availability: value })}
           />
         </main>
       </div>

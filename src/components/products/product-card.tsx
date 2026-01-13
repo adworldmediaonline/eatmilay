@@ -132,7 +132,7 @@ export default function ProductCard({
                     href={`/products/${product.slug}`}
                     className="group/link block"
                   >
-                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground line-clamp-2 group-hover/link:text-primary transition-colors leading-tight mb-2 sm:mb-3">
+                    <h3 className="text-lg font-archivo-black! sm:text-xl lg:text-2xl font-bold text-foreground line-clamp-2 group-hover/link:text-primary transition-colors leading-tight mb-2 sm:mb-3 ">
                       {product.name}
                     </h3>
                   </Link>
@@ -450,8 +450,8 @@ export default function ProductCard({
   const imageHeight = isCompact ? 'h-56' : isShowcase ? 'h-80' : 'h-72';
   const padding = isCompact ? 'p-3' : 'p-4';
   const titleSize = isShowcase
-    ? 'text-lg font-semibold'
-    : 'text-base font-medium';
+    ? 'text-2xl font-bold'
+    : 'text-xl font-bold';
 
   // Deal content commented out - uncomment when deals are back
   // const discount = Math.floor(Math.random() * 31) + 10; // 10-40% discount
@@ -467,9 +467,9 @@ export default function ProductCard({
     <div
       className={`relative bg-white rounded-lg overflow-hidden shadow-sm font-sans flex flex-col h-full border border-gray-200 hover:shadow-md transition-shadow ${className}`}
     >
-      {/* Image Container - Aspect ratio matches portrait images (1261x2000) */}
-      <div className={`relative w-full overflow-hidden bg-gradient-to-br from-gray-50 to-white flex-shrink-0`} style={{ aspectRatio: '1261 / 2000' }}>
-        <Link href={`/products/${product.slug}`} className="block h-full w-full absolute inset-0">
+      {/* Image Container - Light beige/brown background matching reference */}
+      <div className={`relative w-full overflow-hidden bg-[#f5e6d3] flex-shrink-0`} style={{ aspectRatio: '757 / 1200' }}>
+        <Link href={`/products/${product.slug}`} className="block h-full w-full absolute inset-0 flex items-center justify-center">
           <Image
             src={displayImage}
             alt={product.name}
@@ -483,13 +483,6 @@ export default function ProductCard({
             priority={isShowcase}
           />
         </Link>
-
-        {/* Discount Badge */}
-        {discount && discount > 0 && (
-          <div className="absolute top-2 left-2 bg-yellow-400 text-gray-900 px-2 py-1 rounded text-xs font-bold z-10">
-            SAVE {discount}%
-          </div>
-        )}
 
         {/* Stock Status */}
         {!product.inStock && (
@@ -508,91 +501,47 @@ export default function ProductCard({
         {/* Product Name */}
         <Link href={`/products/${product.slug}`}>
           <h3
-            className={`${titleSize} font-bold text-gray-900 mb-2 line-clamp-2 leading-snug hover:text-primary transition-colors`}
+            className={`${titleSize} text-gray-900 mb-2 leading-snug hover:text-primary transition-colors font-[var(--font-archivo-black)]`}
           >
             {product.name}
           </h3>
         </Link>
 
-        {/* Key Features - Simple tags */}
-        {product.badges && product.badges.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {product.badges.slice(0, 3).map((badge, idx) => (
-              <span
-                key={idx}
-                className="text-xs text-gray-600 bg-gray-50 px-2 py-0.5 rounded"
-              >
-                {badge}
-              </span>
-            ))}
-          </div>
-        )}
-
         {/* Rating & Reviews */}
-        <div className="flex items-center gap-1 mb-2">
+        <div className="flex items-center gap-1.5 mb-3">
           <div className="flex items-center gap-0.5">
             {[...Array(5)].map((_, i) => {
               const rating = product.rating || 0;
               const isFilled = i < Math.floor(rating);
+              const isHalf = i === Math.floor(rating) && rating % 1 >= 0.5;
               return (
                 <Star
                   key={i}
                   className={`w-4 h-4 ${isFilled
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300 fill-gray-300'
+                    ? 'fill-gray-900 text-gray-900'
+                    : isHalf
+                      ? 'fill-gray-900 text-gray-300'
+                      : 'text-gray-300 fill-gray-300'
                     }`}
                 />
               );
             })}
           </div>
-          <span className="text-xs text-gray-600">
+          <span className="text-sm text-gray-900">
             ({product.reviewCount || 0})
           </span>
         </div>
 
         {/* Price Section */}
-        <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-lg font-bold text-gray-900">
-            ₹{product.price.toLocaleString()}
-          </span>
+        <div className="flex items-baseline gap-2 mb-4">
           {product.originalPrice && product.originalPrice > product.price && (
             <span className="text-sm text-gray-500 line-through">
               ₹{product.originalPrice.toLocaleString()}
             </span>
           )}
-        </div>
-
-        {/* Quantity Selector */}
-        <div className="mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Quantity:</span>
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleQuantityChange(-1);
-                }}
-                disabled={quantity <= 1}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <Minus className="w-3 h-3" />
-              </button>
-              <div className="w-10 h-8 flex items-center justify-center bg-white border-x border-gray-300">
-                <span className="text-sm font-medium">{quantity}</span>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleQuantityChange(1);
-                }}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors"
-              >
-                <Plus className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
+          <span className="text-lg font-bold text-gray-900">
+            ₹{product.price.toLocaleString()}
+          </span>
         </div>
 
         {/* Add to Cart Button */}
@@ -600,7 +549,7 @@ export default function ProductCard({
           <button
             onClick={handleAddToCart}
             disabled={!product.inStock}
-            className="w-full bg-primary hover:bg-primary/90 disabled:bg-gray-200 disabled:text-gray-500 text-white font-semibold py-2 rounded-lg disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-primary hover:bg-primary/90 disabled:bg-gray-200 disabled:text-gray-500 text-white font-semibold py-2.5 rounded-lg disabled:cursor-not-allowed transition-colors"
           >
             <div className="flex items-center justify-center gap-2">
               <ShoppingCart className="w-4 h-4" />

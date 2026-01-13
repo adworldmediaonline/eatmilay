@@ -3,7 +3,8 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { FloatingCart } from '@/components/cart/floating-cart';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
-import { Questrial, JetBrains_Mono } from 'next/font/google';
+import { Questrial, JetBrains_Mono, Archivo_Black } from 'next/font/google';
+
 import 'swiper/css';
 
 import './globals.css';
@@ -17,6 +18,13 @@ const questrial = Questrial({
 
 const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const archivoBlack = Archivo_Black({
+  variable: '--font-archivo-black',
+  weight: '400',
   subsets: ['latin'],
   display: 'swap',
 });
@@ -40,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${questrial.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${questrial.variable} ${jetbrainsMono.variable} ${archivoBlack.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <NuqsAdapter>
