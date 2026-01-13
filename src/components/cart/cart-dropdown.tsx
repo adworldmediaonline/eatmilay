@@ -175,7 +175,7 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
 
       <DropdownMenuContent
         align="end"
-        className="w-[380px] max-w-[calc(100vw-1rem)]"
+        className="w-[380px] max-w-[calc(100vw-1rem)] overflow-hidden p-0"
         sideOffset={8}
       >
         {/* Header */}
@@ -196,7 +196,7 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
         </div>
 
         {/* Content */}
-        <div className="px-4 py-3">
+        <div className="flex flex-col max-h-[60vh]">
           {!isHydrated ? (
             <div className="text-center py-8">
               <div className="animate-pulse">
@@ -215,9 +215,9 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
             </div>
           ) : (
             <>
-              {/* Cart Items */}
-              <ScrollArea className="max-h-[320px] -mx-4 px-4">
-                <div className="space-y-2 pr-2">
+              {/* Cart Items - Scrollable */}
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="px-4 py-3 space-y-2">
                   {items.map(item => (
                     <CartItemComponent
                       key={item.product.id}
@@ -231,45 +231,45 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
                 </div>
               </ScrollArea>
 
-              <Separator className="my-3" />
+              {/* Cart Summary - Fixed at bottom */}
+              <div className="flex-shrink-0 px-4 pt-3 pb-3 border-t bg-white">
+                {isHydrated && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-sm text-gray-700">
+                        Total ({itemCount} item{itemCount !== 1 ? 's' : ''})
+                      </span>
+                      <span className="font-bold text-xl text-primary">
+                        ₹{totalPrice.toLocaleString()}
+                      </span>
+                    </div>
 
-              {/* Cart Summary */}
-              {isHydrated && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between px-1">
-                    <span className="font-semibold text-sm text-gray-700">
-                      Total ({itemCount} item{itemCount !== 1 ? 's' : ''})
-                    </span>
-                    <span className="font-bold text-xl text-primary">
-                      ₹{totalPrice.toLocaleString()}
-                    </span>
+                    {/* Action Buttons */}
+                    <div className="space-y-2">
+                      <Button
+                        asChild
+                        className="w-full bg-primary hover:bg-primary/90 text-white h-11"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <Link href="/cart" className="flex items-center justify-center gap-2">
+                          <ShoppingCart className="h-4 w-4" />
+                          View Cart
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-white h-11"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <Link href="/checkout" className="flex items-center justify-center">
+                          Checkout
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="space-y-2 pt-2">
-                    <Button
-                      asChild
-                      className="w-full bg-primary hover:bg-primary/90 text-white h-11"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Link href="/cart" className="flex items-center justify-center gap-2">
-                        <ShoppingCart className="h-4 w-4" />
-                        View Cart
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-white h-11"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Link href="/checkout" className="flex items-center justify-center">
-                        Checkout
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </>
           )}
         </div>
