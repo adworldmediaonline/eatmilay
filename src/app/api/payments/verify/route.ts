@@ -15,17 +15,21 @@ function serializeOrderData(order: {
   shipping: { toNumber: () => number };
   discount: { toNumber: () => number };
   total: { toNumber: () => number };
-  items?: Array<{
+  items: Array<{
     price: { toNumber: () => number };
     total: { toNumber: () => number };
     name: string;
     quantity: number;
-    productSnapshot?: { mainImage?: { url?: string } };
+    productSnapshot?: unknown;
+    product?: {
+      mainImageUrl?: string | null;
+      mainImagePublicId?: string | null;
+      mainImageAlt?: string | null;
+    };
   }>;
-  shippingAddress?: unknown;
+  shippingAddress: unknown;
   shippingCourierName?: string | null;
   shippingEstimatedDelivery?: string | null;
-  [key: string]: unknown;
 }) {
   return {
     ...order,
@@ -34,15 +38,37 @@ function serializeOrderData(order: {
     shipping: order.shipping.toNumber(),
     discount: order.discount.toNumber(),
     total: order.total.toNumber(),
-    items:
-      order.items?.map(item => ({
-        ...item,
+    items: order.items.map(item => {
+      // Extract productSnapshot from JSON field or construct from product relation
+      let productSnapshot: { mainImage?: { url?: string } } | undefined;
+
+      if (item.productSnapshot) {
+        const snapshot = item.productSnapshot as Record<string, unknown>;
+        if (snapshot.mainImage && typeof snapshot.mainImage === 'object') {
+          const mainImage = snapshot.mainImage as { url?: string };
+          productSnapshot = { mainImage: { url: mainImage.url } };
+        }
+      } else if (item.product?.mainImageUrl) {
+        // Fallback to product relation if snapshot not available
+        productSnapshot = {
+          mainImage: {
+            url: item.product.mainImageUrl,
+          },
+        };
+      }
+
+      return {
+        name: item.name,
+        quantity: item.quantity,
         price: item.price.toNumber(),
         total: item.total.toNumber(),
-        productSnapshot: (item as { productSnapshot?: { mainImage?: { url?: string } } }).productSnapshot,
-      })) || [],
+        productSnapshot,
+      };
+    }),
     shippingAddress: order.shippingAddress
-      ? JSON.parse(order.shippingAddress as string)
+      ? (typeof order.shippingAddress === 'string'
+          ? JSON.parse(order.shippingAddress)
+          : order.shippingAddress)
       : null,
     shippingCourierName: order.shippingCourierName || undefined,
     shippingEstimatedDelivery: order.shippingEstimatedDelivery || undefined,

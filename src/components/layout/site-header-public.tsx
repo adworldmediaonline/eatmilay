@@ -31,7 +31,6 @@ import Link from 'next/link';
 
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { CartDropdown } from '@/components/cart/cart-dropdown';
-import { TrackOrderDialog } from '@/components/orders/track-order-dialog';
 import { DialogTrigger } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -90,9 +89,6 @@ export default function SiteHeaderPublic() {
 
       {/* Right Side Icons */}
       <div className="flex items-center space-x-2 sm:space-x-3">
-        {/* Track Order */}
-        {isMounted && <TrackOrderDialog />}
-
         {/* Cart */}
         {isMounted && <CartDropdown isScrolled={true} />}
 
@@ -257,21 +253,6 @@ export default function SiteHeaderPublic() {
                     >
                       <span className="font-medium">Contact</span>
                     </Link>
-
-                    <div className="my-4 h-px bg-white/20" />
-
-                    {/* Track Order - Mobile */}
-                    <TrackOrderDialog
-                      mobileTrigger={
-                        <button
-                          className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors w-full text-left"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <Package className="w-5 h-5" />
-                          <span className="font-medium">Track Order</span>
-                        </button>
-                      }
-                    />
 
                     <div className="my-4 h-px bg-white/20" />
 

@@ -42,6 +42,8 @@ export function OrderEmailTemplate({
   total,
   shippingAddress,
   estimatedDelivery,
+  shippingCourierName,
+  shippingEstimatedDelivery,
 }: OrderEmailTemplateProps) {
   return (
     <div

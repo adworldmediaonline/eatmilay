@@ -40,6 +40,8 @@ interface OrderShippedEmailTemplateProps {
   };
   estimatedDelivery: string;
   trackingNumber?: string;
+  shippingCourierName?: string;
+  shippingEstimatedDelivery?: string;
 }
 
 export function OrderShippedEmailTemplate({

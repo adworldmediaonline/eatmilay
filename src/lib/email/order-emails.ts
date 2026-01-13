@@ -54,6 +54,8 @@ interface OrderEmailData {
       country: string;
       phone: string;
     };
+    shippingCourierName?: string;
+    shippingEstimatedDelivery?: string;
   };
   customerEmail: string;
   customerName: string;

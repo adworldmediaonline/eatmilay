@@ -165,24 +165,7 @@ export function OrderSuccessContent() {
             </Badge>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={handleDownloadReceipt}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download Receipt
-            </Button>
-            <Button
-              onClick={handleShare}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Share2 className="h-4 w-4" />
-              Share Order
-            </Button>
-          </div>
+
         </CardContent>
       </Card>
 
@@ -300,56 +283,9 @@ export function OrderSuccessContent() {
         </CardContent>
       </Card>
 
-      {/* Next Steps */}
-      <Card>
-        <CardHeader>
-          <CardTitle>What's Next?</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 border rounded-lg">
-              <Mail className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <h4 className="font-medium mb-1">Email Confirmation</h4>
-              <p className="text-sm text-muted-foreground">
-                Check your email for order confirmation and tracking details
-              </p>
-            </div>
 
-            <div className="text-center p-4 border rounded-lg">
-              <Package className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <h4 className="font-medium mb-1">Order Processing</h4>
-              <p className="text-sm text-muted-foreground">
-                We'll prepare your order and notify you when it ships
-              </p>
-            </div>
 
-            <div className="text-center p-4 border rounded-lg">
-              <Truck className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <h4 className="font-medium mb-1">Track Delivery</h4>
-              <p className="text-sm text-muted-foreground">
-                Track your package in real-time once it's shipped
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Link href={`/orders/${orderData.orderNumber}`}>
-          <Button className="w-full sm:w-auto">
-            <Package className="h-4 w-4 mr-2" />
-            Track Order
-          </Button>
-        </Link>
-
-        <Link href="/">
-          <Button variant="outline" className="w-full sm:w-auto">
-            Continue Shopping
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 }

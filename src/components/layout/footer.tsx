@@ -82,7 +82,6 @@ export default function Footer({ className = '' }: FooterProps) {
   const info = [
     { name: 'Our Story', href: '/about' },
     { name: 'Contact Us', href: '/contact-us' },
-    { name: 'Track Your Order', href: '/track-order' },
     { name: 'FAQs', href: '/faqs' },
   ];
 
