@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useAddItem } from '@/store/cart-store';
 import { toast } from 'sonner';
 import ProductCard from '@/components/products/product-card';
+import { ProductsHeader } from '@/components/products/products-header';
 import type { SerializedProductWithCategory } from '@/lib/serializers';
 import type { ReviewAggregates } from '@/types/review';
 
@@ -18,6 +19,10 @@ interface ProductsGridProps {
   hasMore: boolean;
   loading: boolean;
   onLoadMore: () => void;
+  sortBy?: string;
+  availability?: string;
+  onSortChange?: (value: string) => void;
+  onAvailabilityChange?: (value: string) => void;
 }
 
 export default function ProductsGrid({
@@ -26,6 +31,10 @@ export default function ProductsGrid({
   hasMore,
   loading,
   onLoadMore,
+  sortBy = 'featured',
+  availability = 'all',
+  onSortChange,
+  onAvailabilityChange,
 }: ProductsGridProps) {
   const addItem = useAddItem();
 
@@ -58,7 +67,14 @@ export default function ProductsGrid({
         </div>
       )}
 
-      {/* Header removed per request */}
+      {/* Products Header */}
+      <ProductsHeader
+        totalCount={totalCount}
+        sortBy={sortBy}
+        availability={availability}
+        onSortChange={onSortChange}
+        onAvailabilityChange={onAvailabilityChange}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr relative">
         {loading && products.length > 0 && (

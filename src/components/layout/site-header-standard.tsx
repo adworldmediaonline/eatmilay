@@ -50,190 +50,45 @@ export default function SiteHeaderStandard() {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 bg-white/95 backdrop-blur-md shadow-lg py-3">
-      {/* Logo */}
-      <Link href="/" className="flex items-center">
-        {/* <Image
-          src={logo}
-          alt="eatmilay Logo"
-          style={{ height: 'auto', width: '200px' }}
-          priority
-        /> */}
-        <span className="text-2xl font-bold text-primary">EatMilay</span>
-      </Link>
+    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-12 bg-header-background shadow-lg py-4 h-20 transition-all duration-300">
 
-      {/* Desktop Navigation */}
-      <div className="hidden lg:flex items-center">
-        <NavigationMenu>
-          <NavigationMenuList className="space-x-1">
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  href="/"
-                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-primary hover:text-primary/80 bg-transparent hover:bg-muted`}
-                >
-                  Home
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  href="/contact-us"
-                  className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-primary hover:text-primary/80 bg-transparent hover:bg-muted`}
-                >
-                  Contact
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
-
-      {/* Right Side Icons */}
-      <div className="flex items-center space-x-2 sm:space-x-3">
-        {/* Cart */}
-        {isMounted && <CartDropdown isScrolled={true} />}
-
-        {/* User Account - Desktop */}
-        {!isPending && session ? (
-          <div className="hidden md:block">{isMounted && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-9 w-9 rounded-full hover:bg-gray-100"
-                >
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={session.user.image ?? ''} alt={''} />
-                    <AvatarFallback className="bg-white text-primary font-semibold">
-                      {session.user.initials ?? ''}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-64 bg-white/95 backdrop-blur-sm"
-                align="end"
-                forceMount
-              >
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {session.user.name}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {session.user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem asChild>
-                  <Link href={session.user.role === 'admin' ? '/dashboard/admin/' : '/dashboard/user/'} className="cursor-pointer">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-
-                {/* <DropdownMenuItem asChild>
-                  <Link
-                    href="/dashboard/user/profile"
-                    className="cursor-pointer"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Account Settings</span>
-                  </Link>
-                </DropdownMenuItem> */}
-
-                <DropdownMenuItem asChild>
-                  <Link href={session.user.role === 'admin' ? '/dashboard/admin/orders' : '/dashboard/user/orders'} className="cursor-pointer">
-                    <Package className="mr-2 h-4 w-4" />
-                    <span>Orders</span>
-                  </Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="cursor-pointer text-red-600 focus:text-red-600"
-                  onClick={() => {
-                    authClient.signOut({
-                      fetchOptions: {
-                        onSuccess: () => {
-                          router.push('/');
-                        },
-                      },
-                    });
-                  }}
-                  disabled={false}
-                >
-                  <LogOut className="mr-2 h-4 w-4" /> <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}</div>
-        ) : (
-          isMounted && (
-            <AuthDialog
-              trigger={
-                <DialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="relative p-2 rounded-full transition-all duration-300 hover:bg-gray-100"
-                  >
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-300 bg-primary text-white">
-                      <User className="w-5 h-5" />
-                    </div>
-                  </Button>
-                </DialogTrigger>
-              }
-            />
-          )
-        )}
-
+      {/* Left Section: Desktop Navigation & Mobile Menu */}
+      <div className="flex flex-1 items-center justify-start">
         {/* Mobile Menu */}
-        <div className="md:hidden">
+        <div className="md:hidden mr-4">
           {isMounted && (
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="p-2 transition-colors duration-300 text-primary hover:bg-muted"
+                  className="p-2 transition-colors duration-300 text-header-foreground hover:bg-white/10"
                 >
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent
-                side="right"
-                className="w-[300px] sm:w-[400px] bg-gradient-to-br from-primary to-primary/80"
+                side="left"
+                className="w-[300px] sm:w-[400px] bg-gradient-to-br from-primary to-primary/80 border-r border-white/10"
               >
                 <div className="flex flex-col h-full">
                   {/* Mobile Header */}
                   <div className="flex items-center mb-8">
-                    {/* <Image
-                      src={logo}
-                      alt="eatmilay Logo"
-                      className="brightness-0 invert"
-                      style={{ height: 'auto', width: '180px' }}
-                    /> */}
-                    <span className="text-2xl font-bold text-white">EatMilay</span>
+                    <span className="text-3xl font-bold text-white">EatMilay</span>
                   </div>
 
                   {/* User Info (Mobile) */}
                   {session && (
                     <div className="mb-6 p-4 bg-white/10 backdrop-blur-sm rounded-lg">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
+                        <Avatar className="h-14 w-14 border-2 border-white/20">
                           <AvatarImage src={session.user.image ?? ''} alt={''} />
-                          <AvatarFallback className="bg-white text-primary font-semibold">
+                          <AvatarFallback className="bg-white text-primary font-semibold text-lg">
                             {session.user.initials ?? ''}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-white font-medium">{session.user.name}</p>
+                          <p className="text-white font-medium text-base">{session.user.name}</p>
                           <p className="text-white/70 text-sm">{session.user.email}</p>
                         </div>
                       </div>
@@ -278,14 +133,6 @@ export default function SiteHeaderStandard() {
                           <Package className="w-5 h-5" />
                           <span className="font-medium">Orders</span>
                         </Link>
-                        {/* <Link
-                          href={session.user.role === 'admin' ? '/dashboard/admin/wishlist' : '/dashboard/user/wishlist'}
-                          className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <Heart className="w-5 h-5" />
-                          <span className="font-medium">Favorites</span>
-                        </Link> */}
                       </>
                     )}
                   </nav>
@@ -331,6 +178,133 @@ export default function SiteHeaderStandard() {
             </Sheet>
           )}
         </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center">
+          <NavigationMenu>
+            <NavigationMenuList className="space-x-1">
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/"
+                    className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-lg text-header-foreground hover:text-header-foreground/80 bg-transparent hover:bg-white/10 focus:bg-white/10 focus:text-header-foreground`}
+                  >
+                    Home
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/contact-us"
+                    className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-lg text-header-foreground hover:text-header-foreground/80 bg-transparent hover:bg-white/10 focus:bg-white/10 focus:text-header-foreground`}
+                  >
+                    Contact
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+      </div>
+
+      {/* Center Section: Logo */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Link href="/" className="flex items-center">
+          <span className="text-3xl font-bold text-header-foreground tracking-tight">EatMilay</span>
+        </Link>
+      </div>
+
+      {/* Right Section: Icons */}
+      <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">
+        {/* Cart */}
+        {isMounted && <CartDropdown isScrolled={false} />}
+
+        {/* User Account - Desktop */}
+        {!isPending && session ? (
+          <div className="hidden md:block">{isMounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-11 w-11 rounded-full hover:bg-white/10"
+                >
+                  <Avatar className="h-11 w-11 border border-white/20">
+                    <AvatarImage src={session.user.image ?? ''} alt={''} />
+                    <AvatarFallback className="bg-white text-primary font-semibold text-base">
+                      {session.user.initials ?? ''}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-64 bg-header-background border-white/10 text-header-foreground"
+                align="end"
+                forceMount
+              >
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none text-white">
+                      {session.user.name}
+                    </p>
+                    <p className="text-xs leading-none text-gray-400">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/10" />
+
+                <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                  <Link href={session.user.role === 'admin' ? '/dashboard/admin/' : '/dashboard/user/'}>
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                  <Link href={session.user.role === 'admin' ? '/dashboard/admin/orders' : '/dashboard/user/orders'}>
+                    <Package className="mr-2 h-4 w-4" />
+                    <span>Orders</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem
+                  className="cursor-pointer text-red-500 focus:text-red-400 focus:bg-white/10"
+                  onClick={() => {
+                    authClient.signOut({
+                      fetchOptions: {
+                        onSuccess: () => {
+                          router.push('/');
+                        },
+                      },
+                    });
+                  }}
+                  disabled={false}
+                >
+                  <LogOut className="mr-2 h-4 w-4" /> <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}</div>
+        ) : (
+          isMounted && (
+            <AuthDialog
+              trigger={
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="relative p-2 rounded-full transition-all duration-300 hover:bg-white/10 text-header-foreground"
+                  >
+                    <User className="w-6 h-6" />
+                  </Button>
+                </DialogTrigger>
+              }
+            />
+          )
+        )}
       </div>
     </nav>
   );

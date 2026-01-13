@@ -11,6 +11,8 @@ export interface ProductFilters {
   categoryIds?: string[];
   minPrice?: number;
   maxPrice?: number;
+  availability?: 'all' | 'in-stock' | 'out-of-stock';
+  sortBy?: 'featured' | 'newest' | 'price-low' | 'price-high' | 'rating';
   page?: number;
   limit?: number;
 }
@@ -135,7 +137,7 @@ export async function checkProductSlugExists(slug: string, excludeId?: string) {
 
 export async function getFilteredProducts(filters: ProductFilters) {
   'use cache';
-  const { search, categoryIds, minPrice, maxPrice, page = 1, limit = 12 } = filters;
+  const { search, categoryIds, minPrice, maxPrice, sortBy = 'featured', page = 1, limit = 12 } = filters;
 
   const where: Prisma.ProductWhereInput = {
     ...(search && {
@@ -158,11 +160,34 @@ export async function getFilteredProducts(filters: ProductFilters) {
       : {}),
   };
 
+  // Determine orderBy based on sortBy
+  let orderBy: Prisma.ProductOrderByWithRelationInput;
+  switch (sortBy) {
+    case 'newest':
+      orderBy = { createdAt: 'desc' };
+      break;
+    case 'price-low':
+      orderBy = { price: 'asc' };
+      break;
+    case 'price-high':
+      orderBy = { price: 'desc' };
+      break;
+    case 'rating':
+      // For rating, we'll sort by createdAt as fallback since rating requires aggregation
+      // This can be enhanced later with proper rating aggregation
+      orderBy = { createdAt: 'desc' };
+      break;
+    case 'featured':
+    default:
+      orderBy = { createdAt: 'desc' };
+      break;
+  }
+
   const [products, totalCount] = await Promise.all([
     prisma.product.findMany({
       where,
       include: { category: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy,
       skip: (page - 1) * limit,
       take: limit,
     }),
