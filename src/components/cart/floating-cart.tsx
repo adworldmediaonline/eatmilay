@@ -7,7 +7,7 @@ import {
   useCartItems,
   useCartTotalPrice,
 } from '@/store/cart-store';
-import { CheckCircle, ShoppingBag, X } from 'lucide-react';
+import { CheckCircle, ChevronRight, ShoppingBag, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -55,22 +55,24 @@ export function FloatingCart() {
     <>
       {/* Floating Cart Card - Bottom Center */}
       <div
-        className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[90vw] max-w-md z-50 transition-all duration-500 ease-out ${
-          isVisible
-            ? 'translate-y-0 opacity-100 scale-100'
-            : 'translate-y-[120%] opacity-0 scale-95 pointer-events-none'
-        }`}
+        className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[90vw] max-w-md z-50 transition-all duration-500 ease-out ${isVisible
+          ? 'translate-y-0 opacity-100 scale-100'
+          : 'translate-y-[120%] opacity-0 scale-95 pointer-events-none'
+          }`}
         role="dialog"
         aria-label="Shopping cart notification"
         aria-live="polite"
       >
         <div
-          className={`bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden transition-transform duration-300 ${
-            isAnimating ? 'scale-[1.02]' : 'scale-100'
-          }`}
+          className={`relative bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden transition-transform duration-300 ${isAnimating ? 'scale-[1.02]' : 'scale-100'
+            }`}
         >
           {/* Compact Layout Container */}
-          <div className="flex items-center gap-3 px-3 py-3">
+          <Link
+            href="/cart"
+            className="flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+            onClick={dismiss}
+          >
             {/* Cart Icon */}
             <div className="w-8 h-8 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))] rounded-full flex items-center justify-center flex-shrink-0">
               <ShoppingBag className="w-4 h-4 text-white" />
@@ -90,11 +92,10 @@ export function FloatingCart() {
                   >
                     {/* Circular Product Image */}
                     <div
-                      className={`relative w-12 h-12 rounded-full overflow-hidden transition-all duration-300 border-2 border-white shadow-sm ${
-                        recentlyAdded === item.product.id
-                          ? 'ring-2 ring-[hsl(var(--primary))] scale-110'
-                          : 'hover:scale-105'
-                      }`}
+                      className={`relative w-12 h-12 rounded-full overflow-hidden transition-all duration-300 border-2 border-white shadow-sm ${recentlyAdded === item.product.id
+                        ? 'ring-2 ring-[hsl(var(--primary))] scale-110'
+                        : 'hover:scale-105'
+                        }`}
                     >
                       {item.product.mainImage ? (
                         <Image
@@ -125,34 +126,28 @@ export function FloatingCart() {
               </div>
             </div>
 
-            {/* Subtotal & Actions */}
+            {/* Subtotal */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              {/* Subtotal */}
               <div className="text-right">
                 <span className="text-xs text-gray-600">₹{totalPrice.toLocaleString()}</span>
                 <p className="text-[10px] text-gray-500">{itemCount} item{itemCount > 1 ? 's' : ''}</p>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-1">
-                <Button
-                  asChild
-                  size="sm"
-                  className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))] text-white h-8 px-3 text-xs"
-                  onClick={dismiss}
-                >
-                  <Link href="/cart">Cart</Link>
-                </Button>
-                <button
-                  onClick={dismiss}
-                  className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors text-gray-400 hover:text-gray-600"
-                  aria-label="Close cart"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+              {/* Arrow Icon */}
+              <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
             </div>
-          </div>
+          </Link>
+
+          {/* Close Button - Outside Link */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              dismiss();
+            }}
+            className="absolute top-2 right-2 w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors text-gray-400 hover:text-gray-600 z-10"
+            aria-label="Close cart"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </>
