@@ -3,13 +3,14 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { FloatingCart } from '@/components/cart/floating-cart';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Questrial, JetBrains_Mono } from 'next/font/google';
 import 'swiper/css';
 
 import './globals.css';
 
-const inter = Inter({
+const questrial = Questrial({
   variable: '--font-inter',
+  weight: '400',
   subsets: ['latin'],
   display: 'swap',
 });
@@ -39,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${questrial.variable} ${jetbrainsMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <NuqsAdapter>

@@ -42,12 +42,16 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-header-background: var(--header-background);
+  --color-header-foreground: var(--header-foreground);
 }
 
 :root {
   /* Brand Colors - Only Primary (#19302A) and White (#FFFFFF) */
-  --brand-primary: #19302a; /* Primary Dark Green */
-  --brand-white: #ffffff; /* White */
+  --brand-primary: #19302a;
+  /* Primary Dark Green */
+  --brand-white: #ffffff;
+  /* White */
 
   /* Base Theme */
   --radius: 0.75rem;
@@ -100,6 +104,10 @@
   --sidebar-accent-foreground: #19302a;
   --sidebar-border: #e0e4e2;
   --sidebar-ring: #19302a;
+
+  /* Header - Fixed Black Theme */
+  --header-background: #000000;
+  --header-foreground: #ffffff;
 }
 
 .dark {
@@ -144,6 +152,10 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #456159;
   --sidebar-ring: #ffffff;
+
+  /* Header - Keep Consistent in Dark Mode */
+  --header-background: #000000;
+  --header-foreground: #ffffff;
 }
 
 /* Clean brand utilities - Only Primary (#19302A) and White */
@@ -168,20 +180,24 @@
 
 /* Custom animations */
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
 }
 
 @keyframes float-delay {
+
   0%,
   100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-15px);
   }
@@ -199,13 +215,19 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     font-family: var(--font-inter), system-ui, sans-serif;
     @apply bg-background text-foreground;
   }
 
   /* Section Titles - Primary Color */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply text-primary;
   }
 
@@ -369,6 +391,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -552,11 +575,13 @@
 
 /* Pagination pulse animation */
 @keyframes pagination-pulse {
+
   0%,
   100% {
     opacity: 0.9;
     transform: translate(-50%, -50%) scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: translate(-50%, -50%) scale(1.2);
@@ -631,10 +656,12 @@
   --tw-prose-hr: var(--color-border);
 
   code {
+
     &::before,
     &::after {
       display: none;
     }
+
     text-wrap: nowrap;
     background-color: var(--color-muted);
     padding: 0.125rem 0.25rem;
@@ -898,7 +925,7 @@
       outline-offset: 2px;
     }
 
-    ul[data-type='taskList'] li > div {
+    ul[data-type='taskList'] li>div {
       flex: 1;
     }
 
