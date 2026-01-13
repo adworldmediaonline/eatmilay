@@ -110,6 +110,9 @@ export interface SerializedOrder {
   deliveredAt?: string;
   notes?: string;
   trackingNumber?: string;
+  shippingCourierId?: number;
+  shippingCourierName?: string;
+  shippingEstimatedDelivery?: string;
   user?: {
     id: string;
     name: string;

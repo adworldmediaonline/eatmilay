@@ -12,16 +12,17 @@ import {
   useCartTotalPrice,
 } from '@/store/cart-store';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface CheckoutSummaryProps {}
+interface CheckoutSummaryProps {
+  shippingCost?: number;
+}
 
-export function CheckoutSummary({}: CheckoutSummaryProps) {
+export function CheckoutSummary({ shippingCost = 0 }: CheckoutSummaryProps) {
   const items = useCartItems();
   const count = useCartItemCount();
   const subtotal = useCartTotalPrice();
 
-  // Total is just the subtotal (GST and shipping managed from dashboard)
-  const total = subtotal;
+  // Calculate total with shipping
+  const total = subtotal + shippingCost;
 
   return (
     <Card className="sticky top-8">
@@ -97,6 +98,15 @@ export function CheckoutSummary({}: CheckoutSummaryProps) {
             <span>Subtotal ({count} {count === 1 ? 'item' : 'items'})</span>
             <span>₹{subtotal.toLocaleString()}</span>
           </div>
+
+          {shippingCost > 0 && (
+            <>
+              <div className="flex justify-between text-sm">
+                <span>Shipping</span>
+                <span>₹{shippingCost.toLocaleString()}</span>
+              </div>
+            </>
+          )}
 
           <Separator />
 

@@ -54,6 +54,8 @@ interface OrderEmailData {
       country: string;
       phone: string;
     };
+    shippingCourierName?: string;
+    shippingEstimatedDelivery?: string;
   };
   customerEmail: string;
   customerName: string;
@@ -90,6 +92,8 @@ export async function sendOrderConfirmationEmail({
             ? JSON.parse(order.shippingAddress)
             : order.shippingAddress,
         estimatedDelivery: calculateEstimatedDelivery(order.createdAt),
+        shippingCourierName: order.shippingCourierName,
+        shippingEstimatedDelivery: order.shippingEstimatedDelivery,
       })
     );
 
@@ -146,6 +150,8 @@ export async function sendOrderProcessingEmail({
             ? JSON.parse(order.shippingAddress)
             : order.shippingAddress,
         estimatedDelivery: calculateEstimatedDelivery(order.createdAt),
+        shippingCourierName: order.shippingCourierName,
+        shippingEstimatedDelivery: order.shippingEstimatedDelivery,
       })
     );
 
@@ -211,6 +217,8 @@ export async function sendOrderShippedEmail({
             : order.shippingAddress,
         estimatedDelivery: calculateEstimatedDelivery(order.createdAt, 'shipped'),
         trackingNumber,
+        shippingCourierName: order.shippingCourierName,
+        shippingEstimatedDelivery: order.shippingEstimatedDelivery,
       })
     );
 
@@ -275,6 +283,8 @@ export async function sendOrderDeliveredEmail({
             : order.shippingAddress,
         estimatedDelivery: calculateEstimatedDelivery(order.createdAt, 'shipped'),
         deliveryDate: new Date().toISOString(),
+        shippingCourierName: order.shippingCourierName,
+        shippingEstimatedDelivery: order.shippingEstimatedDelivery,
       })
     );
 

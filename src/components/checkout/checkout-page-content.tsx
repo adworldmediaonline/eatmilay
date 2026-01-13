@@ -14,6 +14,7 @@ export function CheckoutPageContent() {
   const items = useCartItems();
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [shippingCost, setShippingCost] = useState(0);
 
   // Redirect if cart is empty
   if (items.length === 0) {
@@ -29,6 +30,7 @@ export function CheckoutPageContent() {
           isProcessing={isProcessing}
           onProcessingChange={setIsProcessing}
           user={session?.user}
+          onShippingCostChange={setShippingCost}
         />
 
       </div>
@@ -36,7 +38,7 @@ export function CheckoutPageContent() {
       {/* Order Summary Section */}
       <div className="lg:col-span-1">
         <div className="sticky top-8">
-          <CheckoutSummary />
+          <CheckoutSummary shippingCost={shippingCost} />
         </div>
       </div>
     </div>

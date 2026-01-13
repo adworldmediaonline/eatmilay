@@ -131,6 +131,9 @@ export async function getOrders({
       deliveredAt: order.deliveredAt?.toISOString(),
       notes: order.notes || undefined,
       trackingNumber: order.trackingNumber || undefined,
+      shippingCourierId: order.shippingCourierId || undefined,
+      shippingCourierName: order.shippingCourierName || undefined,
+      shippingEstimatedDelivery: order.shippingEstimatedDelivery || undefined,
       user: order.user
         ? {
             id: order.user.id,
@@ -238,6 +241,9 @@ export async function getOrderById(
       deliveredAt: order.deliveredAt?.toISOString(),
       notes: order.notes || undefined,
       trackingNumber: order.trackingNumber || undefined,
+      shippingCourierId: order.shippingCourierId || undefined,
+      shippingCourierName: order.shippingCourierName || undefined,
+      shippingEstimatedDelivery: order.shippingEstimatedDelivery || undefined,
       user: order.user
         ? {
             id: order.user.id,

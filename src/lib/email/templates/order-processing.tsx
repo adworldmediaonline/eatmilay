@@ -39,6 +39,8 @@ interface OrderProcessingEmailTemplateProps {
     phone: string;
   };
   estimatedDelivery: string;
+  shippingCourierName?: string;
+  shippingEstimatedDelivery?: string;
 }
 
 export function OrderProcessingEmailTemplate({
@@ -52,6 +54,8 @@ export function OrderProcessingEmailTemplate({
   total,
   shippingAddress,
   estimatedDelivery,
+  shippingCourierName,
+  shippingEstimatedDelivery,
 }: OrderProcessingEmailTemplateProps) {
   return (
     <Html>
@@ -178,6 +182,30 @@ export function OrderProcessingEmailTemplate({
               <Text style={addressText}>Phone: {shippingAddress.phone}</Text>
             </Section>
           </Section>
+
+          {/* Shipping Courier Details */}
+          {(shippingCourierName || shippingEstimatedDelivery) && (
+            <Section style={contentSection}>
+              <Heading style={h3}>Shipping Details</Heading>
+              <Section style={addressContainer}>
+                {shippingCourierName && (
+                  <Text style={addressText}>
+                    <strong>Courier:</strong> {shippingCourierName}
+                  </Text>
+                )}
+                {shippingEstimatedDelivery && (
+                  <Text style={addressText}>
+                    <strong>Estimated Delivery:</strong> {shippingEstimatedDelivery}
+                  </Text>
+                )}
+                {shipping > 0 && (
+                  <Text style={addressText}>
+                    <strong>Shipping Cost:</strong> ₹{shipping.toLocaleString()}
+                  </Text>
+                )}
+              </Section>
+            </Section>
+          )}
 
           {/* CTA */}
           <Section style={ctaSection}>

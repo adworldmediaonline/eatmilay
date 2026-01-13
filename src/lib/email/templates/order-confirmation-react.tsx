@@ -38,6 +38,8 @@ interface OrderEmailTemplateProps {
     phone: string;
   };
   estimatedDelivery: string;
+  shippingCourierName?: string;
+  shippingEstimatedDelivery?: string;
 }
 
 export function OrderEmailTemplate({
@@ -51,6 +53,8 @@ export function OrderEmailTemplate({
   total,
   shippingAddress,
   estimatedDelivery,
+  shippingCourierName,
+  shippingEstimatedDelivery,
 }: OrderEmailTemplateProps) {
   return (
     <Html>
@@ -160,6 +164,23 @@ export function OrderEmailTemplate({
               <strong>Estimated Delivery:</strong> {estimatedDelivery}
             </Text>
           </Section>
+
+          {/* Shipping Details */}
+          {(shippingCourierName || shippingEstimatedDelivery) && (
+            <Section style={shippingDetailsContainer}>
+              <Heading style={h3}>Shipping Details</Heading>
+              {shippingCourierName && (
+                <Text style={shippingDetailsText}>
+                  <strong>Courier:</strong> {shippingCourierName}
+                </Text>
+              )}
+              {shippingEstimatedDelivery && (
+                <Text style={shippingDetailsText}>
+                  <strong>Estimated Delivery:</strong> {shippingEstimatedDelivery}
+                </Text>
+              )}
+            </Section>
+          )}
 
           {/* Call to Action */}
           <Section style={ctaSection}>
@@ -366,6 +387,22 @@ const deliveryText = {
   color: '#233f1c',
   fontSize: '16px',
   margin: '0',
+  textAlign: 'center' as const,
+};
+
+const shippingDetailsContainer = {
+  backgroundColor: '#eff6ff',
+  border: '2px solid #233f1c',
+  borderRadius: '8px',
+  margin: '24px 20px',
+  padding: '20px',
+  textAlign: 'center' as const,
+};
+
+const shippingDetailsText = {
+  color: '#333',
+  fontSize: '16px',
+  margin: '0 0 8px',
   textAlign: 'center' as const,
 };
 

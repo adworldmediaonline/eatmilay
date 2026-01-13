@@ -9,6 +9,7 @@ import {
   User,
   FileText,
   Calendar,
+  Truck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -237,6 +238,46 @@ export function OrderDetailsContent({ order }: OrderDetailsContentProps) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Shipping Courier Details */}
+          {(order.shippingCourierName || order.shippingCourierId) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Truck className="mr-2 h-5 w-5" />
+                  Shipping Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  {order.shippingCourierName && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Courier:</span>
+                      <span className="font-medium">{order.shippingCourierName}</span>
+                    </div>
+                  )}
+                  {order.shipping > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Shipping Cost:</span>
+                      <span className="font-medium">₹{order.shipping.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {order.shippingEstimatedDelivery && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Estimated Delivery:</span>
+                      <span className="font-medium">{order.shippingEstimatedDelivery}</span>
+                    </div>
+                  )}
+                  {order.shippingCourierId && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Courier ID:</span>
+                      <span className="font-medium">{order.shippingCourierId}</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Timeline */}
           <Card>

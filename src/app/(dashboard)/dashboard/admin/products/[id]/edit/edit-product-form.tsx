@@ -49,6 +49,7 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
     defaultValues: {
       id: product.id,
       name: product.name,
+      sku: product.sku || '',
       price: product.price,
       categoryId: product.categoryId,
       excerpt: product.excerpt || '',
@@ -126,6 +127,28 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
                     </span>
                   )}
                 </span>
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="sku"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>SKU (Stock Keeping Unit)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter SKU (e.g., PROD-001)"
+                  {...field}
+                  value={field.value || ''}
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormDescription>
+                Unique product identifier for inventory management (optional)
               </FormDescription>
               <FormMessage />
             </FormItem>

@@ -23,6 +23,10 @@ export async function POST(request: NextRequest) {
       shippingAddress,
       billingAddress,
       paymentMethod,
+      shippingCost = 0,
+      courierId,
+      courierName,
+      estimatedDelivery,
       orderNotes,
       userId,
     } = validatedData;
@@ -73,10 +77,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Total is just subtotal (GST and shipping managed from dashboard)
-    const shippingCost = 0;
+    // Calculate total with shipping cost
     const taxAmount = 0;
-    const totalAmount = subtotal;
+    const totalAmount = subtotal + shippingCost;
 
     // Generate unique order number
     const orderNumber = await generateOrderNumber();
@@ -116,7 +119,10 @@ export async function POST(request: NextRequest) {
         billingAddress: billingAddress
           ? JSON.stringify(billingAddress)
           : undefined,
-        notes: orderNotes,
+        notes: orderNotes || null,
+        shippingCourierId: courierId || null,
+        shippingCourierName: courierName || null,
+        shippingEstimatedDelivery: estimatedDelivery || null,
         items: {
           create: orderItems,
         },

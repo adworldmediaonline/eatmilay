@@ -40,6 +40,8 @@ interface OrderDeliveredEmailTemplateProps {
   };
   estimatedDelivery: string;
   deliveryDate?: string;
+  shippingCourierName?: string;
+  shippingEstimatedDelivery?: string;
 }
 
 export function OrderDeliveredEmailTemplate({
@@ -52,6 +54,9 @@ export function OrderDeliveredEmailTemplate({
   tax,
   total,
   deliveryDate,
+  shippingAddress,
+  shippingCourierName,
+  shippingEstimatedDelivery,
 }: OrderDeliveredEmailTemplateProps) {
   return (
     <Html>

@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import prisma from '@/lib/prisma';
 import { razorpayPaymentSchema } from '@/lib/validations/order';
 import { sendOrderConfirmationEmail } from '@/lib/email/order-emails';
+import { createShiprocketOrder } from '@/app/actions/shiprocket';
 
 // Helper function to serialize order data for email
 function serializeOrderData(order: {
@@ -14,14 +15,21 @@ function serializeOrderData(order: {
   shipping: { toNumber: () => number };
   discount: { toNumber: () => number };
   total: { toNumber: () => number };
-  items?: Array<{
+  items: Array<{
     price: { toNumber: () => number };
     total: { toNumber: () => number };
     name: string;
     quantity: number;
+    productSnapshot?: unknown;
+    product?: {
+      mainImageUrl?: string | null;
+      mainImagePublicId?: string | null;
+      mainImageAlt?: string | null;
+    };
   }>;
-  shippingAddress?: unknown;
-  [key: string]: unknown;
+  shippingAddress: unknown;
+  shippingCourierName?: string | null;
+  shippingEstimatedDelivery?: string | null;
 }) {
   return {
     ...order,
@@ -30,15 +38,40 @@ function serializeOrderData(order: {
     shipping: order.shipping.toNumber(),
     discount: order.discount.toNumber(),
     total: order.total.toNumber(),
-    items:
-      order.items?.map(item => ({
-        ...item,
+    items: order.items.map(item => {
+      // Extract productSnapshot from JSON field or construct from product relation
+      let productSnapshot: { mainImage?: { url?: string } } | undefined;
+
+      if (item.productSnapshot) {
+        const snapshot = item.productSnapshot as Record<string, unknown>;
+        if (snapshot.mainImage && typeof snapshot.mainImage === 'object') {
+          const mainImage = snapshot.mainImage as { url?: string };
+          productSnapshot = { mainImage: { url: mainImage.url } };
+        }
+      } else if (item.product?.mainImageUrl) {
+        // Fallback to product relation if snapshot not available
+        productSnapshot = {
+          mainImage: {
+            url: item.product.mainImageUrl,
+          },
+        };
+      }
+
+      return {
+        name: item.name,
+        quantity: item.quantity,
         price: item.price.toNumber(),
         total: item.total.toNumber(),
-      })) || [],
+        productSnapshot,
+      };
+    }),
     shippingAddress: order.shippingAddress
-      ? JSON.parse(order.shippingAddress as string)
+      ? (typeof order.shippingAddress === 'string'
+          ? JSON.parse(order.shippingAddress)
+          : order.shippingAddress)
       : null,
+    shippingCourierName: order.shippingCourierName || undefined,
+    shippingEstimatedDelivery: order.shippingEstimatedDelivery || undefined,
   };
 }
 
@@ -86,6 +119,21 @@ export async function POST(request: NextRequest) {
         user: true,
       },
     });
+
+    // Create Shiprocket order (non-blocking - don't fail payment if this fails)
+    try {
+      const shiprocketResult = await createShiprocketOrder({
+        orderId: order.id,
+      });
+
+      if (!shiprocketResult.success) {
+        console.error('Failed to create Shiprocket order:', shiprocketResult.error);
+        // Continue anyway - payment is still valid
+      }
+    } catch (shiprocketError) {
+      console.error('Shiprocket order creation error:', shiprocketError);
+      // Don't fail the payment verification if Shiprocket fails
+    }
 
     // Send order confirmation email
     try {

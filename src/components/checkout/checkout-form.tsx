@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -12,7 +12,9 @@ import {
   Home,
   Building,
   CheckCircle2,
-  FileText
+  FileText,
+  Truck,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,14 +29,27 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { useCartItems, useClearCart } from '@/store/cart-store';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCartItems, useClearCart, useCartTotalPrice } from '@/store/cart-store';
 import { toast } from 'sonner';
 import { checkoutFormSchema, CheckoutFormData } from '@/lib/validations/order';
 import { cn } from '@/lib/utils';
 
+interface ShippingCourier {
+  courier_company_id: number;
+  courier_name: string;
+  rate: number;
+  estimated_delivery_days: number;
+  etd: string;
+  company_name: string;
+}
+
 interface CheckoutFormProps {
   isProcessing: boolean;
   onProcessingChange: (processing: boolean) => void;
+  onShippingCostChange?: (cost: number) => void;
   user?: {
     id: string;
     name: string;
@@ -45,10 +60,20 @@ interface CheckoutFormProps {
 export function CheckoutForm({
   isProcessing,
   onProcessingChange,
+  onShippingCostChange,
   user,
 }: CheckoutFormProps) {
   const cartItems = useCartItems();
   const clearCart = useClearCart();
+  const subtotal = useCartTotalPrice();
+
+  const [shippingRates, setShippingRates] = useState<ShippingCourier[]>([]);
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
+  const [selectedCourierId, setSelectedCourierId] = useState<number | null>(null);
+  const [shippingCost, setShippingCost] = useState(0);
+
+  // Warehouse pickup postcode (should be in env, using example from user's code)
+  const PICKUP_POSTCODE = process.env.NEXT_PUBLIC_SHIPROCKET_PICKUP_POSTCODE || '302017';
 
   const form = useForm({
     resolver: zodResolver(checkoutFormSchema),
@@ -72,6 +97,100 @@ export function CheckoutForm({
     },
   });
 
+  const postalCode = form.watch('shippingAddress.postalCode');
+  const paymentMethod = form.watch('paymentMethod');
+
+  // Calculate total weight (assuming 0.2kg per item, can be improved)
+  const calculateTotalWeight = () => {
+    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    return (totalItems * 0.2).toFixed(3); // kg
+  };
+
+  // Fetch shipping rates when postal code changes
+  useEffect(() => {
+    const fetchShippingRates = async () => {
+      if (!postalCode || postalCode.length !== 6) {
+        setShippingRates([]);
+        setSelectedCourierId(null);
+        setShippingCost(0);
+        onShippingCostChange?.(0);
+        return;
+      }
+
+      setIsLoadingRates(true);
+      try {
+        const queryParams = new URLSearchParams({
+          pickup_postcode: PICKUP_POSTCODE,
+          delivery_postcode: postalCode,
+          cod: paymentMethod === 'cod' ? '1' : '0',
+          weight: calculateTotalWeight(),
+        });
+
+        const response = await fetch(`/api/shiprocket/check-rates?${queryParams.toString()}`);
+        const data = await response.json();
+
+        if (response.ok && data.data?.available_courier_companies) {
+          const couriers = data.data.available_courier_companies as ShippingCourier[];
+          setShippingRates(couriers);
+
+          // Priority: 1. Xpressbees Air (courier_company_id: 33), 2. Recommended courier, 3. First courier
+          let selectedCourier: ShippingCourier | undefined;
+          let selectedCourierId: number | null = null;
+
+          // First priority: Xpressbees Air
+          const xpressbeesAir = couriers.find(c => c.courier_company_id === 33);
+          if (xpressbeesAir) {
+            selectedCourier = xpressbeesAir;
+            selectedCourierId = 33;
+          } else {
+            // Second priority: Recommended courier
+            if (data.data.recommended_courier_company_id) {
+              const recommendedCourier = couriers.find(
+                c => c.courier_company_id === data.data.recommended_courier_company_id
+              );
+              if (recommendedCourier) {
+                selectedCourier = recommendedCourier;
+                selectedCourierId = data.data.recommended_courier_company_id;
+              }
+            }
+
+            // Third priority: First courier
+            if (!selectedCourier && couriers.length > 0) {
+              selectedCourier = couriers[0];
+              selectedCourierId = couriers[0].courier_company_id;
+            }
+          }
+
+          // Set selected courier and shipping cost automatically
+          if (selectedCourier && selectedCourierId) {
+            setSelectedCourierId(selectedCourierId);
+            setShippingCost(selectedCourier.rate);
+            onShippingCostChange?.(selectedCourier.rate);
+          }
+        } else {
+          toast.error(data.error || 'Failed to fetch shipping rates');
+          setShippingRates([]);
+          setSelectedCourierId(null);
+          setShippingCost(0);
+          onShippingCostChange?.(0);
+        }
+      } catch (error) {
+        console.error('Error fetching shipping rates:', error);
+        toast.error('Failed to fetch shipping rates. Please try again.');
+        setShippingRates([]);
+      } finally {
+        setIsLoadingRates(false);
+      }
+    };
+
+    // Debounce API call
+    const timeoutId = setTimeout(() => {
+      fetchShippingRates();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [postalCode, paymentMethod, cartItems.length]);
+
 
   const onSubmit = async (data: CheckoutFormData) => {
     try {
@@ -87,6 +206,9 @@ export function CheckoutForm({
 
   const processOrder = async (data: CheckoutFormData) => {
     try {
+      // Get selected courier details
+      const selectedCourier = shippingRates.find(c => c.courier_company_id === selectedCourierId);
+
       // Create order payload
       const orderPayload = {
         items: cartItems.map(item => ({
@@ -103,6 +225,10 @@ export function CheckoutForm({
         billingAddress: data.shippingAddress, // Same as shipping for now
         paymentMethod: data.paymentMethod,
         shippingMethod: data.shippingMethod,
+        shippingCost: shippingCost,
+        courierId: selectedCourierId,
+        courierName: selectedCourier?.courier_name,
+        estimatedDelivery: selectedCourier?.etd,
         orderNotes: data.orderNotes,
         userId: user?.id,
       };
@@ -448,6 +574,9 @@ export function CheckoutForm({
                             {isFieldValid('shippingAddress.postalCode') && (
                               <CheckCircle2 className="absolute right-3 top-3 h-4 w-4 text-green-500" />
                             )}
+                            {isLoadingRates && (
+                              <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+                            )}
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -456,6 +585,81 @@ export function CheckoutForm({
                   />
                 </div>
               </div>
+
+              {/* Shipping Options */}
+              {postalCode && postalCode.length === 6 && (
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-muted-foreground" />
+                    <h3 className="font-semibold">Shipping Options</h3>
+                  </div>
+
+                  {isLoadingRates ? (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Calculating shipping rates...</span>
+                    </div>
+                  ) : shippingRates.length > 0 ? (
+                    <ScrollArea className="h-[250px] w-full rounded-md border p-4 [&>[data-radix-scroll-area-scrollbar]]:flex">
+                      <RadioGroup
+                        value={selectedCourierId?.toString() || ''}
+                        onValueChange={(value) => {
+                          const courierId = parseInt(value);
+                          setSelectedCourierId(courierId);
+                          const courier = shippingRates.find(c => c.courier_company_id === courierId);
+                          if (courier) {
+                            setShippingCost(courier.rate);
+                            onShippingCostChange?.(courier.rate);
+                          }
+                        }}
+                        className="space-y-3 pr-4"
+                      >
+                        {shippingRates.map((courier) => (
+                          <div
+                            key={courier.courier_company_id}
+                            className={cn(
+                              'flex items-center space-x-3 rounded-lg border p-4 cursor-pointer transition-colors',
+                              selectedCourierId === courier.courier_company_id
+                                ? 'border-primary bg-primary/5'
+                                : 'border-muted hover:border-primary/50'
+                            )}
+                          >
+                            <RadioGroupItem
+                              value={courier.courier_company_id.toString()}
+                              id={`courier-${courier.courier_company_id}`}
+                            />
+                            <Label
+                              htmlFor={`courier-${courier.courier_company_id}`}
+                              className="flex-1 cursor-pointer"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium">{courier.courier_name}</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Estimated delivery: {courier.etd}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-semibold">₹{courier.rate.toLocaleString()}</p>
+                                  {courier.estimated_delivery_days && (
+                                    <p className="text-xs text-muted-foreground">
+                                      {courier.estimated_delivery_days} days
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </ScrollArea>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No shipping options available for this postal code.
+                    </p>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
