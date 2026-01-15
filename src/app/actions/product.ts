@@ -258,13 +258,13 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
           slug,
           price: new Decimal(price),
           categoryId,
-          mainImageUrl: mainImage?.url,
-          mainImagePublicId: mainImage?.publicId,
-          mainImageAlt: mainImage?.altText,
+          mainImageUrl: mainImage?.url ?? null,
+          mainImagePublicId: mainImage?.publicId ?? null,
+          mainImageAlt: mainImage?.altText ?? null,
           additionalImages:
             additionalImages && additionalImages.length > 0
               ? JSON.stringify(additionalImages)
-              : undefined,
+              : null,
         },
         include: {
           category: true,

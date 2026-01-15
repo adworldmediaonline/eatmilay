@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, X, Loader2, GripVertical, Edit3 } from 'lucide-react';
+import { Upload, X, Loader2, GripVertical, Edit3, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import {
@@ -42,6 +42,7 @@ interface ImageUploadProps {
   variant: 'single' | 'multiple';
   value?: ImageData | ImageData[];
   onChange: (value: ImageData | ImageData[] | undefined) => void;
+  onAfterDelete?: () => void; // Callback after successful deletion
   maxFileSize?: number;
   limit?: number;
   className?: string;
@@ -58,12 +59,16 @@ function SortableImageItem({
   image,
   onDelete,
   onUpdateAlt,
+  onReplace,
   disabled,
+  showReplace = false,
 }: {
   image: ImageData;
   onDelete: () => void;
   onUpdateAlt: (altText: string) => void;
+  onReplace?: () => void;
   disabled?: boolean;
+  showReplace?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [altText, setAltText] = useState(image.altText || '');
@@ -139,6 +144,23 @@ function SortableImageItem({
         </Button>
       </div>
 
+      {/* Replace Button (for single variant) */}
+      {showReplace && onReplace && (
+        <div className="p-3 border-t bg-background">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={onReplace}
+            disabled={disabled}
+          >
+            <ImageIcon className="h-4 w-4 mr-2" />
+            Replace Image
+          </Button>
+        </div>
+      )}
+
       {/* Alt Text Editor */}
       {isEditing && (
         <div className="p-3 border-t bg-background">
@@ -190,6 +212,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
       variant,
       value,
       onChange,
+      onAfterDelete,
       maxFileSize = 5 * 1024 * 1024, // 5MB
       limit = 10,
       className,
@@ -218,7 +241,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
 
     const canUploadMore =
       variant === 'single'
-        ? currentImages.length === 0
+        ? currentImages.length === 0 // Only show upload area when no image exists
         : currentImages.length < limit;
 
     const onDrop = useCallback(
@@ -292,15 +315,21 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
       [variant, currentImages, limit, onChange, disabled, folder]
     );
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
       onDrop,
       accept: {
         'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
       },
       maxSize: maxFileSize,
-      disabled: disabled || !canUploadMore,
+      disabled: disabled,
       multiple: variant === 'multiple',
     });
+
+    const handleReplace = useCallback(() => {
+      if (!disabled && open) {
+        open();
+      }
+    }, [open, disabled]);
 
     const handleDelete = async (imageToDelete: ImageData) => {
       if (disabled) return;
@@ -432,6 +461,8 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
                 onUpdateAlt={altText =>
                   handleUpdateAlt(currentImages[0].publicId, altText)
                 }
+                onReplace={handleReplace}
+                showReplace={true}
                 disabled={disabled}
               />
             ) : (

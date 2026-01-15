@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -72,6 +72,24 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
     ? slugify(watchedName, { lower: true, strict: true })
     : '';
   const hasNameChanged = watchedName !== product.name;
+
+  // Handle image deletion - update database and refresh
+  const handleImageDelete = useCallback(async () => {
+    try {
+      // Get current form values
+      const formData = form.getValues();
+
+      // Update product with current form data (including deleted image)
+      const result = await updateProduct(formData);
+
+      if (result.success) {
+        // Refresh the page to refetch data from server
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Error updating product after image deletion:', error);
+    }
+  }, [form, router]);
 
   async function onSubmit(data: FormData) {
     setIsSubmitting(true);
@@ -419,6 +437,7 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
                   variant="single"
                   value={field.value}
                   onChange={field.onChange}
+                  onAfterDelete={handleImageDelete}
                   maxFileSize={5 * 1024 * 1024} // 5MB
                   disabled={isSubmitting}
                 />
