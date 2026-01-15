@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import slugify from 'slugify';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Prisma } from '@prisma/client';
 import { serializeProduct } from '@/lib/serializers';
 import {
   createProductSchema,
@@ -264,7 +265,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
           additionalImages:
             additionalImages && additionalImages.length > 0
               ? JSON.stringify(additionalImages)
-              : null,
+              : Prisma.JsonNull,
         },
         include: {
           category: true,
