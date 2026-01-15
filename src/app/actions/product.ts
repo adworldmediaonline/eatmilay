@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import slugify from 'slugify';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Prisma } from '@prisma/client';
 import { serializeProduct } from '@/lib/serializers';
 import {
   createProductSchema,
@@ -258,13 +259,13 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
           slug,
           price: new Decimal(price),
           categoryId,
-          mainImageUrl: mainImage?.url,
-          mainImagePublicId: mainImage?.publicId,
-          mainImageAlt: mainImage?.altText,
+          mainImageUrl: mainImage?.url ?? null,
+          mainImagePublicId: mainImage?.publicId ?? null,
+          mainImageAlt: mainImage?.altText ?? null,
           additionalImages:
             additionalImages && additionalImages.length > 0
               ? JSON.stringify(additionalImages)
-              : undefined,
+              : Prisma.JsonNull,
         },
         include: {
           category: true,

@@ -468,7 +468,7 @@ export default function ProductCard({
       className={`relative bg-white rounded-lg overflow-hidden shadow-sm font-sans flex flex-col h-full border border-gray-200 hover:shadow-md transition-shadow ${className}`}
     >
       {/* Image Container - Light beige/brown background matching reference */}
-      <div className={`relative w-full overflow-hidden bg-[#f5e6d3] flex-shrink-0`} style={{ aspectRatio: '757 / 1200' }}>
+      <div className={`relative w-full overflow-hidden bg-[#f5e6d3] flex-shrink-0 aspect-square`}>
         <Link href={`/products/${product.slug}`} className="block h-full w-full absolute inset-0 flex items-center justify-center">
           <Image
             src={displayImage}
