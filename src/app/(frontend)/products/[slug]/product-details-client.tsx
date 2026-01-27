@@ -77,10 +77,16 @@ export default function ProductDetailsClient({
   useEffect(() => {
     if (selectedBundle) {
       setDisplayPrice(selectedBundle.sellingPrice);
+      // Set quantity to 1 (representing 1 pack) when bundle is selected
+      // The bundle quantity itself represents units per pack
+      setQuantity(1);
     } else if (selectedVariant) {
       setDisplayPrice(selectedVariant.price);
+      // Reset to 1 when bundle is deselected
+      setQuantity(1);
     } else {
       setDisplayPrice(product.price);
+      setQuantity(1);
     }
   }, [selectedBundle, selectedVariant, product.price]);
 
@@ -91,11 +97,40 @@ export default function ProductDetailsClient({
       : product.name;
     const bundleLabel = selectedBundle ? ` (${selectedBundle.label})` : '';
     
+    // For bundles: 
+    // - Quantity selector represents "number of packs" (1, 2, 3...)
+    // - Bundle selling price is the final price per pack (e.g., 945 for Pack of 2)
+    // - Cart quantity should show total units: bundle.quantity × number of packs
+    // - But cart price calculation: bundle selling price × number of packs
+    // 
+    // We need to store both: the price per pack and number of packs
+    // Since cart multiplies price × quantity, we need to adjust:
+    // - If we pass quantity = total units (2), price needs to be per unit (945/2 = 472.5)
+    // - OR we pass quantity = number of packs (1), price = bundle price (945)
+    //
+    // Actually, the cart calculates: price × quantity
+    // For "Pack of 2" at 945 with 1 pack:
+    // - Option 1: price = 945, quantity = 1 → total = 945 ✓ (but cart shows qty 1, not 2)
+    // - Option 2: price = 472.5, quantity = 2 → total = 945 ✓ (cart shows qty 2 ✓)
+    //
+    // User wants cart to show quantity = bundle quantity, so we need Option 2
+    // But we need to calculate price per unit: bundle selling price / bundle quantity
+    
+    let cartPrice = finalPrice;
+    let cartQuantity = quantity;
+    
+    if (selectedBundle) {
+      // Calculate price per unit: bundle selling price / bundle quantity
+      cartPrice = selectedBundle.sellingPrice / selectedBundle.quantity;
+      // Cart quantity = total units (bundle quantity × number of packs)
+      cartQuantity = selectedBundle.quantity * quantity;
+    }
+    
     const cartProduct = {
       id: product.id,
       name: productName + bundleLabel,
       slug: product.slug,
-      price: finalPrice,
+      price: cartPrice,
       excerpt: product.excerpt || undefined,
       mainImage: product.mainImage,
       category: product.category,
@@ -103,8 +138,11 @@ export default function ProductDetailsClient({
       variantId: selectedVariant?.id,
     };
 
-    addItem(cartProduct, quantity);
-    toast.success(`${productName}${bundleLabel} added to cart!`);
+    addItem(cartProduct, cartQuantity);
+    const quantityText = selectedBundle 
+      ? `${cartQuantity} ${cartQuantity === 1 ? 'unit' : 'units'} (${quantity} ${quantity === 1 ? 'pack' : 'packs'})`
+      : `${quantity} ${quantity === 1 ? 'item' : 'items'}`;
+    toast.success(`${productName}${bundleLabel} - ${quantityText} added to cart!`);
   };
 
   const handleBuyNow = () => {
@@ -418,6 +456,8 @@ export default function ProductDetailsClient({
                   selectedBundleId={selectedBundle?.id}
                   onBundleSelect={(bundle) => {
                     setSelectedBundle(bundle);
+                    // Reset quantity to 1 when bundle is selected (quantity represents number of packs)
+                    setQuantity(1);
                   }}
                 />
               </div>
@@ -440,9 +480,16 @@ export default function ProductDetailsClient({
             {/* Quantity & Add to Cart - Mobile optimized */}
             <div className="space-y-3 lg:space-y-4" id="add-to-cart-section">
               <div className="space-y-2">
-                <span className="font-medium text-gray-700 text-sm lg:text-base">
-                  Quantity:
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700 text-sm lg:text-base">
+                    {selectedBundle ? 'Number of Packs:' : 'Quantity:'}
+                  </span>
+                  {selectedBundle && (
+                    <span className="text-xs text-gray-500">
+                      {selectedBundle.quantity} {selectedBundle.quantity === 1 ? 'unit' : 'units'} per pack
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-1.5 w-fit mx-auto lg:mx-0">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -455,6 +502,11 @@ export default function ProductDetailsClient({
                     <span className="text-xl lg:text-2xl font-bold text-primary">
                       {quantity}
                     </span>
+                    {selectedBundle && (
+                      <div className="text-[10px] text-gray-500 mt-0.5">
+                        ({quantity * selectedBundle.quantity} {quantity * selectedBundle.quantity === 1 ? 'unit' : 'units'} total)
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
