@@ -137,12 +137,12 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
     setIsHydrated(true);
   }, []);
 
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
-    updateQuantity(productId, quantity);
+  const handleUpdateQuantity = (productId: string, quantity: number, variantId?: string, bundleId?: string) => {
+    updateQuantity(productId, quantity, variantId, bundleId);
   };
 
-  const handleRemoveItem = (productId: string) => {
-    removeItem(productId);
+  const handleRemoveItem = (productId: string, variantId?: string, bundleId?: string) => {
+    removeItem(productId, variantId, bundleId);
   };
 
   const handleClearCart = () => {
@@ -220,12 +220,12 @@ export function CartDropdown({ className, isScrolled }: { className?: string; is
                 <div className="px-4 py-3 space-y-2">
                   {items.map(item => (
                     <CartItemComponent
-                      key={item.product.id}
+                      key={`${item.product.id}-${item.product.variantId || 'no-variant'}-${item.product.bundleId || 'no-bundle'}`}
                       item={item}
                       onUpdateQuantity={quantity =>
-                        handleUpdateQuantity(item.product.id, quantity)
+                        handleUpdateQuantity(item.product.id, quantity, item.product.variantId, item.product.bundleId)
                       }
-                      onRemove={() => handleRemoveItem(item.product.id)}
+                      onRemove={() => handleRemoveItem(item.product.id, item.product.variantId, item.product.bundleId)}
                     />
                   ))}
                 </div>

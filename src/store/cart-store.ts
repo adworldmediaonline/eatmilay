@@ -40,25 +40,31 @@ export const useCartStore = create<CartStore>()(
           });
         },
 
-        removeItem: (productId: string) => {
+        removeItem: (productId: string, variantId?: string, bundleId?: string) => {
           set(state => {
             state.error = null;
             state.items = state.items.filter(
-              item => item.product.id !== productId
+              item => 
+                !(item.product.id === productId &&
+                  item.product.variantId === variantId &&
+                  item.product.bundleId === bundleId)
             );
           });
         },
 
-        updateQuantity: (productId: string, quantity: number) => {
+        updateQuantity: (productId: string, quantity: number, variantId?: string, bundleId?: string) => {
           if (quantity <= 0) {
-            get().removeItem(productId);
+            get().removeItem(productId, variantId, bundleId);
             return;
           }
 
           set(state => {
             state.error = null;
             const itemIndex = state.items.findIndex(
-              item => item.product.id === productId
+              item => 
+                item.product.id === productId &&
+                item.product.variantId === variantId &&
+                item.product.bundleId === bundleId
             );
 
             if (itemIndex >= 0) {
@@ -75,8 +81,12 @@ export const useCartStore = create<CartStore>()(
         },
 
         // Utility functions
-        getItem: (productId: string) => {
-          return get().items.find(item => item.product.id === productId);
+        getItem: (productId: string, variantId?: string, bundleId?: string) => {
+          return get().items.find(item => 
+            item.product.id === productId &&
+            item.product.variantId === variantId &&
+            item.product.bundleId === bundleId
+          );
         },
 
         getItemCount: () => {
@@ -90,8 +100,12 @@ export const useCartStore = create<CartStore>()(
           );
         },
 
-        isInCart: (productId: string) => {
-          return get().items.some(item => item.product.id === productId);
+        isInCart: (productId: string, variantId?: string, bundleId?: string) => {
+          return get().items.some(item => 
+            item.product.id === productId &&
+            item.product.variantId === variantId &&
+            item.product.bundleId === bundleId
+          );
         },
 
         // Loading states

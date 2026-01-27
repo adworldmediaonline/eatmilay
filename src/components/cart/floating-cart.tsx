@@ -81,9 +81,12 @@ export function FloatingCart() {
             {/* Horizontal Scrollable Items with Overlap */}
             <div className="flex-1 overflow-hidden">
               <div className="flex overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent pl-2 py-1">
-                {items.map((item, index) => (
+                {items.map((item, index) => {
+                  // Create unique key that includes product, variant, and bundle IDs
+                  const uniqueKey = `${item.product.id}-${item.product.variantId || 'no-variant'}-${item.product.bundleId || 'no-bundle'}`;
+                  return (
                   <div
-                    key={item.product.id}
+                    key={uniqueKey}
                     className="relative"
                     style={{
                       marginLeft: index > 0 ? '-8px' : '0',
@@ -122,7 +125,8 @@ export function FloatingCart() {
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
