@@ -397,6 +397,10 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
     revalidatePath(`/dashboard/admin/products/${id}/edit`);
     revalidatePath('/dashboard/admin/categories');
 
+    if (!updatedProduct) {
+      throw new Error('Failed to update product');
+    }
+
     return {
       success: true,
       data: serializeProduct(updatedProduct),

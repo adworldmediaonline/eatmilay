@@ -22,8 +22,8 @@ export interface VariantInput {
   name: string;
   price: number;
   sku?: string | null;
-  active: boolean;
-  bundles: BundleInput[];
+  active?: boolean;
+  bundles?: BundleInput[];
 }
 
 export interface BundleInput {
@@ -32,9 +32,11 @@ export interface BundleInput {
   label: string;
   quantity: number;
   sellingPrice: number;
-  badge: BundleBadge;
-  isDefault: boolean;
-  active: boolean;
+  badge?: BundleBadge;
+  isDefault?: boolean;
+  active?: boolean;
+  originalPrice?: number;
+  savingsAmount?: number;
 }
 
 interface BundleConfigurationProps {
@@ -59,7 +61,7 @@ export function BundleConfiguration({
         sku: null,
         active: true,
         bundles: [],
-      },
+      } as VariantInput,
     ]);
   };
 
@@ -76,7 +78,7 @@ export function BundleConfiguration({
   const handleAddBundle = (variantIndex: number) => {
     const updated = [...variants];
     updated[variantIndex].bundles = [
-      ...updated[variantIndex].bundles,
+      ...(updated[variantIndex].bundles || []),
       {
         label: '',
         quantity: 1,
@@ -84,7 +86,7 @@ export function BundleConfiguration({
         badge: BundleBadge.NONE,
         isDefault: false,
         active: true,
-      },
+      } as BundleInput,
     ];
     onVariantsChange(updated);
   };
@@ -97,7 +99,7 @@ export function BundleConfiguration({
   ) => {
     const updated = [...variants];
     const variant = updated[variantIndex];
-    const bundle = variant.bundles[bundleIndex];
+    const bundle = (variant.bundles || [])[bundleIndex];
     
     // Calculate original price and savings when quantity or selling price changes
     if (field === 'quantity' || field === 'sellingPrice') {
@@ -106,6 +108,9 @@ export function BundleConfiguration({
       const originalPrice = variant.price * quantity;
       const savingsAmount = originalPrice - sellingPrice;
       
+      if (!updated[variantIndex].bundles) {
+        updated[variantIndex].bundles = [];
+      }
       updated[variantIndex].bundles[bundleIndex] = {
         ...bundle,
         [field]: value,
@@ -116,13 +121,16 @@ export function BundleConfiguration({
       // Handle isDefault - only one bundle can be default per variant
       if (field === 'isDefault' && value === true) {
         // Unset other defaults in this variant
-        variant.bundles.forEach((b, i) => {
+        (variant.bundles || []).forEach((b, i) => {
           if (i !== bundleIndex) {
             b.isDefault = false;
           }
         });
       }
       
+      if (!updated[variantIndex].bundles) {
+        updated[variantIndex].bundles = [];
+      }
       updated[variantIndex].bundles[bundleIndex] = {
         ...bundle,
         [field]: value,
@@ -134,7 +142,7 @@ export function BundleConfiguration({
 
   const handleDeleteBundle = (variantIndex: number, bundleIndex: number) => {
     const updated = [...variants];
-    updated[variantIndex].bundles = updated[variantIndex].bundles.filter(
+    updated[variantIndex].bundles = (updated[variantIndex].bundles || []).filter(
       (_, i) => i !== bundleIndex
     );
     onVariantsChange(updated);
@@ -144,7 +152,7 @@ export function BundleConfiguration({
   useEffect(() => {
     const updated = variants.map((variant) => ({
       ...variant,
-      bundles: variant.bundles.map((bundle) => {
+      bundles: (variant.bundles || []).map((bundle) => {
         const originalPrice = variant.price * bundle.quantity;
         const savingsAmount = originalPrice - bundle.sellingPrice;
         return {
@@ -213,7 +221,7 @@ export function BundleConfiguration({
                     </Label>
                     <Switch
                       id={`variant-active-${variantIndex}`}
-                      checked={variant.active}
+                      checked={variant.active ?? true}
                       onCheckedChange={(checked) =>
                         handleVariantChange(variantIndex, 'active', checked)
                       }
@@ -293,7 +301,7 @@ export function BundleConfiguration({
                     </Button>
                   </div>
 
-                  {variant.bundles.length === 0 ? (
+                  {(!variant.bundles || variant.bundles.length === 0) ? (
                     <p className="text-sm text-muted-foreground py-4 text-center">
                       No bundles configured for this variant
                     </p>
@@ -317,7 +325,7 @@ export function BundleConfiguration({
                                   </Label>
                                   <Switch
                                     id={`bundle-active-${variantIndex}-${bundleIndex}`}
-                                    checked={bundle.active}
+                                    checked={bundle.active ?? true}
                                     onCheckedChange={(checked) =>
                                       handleBundleChange(
                                         variantIndex,
@@ -417,7 +425,7 @@ export function BundleConfiguration({
                                     Badge
                                   </Label>
                                   <Select
-                                    value={bundle.badge}
+                                    value={bundle.badge || BundleBadge.NONE}
                                     onValueChange={(value) =>
                                       handleBundleChange(
                                         variantIndex,
@@ -467,7 +475,7 @@ export function BundleConfiguration({
                                   <input
                                     type="radio"
                                     id={`bundle-default-${variantIndex}-${bundleIndex}`}
-                                    checked={bundle.isDefault}
+                                    checked={bundle.isDefault ?? false}
                                     onChange={(e) =>
                                       handleBundleChange(
                                         variantIndex,
@@ -485,9 +493,9 @@ export function BundleConfiguration({
                                     Set as Default Bundle
                                   </Label>
                                 </div>
-                                {bundle.badge !== BundleBadge.NONE && (
+                                {(bundle.badge || BundleBadge.NONE) !== BundleBadge.NONE && (
                                   <Badge variant="secondary">
-                                    {bundle.badge === BundleBadge.BEST_SELLER
+                                    {(bundle.badge || BundleBadge.NONE) === BundleBadge.BEST_SELLER
                                       ? 'Best Seller'
                                       : 'Super Saver'}
                                   </Badge>

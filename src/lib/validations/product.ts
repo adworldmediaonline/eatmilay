@@ -33,7 +33,7 @@ const productVariantSchema = z.object({
   name: z.string().min(1, 'Variant name is required').max(100, 'Variant name is too long'),
   price: z.number().min(0.01, 'Price must be greater than 0').max(999999.99, 'Price is too high'),
   sku: z.string().max(100).optional().nullable(),
-  active: z.boolean().default(true),
+  active: z.boolean().optional().default(true),
 });
 
 // Product Bundle schema
@@ -44,8 +44,8 @@ const productBundleSchema = z.object({
   quantity: z.number().int().min(1, 'Quantity must be at least 1'),
   sellingPrice: z.number().min(0.01, 'Selling price must be greater than 0').max(999999.99, 'Price is too high'),
   badge: z.nativeEnum(BundleBadge).optional().default(BundleBadge.NONE),
-  isDefault: z.boolean().default(false),
-  active: z.boolean().default(true),
+  isDefault: z.boolean().optional().default(false),
+  active: z.boolean().optional().default(true),
 }).refine(
   (data) => {
     // Selling price must be less than original price (will be validated in action)
@@ -101,7 +101,7 @@ export const createProductSchema = z.object({
   enableBundlePricing: z.boolean().default(false),
   variants: z.array(productVariantSchema.extend({
     bundles: z.array(productBundleSchema).optional().default([]),
-  })).optional().default([]),
+  })).default([]),
 });
 
 export const updateProductSchema = z.object({
@@ -152,7 +152,7 @@ export const updateProductSchema = z.object({
   enableBundlePricing: z.boolean().default(false),
   variants: z.array(productVariantSchema.extend({
     bundles: z.array(productBundleSchema).optional().default([]),
-  })).optional().default([]),
+  })).default([]),
 });
 
 // Helper type for bundle data with calculated fields

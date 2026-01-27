@@ -43,7 +43,7 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const form = useForm<FormData>({
+  const form = useForm({
     resolver: zodResolver(createProductSchema),
     mode: 'onChange', // Trigger validation on change
     defaultValues: {

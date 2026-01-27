@@ -209,6 +209,7 @@ export function serializeProducts<
     mainImagePublicId?: string | null;
     mainImageAlt?: string | null;
     additionalImages?: unknown;
+    variants?: any[];
   },
 >(
   products: T[]
@@ -220,10 +221,12 @@ export function serializeProducts<
     | 'mainImagePublicId'
     | 'mainImageAlt'
     | 'additionalImages'
+    | 'variants'
   > & {
     price: number;
     mainImage?: ImageData;
     additionalImages?: ImageData[];
+    variants?: SerializedVariant[];
   }
 > {
   return products.map(serializeProduct);

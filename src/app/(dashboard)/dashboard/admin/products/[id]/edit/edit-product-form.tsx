@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { updateProduct } from '@/app/actions/product';
-import { updateProductSchema } from '@/lib/validations/product';
+import { updateProductSchema, BundleBadge } from '@/lib/validations/product';
 import { toast } from 'sonner';
 import slugify from 'slugify';
 import type { SerializedProductWithCategory } from '@/server/queries/product';
@@ -44,7 +44,7 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const form = useForm<FormData>({
+  const form = useForm({
     resolver: zodResolver(updateProductSchema),
     mode: 'onChange', // Trigger validation on change
     defaultValues: {
@@ -65,13 +65,13 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
       metaKeywords: product.metaKeywords || '',
       mainImage: product.mainImage,
       additionalImages: product.additionalImages,
-      enableBundlePricing: (product as any).enableBundlePricing || false,
+      enableBundlePricing: Boolean((product as any).enableBundlePricing ?? false),
       variants: (product as any).variants?.map((variant: any) => ({
         id: variant.id,
         name: variant.name,
         price: variant.price,
         sku: variant.sku,
-        active: variant.active,
+        active: Boolean(variant.active ?? true),
         bundles: variant.bundles?.map((bundle: any) => ({
           id: bundle.id,
           variantId: bundle.variantId,
@@ -79,11 +79,11 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
           quantity: bundle.quantity,
           sellingPrice: bundle.sellingPrice,
           badge: bundle.badge || 'NONE',
-          isDefault: bundle.isDefault || false,
-          active: bundle.active,
+          isDefault: Boolean(bundle.isDefault ?? false),
+          active: Boolean(bundle.active ?? true),
         })) || [],
       })) || [],
-    },
+    } as FormData,
   });
 
   const watchedName = form.watch('name');
@@ -98,8 +98,24 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
       // Get current form values
       const formData = form.getValues();
 
+      // Ensure enableBundlePricing is always a boolean and normalize variants
+      const submitData = {
+        ...formData,
+        enableBundlePricing: Boolean(formData.enableBundlePricing ?? false),
+        variants: (formData.variants ?? []).map(variant => ({
+          ...variant,
+          active: Boolean(variant.active ?? true),
+          bundles: (variant.bundles ?? []).map(bundle => ({
+            ...bundle,
+            badge: (bundle.badge as BundleBadge) || BundleBadge.NONE,
+            isDefault: Boolean(bundle.isDefault ?? false),
+            active: Boolean(bundle.active ?? true),
+          })),
+        })),
+      };
+
       // Update product with current form data (including deleted image)
-      const result = await updateProduct(formData);
+      const result = await updateProduct(submitData);
 
       if (result.success) {
         // Refresh the page to refetch data from server
@@ -114,7 +130,22 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
     setIsSubmitting(true);
 
     try {
-      const result = await updateProduct(data);
+      // Ensure enableBundlePricing is always a boolean and normalize variants
+      const submitData = {
+        ...data,
+        enableBundlePricing: Boolean(data.enableBundlePricing ?? false),
+        variants: (data.variants ?? []).map(variant => ({
+          ...variant,
+          active: Boolean(variant.active ?? true),
+          bundles: (variant.bundles ?? []).map(bundle => ({
+            ...bundle,
+            badge: (bundle.badge as BundleBadge) || BundleBadge.NONE,
+            isDefault: Boolean(bundle.isDefault ?? false),
+            active: Boolean(bundle.active ?? true),
+          })),
+        })),
+      };
+      const result = await updateProduct(submitData);
 
       if (result.success) {
         toast.success('Product updated successfully!');

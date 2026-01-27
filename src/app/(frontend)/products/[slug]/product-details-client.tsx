@@ -425,7 +425,7 @@ export default function ProductDetailsClient({
                   <Label className="text-base font-semibold text-gray-900">Select Size/Variant:</Label>
                 </div>
                 <div className="flex flex-wrap gap-2.5">
-                  {variants.map((variant) => {
+                  {variants.map((variant: SerializedVariant) => {
                     const isSelected = selectedVariant?.id === variant.id;
                     return (
                       <button
