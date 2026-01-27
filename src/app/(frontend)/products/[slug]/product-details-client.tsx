@@ -356,16 +356,35 @@ export default function ProductDetailsClient({
               )}
             </div>
 
+            {/* Price Display - Above Variant Selector - Compact Horizontal */}
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-bold text-primary">
+                  ₹{displayPrice.toFixed(2)}
+                </span>
+                {selectedBundle && selectedBundle.originalPrice > selectedBundle.sellingPrice && (
+                  <span className="text-lg sm:text-xl text-gray-400 line-through">
+                    ₹{selectedBundle.originalPrice.toFixed(2)}
+                  </span>
+                )}
+              </div>
+              {selectedBundle && selectedBundle.savingsAmount > 0 && (
+                <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 rounded text-xs sm:text-sm font-semibold text-green-700">
+                  Save ₹{selectedBundle.savingsAmount.toFixed(2)}
+                </div>
+              )}
+              {!selectedBundle && selectedVariant && (
+                <span className="text-sm text-gray-500">
+                  Per {selectedVariant.name.toLowerCase()}
+                </span>
+              )}
+            </div>
+
             {/* Variant Selector */}
             {variants.length > 0 && (
               <div className="space-y-3 pb-2">
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <Label className="text-base font-semibold text-gray-900">Select Size/Variant:</Label>
-                  {selectedVariant && (
-                    <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
-                      Base: ₹{selectedVariant.price.toFixed(2)}
-                    </span>
-                  )}
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {variants.map((variant) => {
@@ -403,36 +422,6 @@ export default function ProductDetailsClient({
                 />
               </div>
             )}
-
-            {/* Price - Mobile optimized */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-5 sm:p-6 border border-gray-200">
-              <div className="flex items-baseline gap-3 mb-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-4xl font-bold text-primary">
-                    ₹{displayPrice.toFixed(2)}
-                  </span>
-                  {selectedBundle && selectedBundle.originalPrice > selectedBundle.sellingPrice && (
-                    <span className="text-xl sm:text-2xl text-gray-400 line-through">
-                      ₹{selectedBundle.originalPrice.toFixed(2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              {selectedBundle && selectedBundle.savingsAmount > 0 && (
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 rounded-lg">
-                    <span className="text-sm sm:text-base font-semibold text-green-700">
-                      💰 You save ₹{selectedBundle.savingsAmount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              )}
-              {!selectedBundle && selectedVariant && (
-                <p className="text-sm text-gray-600 mt-1">
-                  Per {selectedVariant.name.toLowerCase()}
-                </p>
-              )}
-            </div>
 
             {/* Key Benefits / Why You'll Love It - Mobile optimized */}
             {product.whyLoveIt && (
