@@ -65,7 +65,9 @@ export default function ProductDetailsClient({
     variants.length > 0 ? variants[0] : null
   );
   const [selectedBundle, setSelectedBundle] = useState<SerializedBundle | null>(null);
-  const [displayPrice, setDisplayPrice] = useState(product.price);
+  const [displayPrice, setDisplayPrice] = useState(
+    variants.length > 0 && variants[0] ? variants[0].price : product.price
+  );
 
   // Cart functionality
   const addItem = useAddItem();
@@ -356,55 +358,78 @@ export default function ProductDetailsClient({
 
             {/* Variant Selector */}
             {variants.length > 0 && (
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Select Variant:</Label>
-                <div className="flex flex-wrap gap-2">
-                  {variants.map((variant) => (
-                    <button
-                      key={variant.id}
-                      onClick={() => {
-                        setSelectedVariant(variant);
-                        setSelectedBundle(null);
-                      }}
-                      className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                        selectedVariant?.id === variant.id
-                          ? 'border-primary bg-primary/10 text-primary font-semibold'
-                          : 'border-gray-200 hover:border-primary/50'
-                      }`}
-                    >
-                      {variant.name}
-                    </button>
-                  ))}
+              <div className="space-y-3 pb-2">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <Label className="text-base font-semibold text-gray-900">Select Size/Variant:</Label>
+                  {selectedVariant && (
+                    <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+                      Base: ₹{selectedVariant.price.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2.5">
+                  {variants.map((variant) => {
+                    const isSelected = selectedVariant?.id === variant.id;
+                    return (
+                      <button
+                        key={variant.id}
+                        onClick={() => {
+                          setSelectedVariant(variant);
+                          setSelectedBundle(null);
+                        }}
+                        className={`px-5 py-3 rounded-xl border-2 transition-all duration-200 font-medium transform ${
+                          isSelected
+                            ? 'border-primary bg-primary text-white shadow-md shadow-primary/30 scale-105'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-primary/50 hover:bg-gray-50 hover:shadow-sm hover:scale-102'
+                        }`}
+                      >
+                        {variant.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
             {/* Bundle & Save */}
             {selectedVariant && (product as any).enableBundlePricing && (
-              <BundleSelector
-                variant={selectedVariant}
-                selectedBundleId={selectedBundle?.id}
-                onBundleSelect={(bundle) => {
-                  setSelectedBundle(bundle);
-                }}
-              />
+              <div className="pt-2">
+                <BundleSelector
+                  variant={selectedVariant}
+                  selectedBundleId={selectedBundle?.id}
+                  onBundleSelect={(bundle) => {
+                    setSelectedBundle(bundle);
+                  }}
+                />
+              </div>
             )}
 
             {/* Price - Mobile optimized */}
-            <div className="bg-gray-50 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl lg:text-3xl font-bold text-primary">
-                  ₹{displayPrice.toFixed(2)}
-                </span>
-                {selectedBundle && selectedBundle.originalPrice > selectedBundle.sellingPrice && (
-                  <span className="text-lg text-gray-500 line-through">
-                    ₹{selectedBundle.originalPrice.toFixed(2)}
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-5 sm:p-6 border border-gray-200">
+              <div className="flex items-baseline gap-3 mb-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl sm:text-4xl font-bold text-primary">
+                    ₹{displayPrice.toFixed(2)}
                   </span>
-                )}
+                  {selectedBundle && selectedBundle.originalPrice > selectedBundle.sellingPrice && (
+                    <span className="text-xl sm:text-2xl text-gray-400 line-through">
+                      ₹{selectedBundle.originalPrice.toFixed(2)}
+                    </span>
+                  )}
+                </div>
               </div>
               {selectedBundle && selectedBundle.savingsAmount > 0 && (
-                <p className="text-sm font-medium text-green-600">
-                  You save ₹{selectedBundle.savingsAmount.toFixed(2)}
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 rounded-lg">
+                    <span className="text-sm sm:text-base font-semibold text-green-700">
+                      💰 You save ₹{selectedBundle.savingsAmount.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {!selectedBundle && selectedVariant && (
+                <p className="text-sm text-gray-600 mt-1">
+                  Per {selectedVariant.name.toLowerCase()}
                 </p>
               )}
             </div>
