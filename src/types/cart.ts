@@ -15,6 +15,9 @@ export interface CartProduct {
     name: string;
     slug: string;
   };
+  // Bundle & Save support
+  bundleId?: string;
+  variantId?: string;
 }
 
 export interface CartItem {

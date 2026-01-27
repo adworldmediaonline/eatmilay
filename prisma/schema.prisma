@@ -118,10 +118,14 @@ model Product {
   metaDescription String? @db.Text // Max 160 chars
   metaKeywords    String? @db.Text // Comma-separated keywords
 
+  // Bundle & Save Feature
+  enableBundlePricing Boolean @default(false)
+
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   orderItems OrderItem[]
   reviews    Review[]
+  variants   ProductVariant[]
 
   // Optimized indexes for search
   @@index([name])
@@ -130,6 +134,55 @@ model Product {
   @@index([categoryId])
   @@index([createdAt])
   @@map("product")
+}
+
+// Product Variants (e.g., weight-based: 100g, 200g, 500g, 1kg)
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String   // e.g., "500 gm", "1 kg"
+  price     Decimal  @db.Decimal(10, 2) // Base price for this variant
+  sku       String?  @unique // Optional SKU for variant
+  active    Boolean  @default(true)
+  
+  bundles   ProductBundle[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([active])
+  @@map("product_variant")
+}
+
+// Bundle Pricing Options
+model ProductBundle {
+  id                String   @id @default(cuid())
+  variantId         String
+  variant           ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  label             String   // e.g., "Buy 1", "Pack of 2", "Pack of 5"
+  quantity          Int      // Number of units in bundle
+  sellingPrice      Decimal  @db.Decimal(10, 2) // Final price shown to customer
+  originalPrice     Decimal  @db.Decimal(10, 2) // Quantity × base variant price (auto-calculated)
+  savingsAmount     Decimal  @db.Decimal(10, 2) // Original Price − Selling Price (auto-calculated)
+  badge             BundleBadge? // None, Best Seller, Super Saver
+  isDefault         Boolean  @default(false) // One bundle can be default per variant
+  active            Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([variantId])
+  @@index([active])
+  @@index([isDefault])
+  @@map("product_bundle")
+}
+
+enum BundleBadge {
+  NONE
+  BEST_SELLER
+  SUPER_SAVER
 }
 
 // Order Management System

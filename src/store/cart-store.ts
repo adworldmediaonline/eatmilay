@@ -18,8 +18,12 @@ export const useCartStore = create<CartStore>()(
           set(state => {
             state.error = null;
 
+            // Find existing item with same product, variant, and bundle
             const existingItemIndex = state.items.findIndex(
-              item => item.product.id === product.id
+              item => 
+                item.product.id === product.id &&
+                item.product.variantId === product.variantId &&
+                item.product.bundleId === product.bundleId
             );
 
             if (existingItemIndex >= 0) {

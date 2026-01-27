@@ -3,11 +3,14 @@
 import ProductReviews from '@/components/products/product-reviews';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import type { SerializedProductWithCategory } from '@/server/queries/product';
 import type { ReviewData, ReviewAggregates } from '@/types/review';
 import { useAddItem } from '@/store/cart-store';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { BundleSelector } from '@/components/products/bundle-selector';
+import type { SerializedVariant, SerializedBundle } from '@/lib/serializers';
 
 import {
   CheckCircle,
@@ -55,24 +58,51 @@ export default function ProductDetailsClient({
   const [activeTab, setActiveTab] = useState('description');
   const [showStickyCart, setShowStickyCart] = useState(false);
   const [showImageZoom, setShowImageZoom] = useState(false);
+  
+  // Bundle & Save state
+  const variants = (product as any).variants || [];
+  const [selectedVariant, setSelectedVariant] = useState<SerializedVariant | null>(
+    variants.length > 0 ? variants[0] : null
+  );
+  const [selectedBundle, setSelectedBundle] = useState<SerializedBundle | null>(null);
+  const [displayPrice, setDisplayPrice] = useState(product.price);
 
   // Cart functionality
   const addItem = useAddItem();
   const router = useRouter();
+  
+  // Update display price when bundle is selected
+  useEffect(() => {
+    if (selectedBundle) {
+      setDisplayPrice(selectedBundle.sellingPrice);
+    } else if (selectedVariant) {
+      setDisplayPrice(selectedVariant.price);
+    } else {
+      setDisplayPrice(product.price);
+    }
+  }, [selectedBundle, selectedVariant, product.price]);
 
   const handleAddToCart = () => {
+    const finalPrice = selectedBundle ? selectedBundle.sellingPrice : displayPrice;
+    const productName = selectedVariant 
+      ? `${product.name} - ${selectedVariant.name}`
+      : product.name;
+    const bundleLabel = selectedBundle ? ` (${selectedBundle.label})` : '';
+    
     const cartProduct = {
       id: product.id,
-      name: product.name,
+      name: productName + bundleLabel,
       slug: product.slug,
-      price: product.price,
+      price: finalPrice,
       excerpt: product.excerpt || undefined,
       mainImage: product.mainImage,
       category: product.category,
+      bundleId: selectedBundle?.id,
+      variantId: selectedVariant?.id,
     };
 
     addItem(cartProduct, quantity);
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${productName}${bundleLabel} added to cart!`);
   };
 
   const handleBuyNow = () => {
@@ -324,14 +354,59 @@ export default function ProductDetailsClient({
               )}
             </div>
 
+            {/* Variant Selector */}
+            {variants.length > 0 && (
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-700">Select Variant:</Label>
+                <div className="flex flex-wrap gap-2">
+                  {variants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      onClick={() => {
+                        setSelectedVariant(variant);
+                        setSelectedBundle(null);
+                      }}
+                      className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                        selectedVariant?.id === variant.id
+                          ? 'border-primary bg-primary/10 text-primary font-semibold'
+                          : 'border-gray-200 hover:border-primary/50'
+                      }`}
+                    >
+                      {variant.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bundle & Save */}
+            {selectedVariant && (product as any).enableBundlePricing && (
+              <BundleSelector
+                variant={selectedVariant}
+                selectedBundleId={selectedBundle?.id}
+                onBundleSelect={(bundle) => {
+                  setSelectedBundle(bundle);
+                }}
+              />
+            )}
+
             {/* Price - Mobile optimized */}
             <div className="bg-gray-50 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-2xl lg:text-3xl font-bold text-primary">
-                  ₹{product.price}
+                  ₹{displayPrice.toFixed(2)}
                 </span>
+                {selectedBundle && selectedBundle.originalPrice > selectedBundle.sellingPrice && (
+                  <span className="text-lg text-gray-500 line-through">
+                    ₹{selectedBundle.originalPrice.toFixed(2)}
+                  </span>
+                )}
               </div>
-
+              {selectedBundle && selectedBundle.savingsAmount > 0 && (
+                <p className="text-sm font-medium text-green-600">
+                  You save ₹{selectedBundle.savingsAmount.toFixed(2)}
+                </p>
+              )}
             </div>
 
             {/* Key Benefits / Why You'll Love It - Mobile optimized */}

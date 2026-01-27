@@ -32,6 +32,7 @@ import type { SerializedProductWithCategory } from '@/server/queries/product';
 import type { CategoryWithCount } from '@/server/queries/category';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { BundleConfiguration, type VariantInput } from '@/components/admin/bundle-configuration';
 type FormData = z.infer<typeof updateProductSchema>;
 
 interface EditProductFormProps {
@@ -64,6 +65,24 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
       metaKeywords: product.metaKeywords || '',
       mainImage: product.mainImage,
       additionalImages: product.additionalImages,
+      enableBundlePricing: (product as any).enableBundlePricing || false,
+      variants: (product as any).variants?.map((variant: any) => ({
+        id: variant.id,
+        name: variant.name,
+        price: variant.price,
+        sku: variant.sku,
+        active: variant.active,
+        bundles: variant.bundles?.map((bundle: any) => ({
+          id: bundle.id,
+          variantId: bundle.variantId,
+          label: bundle.label,
+          quantity: bundle.quantity,
+          sellingPrice: bundle.sellingPrice,
+          badge: bundle.badge || 'NONE',
+          isDefault: bundle.isDefault || false,
+          active: bundle.active,
+        })) || [],
+      })) || [],
     },
   });
 
@@ -382,6 +401,32 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
               <FormDescription>
                 Enter the price in dollars (e.g., 29.99)
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Bundle & Save Configuration */}
+        <FormField
+          control={form.control}
+          name="enableBundlePricing"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <BundleConfiguration
+                  enableBundlePricing={field.value || false}
+                  variants={form.watch('variants') || []}
+                  onEnableChange={(enabled) => {
+                    field.onChange(enabled);
+                    if (!enabled) {
+                      form.setValue('variants', []);
+                    }
+                  }}
+                  onVariantsChange={(variants) => {
+                    form.setValue('variants', variants as VariantInput[]);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

@@ -31,6 +31,7 @@ import type { CategoryWithCount } from '@/server/queries/category';
 import { createProductSchema } from '@/lib/validations/product';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { BundleConfiguration, type VariantInput } from '@/components/admin/bundle-configuration';
 
 type FormData = z.infer<typeof createProductSchema>;
 
@@ -62,6 +63,8 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
       categoryId: '',
       mainImage: undefined,
       additionalImages: undefined,
+      enableBundlePricing: false,
+      variants: [],
     },
   });
 
@@ -355,6 +358,32 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
               <FormDescription>
                 Enter the price in dollars (e.g., 29.99)
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Bundle & Save Configuration */}
+        <FormField
+          control={form.control}
+          name="enableBundlePricing"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <BundleConfiguration
+                  enableBundlePricing={field.value || false}
+                  variants={form.watch('variants') || []}
+                  onEnableChange={(enabled) => {
+                    field.onChange(enabled);
+                    if (!enabled) {
+                      form.setValue('variants', []);
+                    }
+                  }}
+                  onVariantsChange={(variants) => {
+                    form.setValue('variants', variants as VariantInput[]);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

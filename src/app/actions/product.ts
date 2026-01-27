@@ -35,6 +35,8 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       categoryId,
       mainImage,
       additionalImages,
+      enableBundlePricing,
+      variants,
     } = validatedData;
 
     // Check if category exists
@@ -73,7 +75,7 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       }
     }
 
-    // Create product
+    // Create product with variants and bundles
     const product = await prisma.product.create({
       data: {
         name,
@@ -98,9 +100,49 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
           additionalImages && additionalImages.length > 0
             ? JSON.stringify(additionalImages)
             : undefined,
+        enableBundlePricing: enableBundlePricing || false,
+        variants: variants && variants.length > 0 ? {
+          create: variants.map((variant) => {
+            const variantPrice = new Decimal(variant.price);
+            return {
+              name: variant.name,
+              price: variantPrice,
+              sku: variant.sku || null,
+              active: variant.active !== false,
+              bundles: variant.bundles && variant.bundles.length > 0 ? {
+                create: variant.bundles.map((bundle) => {
+                  const originalPrice = variantPrice.times(bundle.quantity);
+                  const sellingPrice = new Decimal(bundle.sellingPrice);
+                  const savingsAmount = originalPrice.minus(sellingPrice);
+                  
+                  // Validate selling price is less than original
+                  if (sellingPrice.gte(originalPrice)) {
+                    throw new Error(`Bundle "${bundle.label}": Selling price must be less than original price (₹${originalPrice.toString()})`);
+                  }
+                  
+                  return {
+                    label: bundle.label,
+                    quantity: bundle.quantity,
+                    sellingPrice,
+                    originalPrice,
+                    savingsAmount,
+                    badge: bundle.badge || 'NONE',
+                    isDefault: bundle.isDefault || false,
+                    active: bundle.active !== false,
+                  };
+                }),
+              } : undefined,
+            };
+          }),
+        } : undefined,
       },
       include: {
         category: true,
+        variants: {
+          include: {
+            bundles: true,
+          },
+        },
       },
     });
 
@@ -149,6 +191,8 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
       categoryId,
       mainImage,
       additionalImages,
+      enableBundlePricing,
+      variants,
     } = validatedData;
 
     // Check if product exists (with timeout handling)
@@ -241,35 +285,99 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
     // Update product with error handling
     let updatedProduct;
     try {
-      updatedProduct = await prisma.product.update({
-        where: { id },
-        data: {
-          name,
-          sku: sku || null,
-          excerpt,
-          description,
-          tagline,
-          whyLoveIt,
-          whatsInside,
-          howToUse,
-          ingredients,
-          metaTitle,
-          metaDescription,
-          metaKeywords,
-          slug,
-          price: new Decimal(price),
-          categoryId,
-          mainImageUrl: mainImage?.url ?? null,
-          mainImagePublicId: mainImage?.publicId ?? null,
-          mainImageAlt: mainImage?.altText ?? null,
-          additionalImages:
-            additionalImages && additionalImages.length > 0
-              ? JSON.stringify(additionalImages)
-              : Prisma.JsonNull,
-        },
-        include: {
-          category: true,
-        },
+      // Use transaction to handle variants and bundles updates
+      updatedProduct = await prisma.$transaction(async (tx) => {
+        // First, delete all existing variants (cascades to bundles)
+        await tx.productVariant.deleteMany({
+          where: { productId: id },
+        });
+
+        // Update product
+        const product = await tx.product.update({
+          where: { id },
+          data: {
+            name,
+            sku: sku || null,
+            excerpt,
+            description,
+            tagline,
+            whyLoveIt,
+            whatsInside,
+            howToUse,
+            ingredients,
+            metaTitle,
+            metaDescription,
+            metaKeywords,
+            slug,
+            price: new Decimal(price),
+            categoryId,
+            mainImageUrl: mainImage?.url ?? null,
+            mainImagePublicId: mainImage?.publicId ?? null,
+            mainImageAlt: mainImage?.altText ?? null,
+            additionalImages:
+              additionalImages && additionalImages.length > 0
+                ? JSON.stringify(additionalImages)
+                : Prisma.JsonNull,
+            enableBundlePricing: enableBundlePricing || false,
+          },
+        });
+
+        // Create variants and bundles if provided
+        if (variants && variants.length > 0) {
+          for (const variant of variants) {
+            const variantPrice = new Decimal(variant.price);
+            const createdVariant = await tx.productVariant.create({
+              data: {
+                productId: id,
+                name: variant.name,
+                price: variantPrice,
+                sku: variant.sku || null,
+                active: variant.active !== false,
+              },
+            });
+
+            // Create bundles for this variant
+            if (variant.bundles && variant.bundles.length > 0) {
+              for (const bundle of variant.bundles) {
+                const originalPrice = variantPrice.times(bundle.quantity);
+                const sellingPrice = new Decimal(bundle.sellingPrice);
+                const savingsAmount = originalPrice.minus(sellingPrice);
+                
+                // Validate selling price is less than original
+                if (sellingPrice.gte(originalPrice)) {
+                  throw new Error(`Bundle "${bundle.label}": Selling price must be less than original price (₹${originalPrice.toString()})`);
+                }
+                
+                await tx.productBundle.create({
+                  data: {
+                    variantId: createdVariant.id,
+                    label: bundle.label,
+                    quantity: bundle.quantity,
+                    sellingPrice,
+                    originalPrice,
+                    savingsAmount,
+                    badge: bundle.badge || 'NONE',
+                    isDefault: bundle.isDefault || false,
+                    active: bundle.active !== false,
+                  },
+                });
+              }
+            }
+          }
+        }
+
+        // Return product with variants and bundles
+        return await tx.product.findUnique({
+          where: { id },
+          include: {
+            category: true,
+            variants: {
+              include: {
+                bundles: true,
+              },
+            },
+          },
+        });
       });
     } catch (dbError) {
       console.error(
@@ -279,7 +387,9 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
       return {
         success: false,
         error:
-          'Failed to update product due to database connection error. Please try again.',
+          dbError instanceof Error 
+            ? dbError.message 
+            : 'Failed to update product due to database connection error. Please try again.',
       };
     }
 

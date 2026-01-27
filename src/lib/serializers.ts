@@ -9,8 +9,35 @@ export interface ImageData {
 
 // Product serialization utilities
 export type ProductWithCategory = Prisma.ProductGetPayload<{
-  include: { category: true };
+  include: { category: true; variants: { include: { bundles: true } } };
 }>;
+
+export type SerializedVariant = {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  sku?: string | null;
+  active: boolean;
+  bundles: SerializedBundle[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type SerializedBundle = {
+  id: string;
+  variantId: string;
+  label: string;
+  quantity: number;
+  sellingPrice: number;
+  originalPrice: number;
+  savingsAmount: number;
+  badge: string;
+  isDefault: boolean;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type CategoryWithProducts = Prisma.CategoryGetPayload<{
   include: { products: true };
@@ -37,10 +64,12 @@ export type SerializedProductWithCategory = Omit<
   | 'mainImagePublicId'
   | 'mainImageAlt'
   | 'additionalImages'
+  | 'variants'
 > & {
   price: number;
   mainImage?: ImageData;
   additionalImages?: ImageData[];
+  variants?: SerializedVariant[];
 };
 
 export type SerializedCategoryWithProducts = Omit<
@@ -71,6 +100,32 @@ function parseAdditionalImages(
   }
 }
 
+// Helper to serialize variants and bundles
+function serializeVariants(variants: any[] | undefined | null): SerializedVariant[] | undefined {
+  if (!variants || !Array.isArray(variants)) {
+    return undefined;
+  }
+  
+  return variants.map((variant) => ({
+    ...variant,
+    price: typeof variant.price === 'object' && variant.price?.toNumber 
+      ? variant.price.toNumber() 
+      : variant.price,
+    bundles: variant.bundles?.map((bundle: any) => ({
+      ...bundle,
+      sellingPrice: typeof bundle.sellingPrice === 'object' && bundle.sellingPrice?.toNumber
+        ? bundle.sellingPrice.toNumber()
+        : bundle.sellingPrice,
+      originalPrice: typeof bundle.originalPrice === 'object' && bundle.originalPrice?.toNumber
+        ? bundle.originalPrice.toNumber()
+        : bundle.originalPrice,
+      savingsAmount: typeof bundle.savingsAmount === 'object' && bundle.savingsAmount?.toNumber
+        ? bundle.savingsAmount.toNumber()
+        : bundle.savingsAmount,
+    })) || [],
+  }));
+}
+
 // Core serialization function with proper type safety
 export function serializeProduct<
   T extends {
@@ -79,6 +134,7 @@ export function serializeProduct<
     mainImagePublicId?: string | null;
     mainImageAlt?: string | null;
     additionalImages?: unknown;
+    variants?: any[];
   },
 >(
   product: T
@@ -89,10 +145,12 @@ export function serializeProduct<
   | 'mainImagePublicId'
   | 'mainImageAlt'
   | 'additionalImages'
+  | 'variants'
 > & {
   price: number;
   mainImage?: ImageData;
   additionalImages?: ImageData[];
+  variants?: SerializedVariant[];
 } {
   // Process main image
   const mainImage: ImageData | undefined =
@@ -107,6 +165,9 @@ export function serializeProduct<
   // Process additional images
   const additionalImages = parseAdditionalImages(product.additionalImages);
 
+  // Process variants and bundles (handle case where variants might not exist)
+  const variants = product.variants ? serializeVariants(product.variants) : undefined;
+
   // Return serialized product with proper typing
   const {
     price,
@@ -114,6 +175,7 @@ export function serializeProduct<
     mainImagePublicId: _publicId, // eslint-disable-line @typescript-eslint/no-unused-vars
     mainImageAlt: _alt, // eslint-disable-line @typescript-eslint/no-unused-vars
     additionalImages: _images, // eslint-disable-line @typescript-eslint/no-unused-vars
+    variants: _variants, // eslint-disable-line @typescript-eslint/no-unused-vars
     ...rest
   } = product;
 
@@ -122,6 +184,7 @@ export function serializeProduct<
     price: price.toNumber(),
     mainImage,
     additionalImages,
+    variants,
   } as Omit<
     T,
     | 'price'
@@ -129,10 +192,12 @@ export function serializeProduct<
     | 'mainImagePublicId'
     | 'mainImageAlt'
     | 'additionalImages'
+    | 'variants'
   > & {
     price: number;
     mainImage?: ImageData;
     additionalImages?: ImageData[];
+    variants?: SerializedVariant[];
   };
 }
 
