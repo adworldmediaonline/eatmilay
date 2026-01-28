@@ -61,13 +61,24 @@ export default function ProductDetailsClient({
   
   // Bundle & Save state
   const variants = (product as any).variants || [];
-  const [selectedVariant, setSelectedVariant] = useState<SerializedVariant | null>(
-    variants.length > 0 ? variants[0] : null
-  );
-  const [selectedBundle, setSelectedBundle] = useState<SerializedBundle | null>(null);
-  const [displayPrice, setDisplayPrice] = useState(
-    variants.length > 0 && variants[0] ? variants[0].price : product.price
-  );
+  const enableBundlePricing = !!(product as any).enableBundlePricing;
+
+  // Helper: get default bundle for a variant (isDefault or first)
+  const getDefaultBundle = (v: SerializedVariant | null): SerializedBundle | null => {
+    if (!v?.bundles?.length) return null;
+    return v.bundles.find((b) => b.isDefault) || v.bundles[0] || null;
+  };
+
+  const firstVariant = variants.length > 0 ? variants[0] : null;
+  const initialDefaultBundle = enableBundlePricing ? getDefaultBundle(firstVariant) : null;
+
+  const [selectedVariant, setSelectedVariant] = useState<SerializedVariant | null>(firstVariant);
+  const [selectedBundle, setSelectedBundle] = useState<SerializedBundle | null>(initialDefaultBundle);
+  const [displayPrice, setDisplayPrice] = useState(() => {
+    if (initialDefaultBundle) return initialDefaultBundle.sellingPrice;
+    if (firstVariant) return firstVariant.price;
+    return product.price;
+  });
 
   // Cart functionality
   const addItem = useAddItem();
@@ -432,7 +443,9 @@ export default function ProductDetailsClient({
                         key={variant.id}
                         onClick={() => {
                           setSelectedVariant(variant);
-                          setSelectedBundle(null);
+                          const def = enableBundlePricing ? getDefaultBundle(variant) : null;
+                          setSelectedBundle(def);
+                          if (def) setQuantity(1);
                         }}
                         className={`px-5 py-3 rounded-xl border-2 transition-all duration-200 font-medium transform ${
                           isSelected
@@ -449,14 +462,14 @@ export default function ProductDetailsClient({
             )}
 
             {/* Bundle & Save */}
-            {selectedVariant && (product as any).enableBundlePricing && (
+            {selectedVariant && enableBundlePricing && (
               <div className="pt-2">
                 <BundleSelector
+                  key={selectedVariant.id}
                   variant={selectedVariant}
                   selectedBundleId={selectedBundle?.id}
                   onBundleSelect={(bundle) => {
                     setSelectedBundle(bundle);
-                    // Reset quantity to 1 when bundle is selected (quantity represents number of packs)
                     setQuantity(1);
                   }}
                 />
