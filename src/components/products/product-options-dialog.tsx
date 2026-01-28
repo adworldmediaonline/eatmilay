@@ -55,28 +55,30 @@ export function ProductOptionsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton
-        className="max-w-lg max-h-[90vh] overflow-y-auto"
+        className="max-w-lg flex flex-col overflow-hidden max-h-[90vh] h-[85vh] sm:h-[80vh]"
       >
-        <DialogHeader>
+        <DialogHeader className="shrink-0 py-0">
           <DialogTitle className="sr-only">
             {product ? product.name : 'Product options'}
           </DialogTitle>
         </DialogHeader>
         {loading && (
-          <div className="py-12 flex items-center justify-center text-muted-foreground">
+          <div className="flex-1 min-h-0 py-12 flex items-center justify-center text-muted-foreground">
             Loading…
           </div>
         )}
         {error && !loading && (
-          <div className="py-8 text-center text-destructive">{error}</div>
+          <div className="flex-1 min-h-0 py-8 text-center text-destructive">{error}</div>
         )}
         {product && !loading && !error && (
-          <ProductOptionsContent
-            product={product}
-            variant="dialog"
-            showBuyNow
-            onAfterAddToCart={() => onOpenChange(false)}
-          />
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <ProductOptionsContent
+              product={product}
+              variant="dialog"
+              showBuyNow
+              onAfterAddToCart={() => onOpenChange(false)}
+            />
+          </div>
         )}
       </DialogContent>
     </Dialog>

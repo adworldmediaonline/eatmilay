@@ -107,10 +107,11 @@ export function ProductOptionsContent({
   };
 
   const mainImage = product.mainImage;
+  const isDialog = variant === 'dialog';
 
-  return (
-    <div id={id} className="space-y-4">
-      {variant === 'dialog' && (
+  const formContent = (
+    <>
+      {isDialog && (
         <div className="flex gap-4 pb-4 border-b border-gray-200">
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
             {mainImage?.url && (
@@ -178,8 +179,8 @@ export function ProductOptionsContent({
                     if (def) setQuantity(1);
                   }}
                   className={`px-5 py-3 rounded-xl border-2 transition-all duration-200 font-medium ${isSelected
-                      ? 'border-primary bg-primary text-white shadow-md shadow-primary/30 scale-105'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-primary/50 hover:bg-gray-50 hover:shadow-sm'
+                    ? 'border-primary bg-primary text-white shadow-md shadow-primary/30 scale-105'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-primary/50 hover:bg-gray-50 hover:shadow-sm'
                     }`}
                 >
                   {v.name}
@@ -243,28 +244,49 @@ export function ProductOptionsContent({
           </button>
         </div>
       </div>
+    </>
+  );
 
-      {/* Add to Cart + Buy Now */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pt-2">
+  const actionsBar = (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+      <Button
+        onClick={handleAddToCart}
+        size="lg"
+        className="bg-primary hover:bg-primary text-white py-3 font-bold rounded-xl"
+      >
+        <ShoppingCart className="w-4 h-4 mr-2" />
+        Add to Cart
+      </Button>
+      {showBuyNow && (
         <Button
-          onClick={handleAddToCart}
+          onClick={handleBuyNow}
+          variant="outline"
           size="lg"
-          className="bg-primary hover:bg-primary text-white py-3 font-bold rounded-xl"
+          className="border-2 border-primary text-primary hover:bg-primary hover:text-white py-3 font-bold rounded-xl"
         >
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          Add to Cart
+          Buy Now
         </Button>
-        {showBuyNow && (
-          <Button
-            onClick={handleBuyNow}
-            variant="outline"
-            size="lg"
-            className="border-2 border-primary text-primary hover:bg-primary hover:text-white py-3 font-bold rounded-xl"
-          >
-            Buy Now
-          </Button>
-        )}
+      )}
+    </div>
+  );
+
+  if (isDialog) {
+    return (
+      <div id={id} className="flex flex-col h-full min-h-0">
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-4 pr-2">
+          {formContent}
+        </div>
+        <div className="shrink-0 pt-4 border-t bg-background mt-4">
+          {actionsBar}
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div id={id} className="space-y-4">
+      {formContent}
+      <div className="pt-2">{actionsBar}</div>
     </div>
   );
 }
