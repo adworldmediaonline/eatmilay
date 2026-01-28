@@ -1,30 +1,22 @@
 'use client';
 
 import ProductReviews from '@/components/products/product-reviews';
+import { ProductOptionsContent } from '@/components/products/product-options-content';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import type { SerializedProductWithCategory } from '@/server/queries/product';
 import type { ReviewData, ReviewAggregates } from '@/types/review';
-import { useAddItem } from '@/store/cart-store';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { BundleSelector } from '@/components/products/bundle-selector';
-import type { SerializedVariant, SerializedBundle } from '@/lib/serializers';
 
 import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
-  Minus,
-  Plus,
-  ShoppingCart,
   Sparkles,
   Star,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 // Import Swiper core and required modules
 import { Navigation } from 'swiper/modules';
@@ -54,126 +46,8 @@ export default function ProductDetailsClient({
   );
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
-  const [showStickyCart, setShowStickyCart] = useState(false);
   const [showImageZoom, setShowImageZoom] = useState(false);
-  
-  // Bundle & Save state
-  const variants = (product as any).variants || [];
-  const enableBundlePricing = !!(product as any).enableBundlePricing;
-
-  // Helper: get default bundle for a variant (isDefault or first)
-  const getDefaultBundle = (v: SerializedVariant | null): SerializedBundle | null => {
-    if (!v?.bundles?.length) return null;
-    return v.bundles.find((b) => b.isDefault) || v.bundles[0] || null;
-  };
-
-  const firstVariant = variants.length > 0 ? variants[0] : null;
-  const initialDefaultBundle = enableBundlePricing ? getDefaultBundle(firstVariant) : null;
-
-  const [selectedVariant, setSelectedVariant] = useState<SerializedVariant | null>(firstVariant);
-  const [selectedBundle, setSelectedBundle] = useState<SerializedBundle | null>(initialDefaultBundle);
-  const [displayPrice, setDisplayPrice] = useState(() => {
-    if (initialDefaultBundle) return initialDefaultBundle.sellingPrice;
-    if (firstVariant) return firstVariant.price;
-    return product.price;
-  });
-
-  // Cart functionality
-  const addItem = useAddItem();
-  const router = useRouter();
-  
-  // Update display price when bundle is selected
-  useEffect(() => {
-    if (selectedBundle) {
-      setDisplayPrice(selectedBundle.sellingPrice);
-      // Set quantity to 1 (representing 1 pack) when bundle is selected
-      // The bundle quantity itself represents units per pack
-      setQuantity(1);
-    } else if (selectedVariant) {
-      setDisplayPrice(selectedVariant.price);
-      // Reset to 1 when bundle is deselected
-      setQuantity(1);
-    } else {
-      setDisplayPrice(product.price);
-      setQuantity(1);
-    }
-  }, [selectedBundle, selectedVariant, product.price]);
-
-  const handleAddToCart = () => {
-    const finalPrice = selectedBundle ? selectedBundle.sellingPrice : displayPrice;
-    const productName = selectedVariant 
-      ? `${product.name} - ${selectedVariant.name}`
-      : product.name;
-    const bundleLabel = selectedBundle ? ` (${selectedBundle.label})` : '';
-    
-    // For bundles: 
-    // - Quantity selector represents "number of packs" (1, 2, 3...)
-    // - Bundle selling price is the final price per pack (e.g., 945 for Pack of 2)
-    // - Cart quantity should show total units: bundle.quantity × number of packs
-    // - But cart price calculation: bundle selling price × number of packs
-    // 
-    // We need to store both: the price per pack and number of packs
-    // Since cart multiplies price × quantity, we need to adjust:
-    // - If we pass quantity = total units (2), price needs to be per unit (945/2 = 472.5)
-    // - OR we pass quantity = number of packs (1), price = bundle price (945)
-    //
-    // Actually, the cart calculates: price × quantity
-    // For "Pack of 2" at 945 with 1 pack:
-    // - Option 1: price = 945, quantity = 1 → total = 945 ✓ (but cart shows qty 1, not 2)
-    // - Option 2: price = 472.5, quantity = 2 → total = 945 ✓ (cart shows qty 2 ✓)
-    //
-    // User wants cart to show quantity = bundle quantity, so we need Option 2
-    // But we need to calculate price per unit: bundle selling price / bundle quantity
-    
-    let cartPrice = finalPrice;
-    let cartQuantity = quantity;
-    
-    if (selectedBundle) {
-      // Calculate price per unit: bundle selling price / bundle quantity
-      cartPrice = selectedBundle.sellingPrice / selectedBundle.quantity;
-      // Cart quantity = total units (bundle quantity × number of packs)
-      cartQuantity = selectedBundle.quantity * quantity;
-    }
-    
-    const cartProduct = {
-      id: product.id,
-      name: productName + bundleLabel,
-      slug: product.slug,
-      price: cartPrice,
-      excerpt: product.excerpt || undefined,
-      mainImage: product.mainImage,
-      category: product.category,
-      bundleId: selectedBundle?.id,
-      variantId: selectedVariant?.id,
-    };
-
-    addItem(cartProduct, cartQuantity);
-    const quantityText = selectedBundle 
-      ? `${cartQuantity} ${cartQuantity === 1 ? 'unit' : 'units'} (${quantity} ${quantity === 1 ? 'pack' : 'packs'})`
-      : `${quantity} ${quantity === 1 ? 'item' : 'items'}`;
-    toast.success(`${productName}${bundleLabel} - ${quantityText} added to cart!`);
-  };
-
-  const handleBuyNow = () => {
-    handleAddToCart();
-    router.push('/checkout');
-  };
-
-  // Add scroll listener for sticky cart
-  useEffect(() => {
-    const handleScroll = () => {
-      const addToCartSection = document.getElementById('add-to-cart-section');
-      if (addToCartSection) {
-        const rect = addToCartSection.getBoundingClientRect();
-        setShowStickyCart(rect.bottom < 0);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -405,78 +279,14 @@ export default function ProductDetailsClient({
               )}
             </div>
 
-            {/* Price Display - Above Variant Selector - Compact Horizontal */}
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-bold text-primary">
-                  ₹{displayPrice.toFixed(2)}
-                </span>
-                {selectedBundle && selectedBundle.originalPrice > selectedBundle.sellingPrice && (
-                  <span className="text-lg sm:text-xl text-gray-400 line-through">
-                    ₹{selectedBundle.originalPrice.toFixed(2)}
-                  </span>
-                )}
-              </div>
-              {selectedBundle && selectedBundle.savingsAmount > 0 && (
-                <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 rounded text-xs sm:text-sm font-semibold text-green-700">
-                  Save ₹{selectedBundle.savingsAmount.toFixed(2)}
-                </div>
-              )}
-              {!selectedBundle && selectedVariant && (
-                <span className="text-sm text-gray-500">
-                  Per {selectedVariant.name.toLowerCase()}
-                </span>
-              )}
-            </div>
+            <ProductOptionsContent
+              product={product}
+              variant="inline"
+              showBuyNow
+              id="add-to-cart-section"
+            />
 
-            {/* Variant Selector */}
-            {variants.length > 0 && (
-              <div className="space-y-3 pb-2">
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <Label className="text-base font-semibold text-gray-900">Select Size/Variant:</Label>
-                </div>
-                <div className="flex flex-wrap gap-2.5">
-                  {variants.map((variant: SerializedVariant) => {
-                    const isSelected = selectedVariant?.id === variant.id;
-                    return (
-                      <button
-                        key={variant.id}
-                        onClick={() => {
-                          setSelectedVariant(variant);
-                          const def = enableBundlePricing ? getDefaultBundle(variant) : null;
-                          setSelectedBundle(def);
-                          if (def) setQuantity(1);
-                        }}
-                        className={`px-5 py-3 rounded-xl border-2 transition-all duration-200 font-medium transform ${
-                          isSelected
-                            ? 'border-primary bg-primary text-white shadow-md shadow-primary/30 scale-105'
-                            : 'border-gray-300 bg-white text-gray-700 hover:border-primary/50 hover:bg-gray-50 hover:shadow-sm hover:scale-102'
-                        }`}
-                      >
-                        {variant.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Bundle & Save */}
-            {selectedVariant && enableBundlePricing && (
-              <div className="pt-2">
-                <BundleSelector
-                  key={selectedVariant.id}
-                  variant={selectedVariant}
-                  selectedBundleId={selectedBundle?.id}
-                  onBundleSelect={(bundle) => {
-                    setSelectedBundle(bundle);
-                    setQuantity(1);
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Key Benefits / Why You'll Love It - Mobile optimized */}
+            {/* Key Benefits / Why You'll Love It */}
             {product.whyLoveIt && (
               <div className="bg-[#ffffff]/10 rounded-xl p-4">
                 <h3 className="font-bold text-primary mb-2 flex items-center text-sm lg:text-base">
@@ -489,71 +299,6 @@ export default function ProductDetailsClient({
                 />
               </div>
             )}
-
-            {/* Quantity & Add to Cart - Mobile optimized */}
-            <div className="space-y-3 lg:space-y-4" id="add-to-cart-section">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-gray-700 text-sm lg:text-base">
-                    {selectedBundle ? 'Number of Packs:' : 'Quantity:'}
-                  </span>
-                  {selectedBundle && (
-                    <span className="text-xs text-gray-500">
-                      {selectedBundle.quantity} {selectedBundle.quantity === 1 ? 'unit' : 'units'} per pack
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-1.5 w-fit mx-auto lg:mx-0">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 lg:w-12 lg:h-12 bg-white hover:bg-primary hover:text-white rounded-lg flex items-center justify-center transition-all duration-200 group touch-manipulation"
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="w-4 h-4 lg:w-5 lg:h-5 group-disabled:text-gray-400" />
-                  </button>
-                  <div className="w-16 lg:w-20 text-center">
-                    <span className="text-xl lg:text-2xl font-bold text-primary">
-                      {quantity}
-                    </span>
-                    {selectedBundle && (
-                      <div className="text-[10px] text-gray-500 mt-0.5">
-                        ({quantity * selectedBundle.quantity} {quantity * selectedBundle.quantity === 1 ? 'unit' : 'units'} total)
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 lg:w-12 lg:h-12 bg-white hover:bg-primary hover:text-white rounded-lg flex items-center justify-center transition-all duration-200 group touch-manipulation"
-                  >
-                    <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Enhanced Action Buttons - Mobile optimized */}
-              <div className="space-y-2 lg:space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:gap-3">
-                  <Button
-                    onClick={handleAddToCart}
-                    size="lg"
-                    className="bg-primary hover:bg-primary text-white py-3 lg:py-4 text-sm lg:text-base font-bold rounded-xl group transition-all duration-300 hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 touch-manipulation order-2 sm:order-1"
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                    Add to Cart
-                  </Button>
-                  <Button
-                    onClick={handleBuyNow}
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-primary text-primary hover:bg-primary hover:text-white py-3 lg:py-4 text-sm lg:text-base font-bold rounded-xl transition-all duration-300 touch-manipulation order-1 sm:order-2"
-                  >
-                    Buy Now
-                  </Button>
-                </div>
-
-                {/* Wishlist & Share - Mobile optimized */}
-              </div>
-            </div>
           </div>
         </div>
 
@@ -683,77 +428,6 @@ export default function ProductDetailsClient({
         {/* Related Products */}
 
       </main>
-
-      {/* Enhanced Sticky Mobile Add to Cart */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50 transition-all duration-300 lg:hidden ${showStickyCart ? 'translate-y-0' : 'translate-y-full'
-          }`}
-      >
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-3">
-            {/* Product Image */}
-            <div className="flex-shrink-0 relative w-12 h-12">
-              <Image
-                src={allImages[0]?.url || ''}
-                alt={allImages[0]?.altText || product.name}
-                fill
-                className="object-cover rounded-lg shadow-sm"
-                sizes="48px"
-              />
-            </div>
-
-            {/* Product Info */}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate text-sm leading-tight">
-                {product.name}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-lg font-bold text-primary">
-                  ₹{product.price}
-                </span>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-3 h-3 text-yellow-500 fill-current"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Quantity Controls */}
-            <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-2 hover:bg-gray-100 transition-colors touch-manipulation"
-                disabled={quantity <= 1}
-              >
-                <Minus className="w-4 h-4 text-gray-600" />
-              </button>
-              <span className="px-3 py-2 font-medium text-sm min-w-[2rem] text-center">
-                {quantity}
-              </span>
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="p-2 hover:bg-gray-100 transition-colors touch-manipulation"
-              >
-                <Plus className="w-4 h-4 text-gray-600" />
-              </button>
-            </div>
-
-            {/* Add to Cart Button */}
-            <Button
-              onClick={handleAddToCart}
-              size="sm"
-              className="bg-primary hover:bg-primary text-white px-4 py-2 rounded-xl font-bold shadow-lg transition-all duration-300 touch-manipulation"
-            >
-              <ShoppingCart className="w-4 h-4 mr-1" />
-              <span className="text-sm">Add</span>
-            </Button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

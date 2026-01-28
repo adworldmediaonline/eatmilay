@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { getProductBySlug } from '@/server/queries/product';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import slugify from 'slugify';
@@ -114,12 +115,12 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
                   const originalPrice = variantPrice.times(bundle.quantity);
                   const sellingPrice = new Decimal(bundle.sellingPrice);
                   const savingsAmount = originalPrice.minus(sellingPrice);
-                  
+
                   // Validate selling price is less than original
                   if (sellingPrice.gte(originalPrice)) {
                     throw new Error(`Bundle "${bundle.label}": Selling price must be less than original price (₹${originalPrice.toString()})`);
                   }
-                  
+
                   return {
                     label: bundle.label,
                     quantity: bundle.quantity,
@@ -342,12 +343,12 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
                 const originalPrice = variantPrice.times(bundle.quantity);
                 const sellingPrice = new Decimal(bundle.sellingPrice);
                 const savingsAmount = originalPrice.minus(sellingPrice);
-                
+
                 // Validate selling price is less than original
                 if (sellingPrice.gte(originalPrice)) {
                   throw new Error(`Bundle "${bundle.label}": Selling price must be less than original price (₹${originalPrice.toString()})`);
                 }
-                
+
                 await tx.productBundle.create({
                   data: {
                     variantId: createdVariant.id,
@@ -387,8 +388,8 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
       return {
         success: false,
         error:
-          dbError instanceof Error 
-            ? dbError.message 
+          dbError instanceof Error
+            ? dbError.message
             : 'Failed to update product due to database connection error. Please try again.',
       };
     }
@@ -468,4 +469,9 @@ export async function deleteProduct(data: z.infer<typeof deleteProductSchema>) {
       error: 'Failed to delete product. Please try again.',
     };
   }
+}
+
+/** Fetch product by slug (for client use, e.g. ProductOptionsDialog). */
+export async function getProductBySlugAction(slug: string) {
+  return getProductBySlug(slug);
 }

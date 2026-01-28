@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAddItem } from '@/store/cart-store';
-import { toast } from 'sonner';
 import ProductCard from '@/components/products/product-card';
+import { ProductOptionsDialog } from '@/components/products/product-options-dialog';
 import { ProductsHeader } from '@/components/products/products-header';
 import type { SerializedProductWithCategory } from '@/lib/serializers';
 import type { ReviewAggregates } from '@/types/review';
@@ -27,7 +26,13 @@ export default function HomeProductsSection({
   const [sortBy, setSortBy] = useState('featured');
   const [availability, setAvailability] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
-  const addItem = useAddItem();
+  const [optionsDialogOpen, setOptionsDialogOpen] = useState(false);
+  const [optionsDialogSlug, setOptionsDialogSlug] = useState<string | null>(null);
+
+  const openOptionsDialog = (slug: string) => {
+    setOptionsDialogSlug(slug);
+    setOptionsDialogOpen(true);
+  };
 
   // Map price range to min/max prices
   const getPriceRange = (range: string): { minPrice?: number; maxPrice?: number } => {
@@ -83,26 +88,16 @@ export default function HomeProductsSection({
     return () => clearTimeout(timeoutId);
   }, [sortBy, availability, priceRange]);
 
-  const handleAddToCart = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-
-    const cartProduct = {
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      excerpt: product.excerpt || undefined,
-      mainImage: product.mainImage,
-      category: product.category,
-    };
-
-    addItem(cartProduct, 1);
-    toast.success(`${product.name} added to cart!`);
-  };
-
   return (
     <div className="space-y-6">
+      <ProductOptionsDialog
+        open={optionsDialogOpen}
+        onOpenChange={(open) => {
+          setOptionsDialogOpen(open);
+          if (!open) setOptionsDialogSlug(null);
+        }}
+        productSlug={optionsDialogSlug}
+      />
       <ProductsHeader
         totalCount={totalCount}
         sortBy={sortBy}
@@ -141,7 +136,8 @@ export default function HomeProductsSection({
                   rating: rating > 0 ? rating : undefined,
                   reviewCount: reviewCount > 0 ? reviewCount : undefined,
                 }}
-                onAddToCart={handleAddToCart}
+                showChooseOptions
+                onChooseOptions={openOptionsDialog}
               />
             );
           })}

@@ -28,6 +28,9 @@ interface ProductCardProps {
   variant?: 'default' | 'compact' | 'showcase' | 'elegant' | 'horizontal';
   showQuickActions?: boolean;
   showWishlist?: boolean;
+  /** When true, show "Choose Options" instead of "Add to Cart" and call onChooseOptions(slug) on click. */
+  showChooseOptions?: boolean;
+  onChooseOptions?: (slug: string) => void;
   onAddToCart?: (productId: string, quantity?: number) => void;
   onToggleWishlist?: (productId: string) => void;
   onQuickView?: (productId: string) => void;
@@ -39,6 +42,8 @@ export default function ProductCard({
   variant = 'default',
   showQuickActions = true,
   showWishlist = true,
+  showChooseOptions = false,
+  onChooseOptions,
   onAddToCart,
   onToggleWishlist,
   onQuickView,
@@ -49,9 +54,11 @@ export default function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
+    if (showChooseOptions && onChooseOptions) {
+      onChooseOptions(product.slug);
+      return;
+    }
     onAddToCart?.(product.id, quantity);
-    // Reset quantity after adding to cart
     setQuantity(1);
   };
 
@@ -188,38 +195,53 @@ export default function ProductCard({
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!product.inStock}
-                  className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed text-sm hover:shadow-lg hover:shadow-primary/25 transform hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <ShoppingCart className="w-4 h-4" />
-                    {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-                  </div>
-                </button>
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!product.inStock}
-                  className="w-full bg-secondary hover:bg-secondary/90 disabled:bg-muted disabled:text-muted-foreground text-primary font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed text-sm hover:shadow-lg hover:shadow-secondary/25 transform hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                {showChooseOptions && onChooseOptions ? (
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={!product.inStock}
+                    className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed text-sm hover:shadow-lg hover:shadow-primary/25 transform hover:-translate-y-0.5"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <ShoppingCart className="w-4 h-4" />
+                      {product.inStock ? 'Choose Options' : 'Out of Stock'}
+                    </div>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={!product.inStock}
+                      className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed text-sm hover:shadow-lg hover:shadow-primary/25 transform hover:-translate-y-0.5"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                    Buy Now
-                  </div>
-                </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <ShoppingCart className="w-4 h-4" />
+                        {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                      </div>
+                    </button>
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={!product.inStock}
+                      className="w-full bg-secondary hover:bg-secondary/90 disabled:bg-muted disabled:text-muted-foreground text-primary font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl transition-all duration-300 disabled:cursor-not-allowed text-sm hover:shadow-lg hover:shadow-secondary/25 transform hover:-translate-y-0.5"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                          />
+                        </svg>
+                        Buy Now
+                      </div>
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Footer Actions - Better UX */}
@@ -544,7 +566,7 @@ export default function ProductCard({
           </span>
         </div>
 
-        {/* Add to Cart Button */}
+        {/* Add to Cart / Choose Options Button */}
         <div className="mt-auto pt-2">
           <button
             onClick={handleAddToCart}
@@ -553,7 +575,11 @@ export default function ProductCard({
           >
             <div className="flex items-center justify-center gap-2">
               <ShoppingCart className="w-4 h-4" />
-              <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
+              <span>
+                {showChooseOptions && onChooseOptions
+                  ? (product.inStock ? 'Choose Options' : 'Out of Stock')
+                  : (product.inStock ? 'Add to Cart' : 'Out of Stock')}
+              </span>
             </div>
           </button>
         </div>
