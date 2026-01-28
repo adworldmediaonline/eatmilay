@@ -132,7 +132,7 @@ export default function ProductCard({
                     href={`/products/${product.slug}`}
                     className="group/link block"
                   >
-                    <h3 className="text-lg font-archivo-black! sm:text-xl lg:text-2xl font-bold text-foreground line-clamp-2 group-hover/link:text-primary transition-colors leading-tight mb-2 sm:mb-3 ">
+                    <h3 className="font-heading text-lg sm:text-xl lg:text-2xl font-bold text-foreground line-clamp-2 group-hover/link:text-primary transition-colors leading-tight mb-2 sm:mb-3">
                       {product.name}
                     </h3>
                   </Link>
@@ -334,7 +334,7 @@ export default function ProductCard({
 
           {/* Product Name - Larger, more prominent */}
           <Link href={`/products/${product.slug}`} className="block">
-            <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 line-clamp-2 leading-tight">
+            <h3 className="font-heading text-base sm:text-lg lg:text-xl font-bold text-gray-900 line-clamp-2 leading-tight">
               {product.name}
             </h3>
           </Link>
@@ -501,7 +501,7 @@ export default function ProductCard({
         {/* Product Name */}
         <Link href={`/products/${product.slug}`}>
           <h3
-            className={`${titleSize} text-gray-900 mb-2 leading-snug hover:text-primary transition-colors font-[var(--font-archivo-black)]`}
+            className={`font-heading ${titleSize} text-gray-900 mb-2 leading-snug hover:text-primary transition-colors`}
           >
             {product.name}
           </h3>

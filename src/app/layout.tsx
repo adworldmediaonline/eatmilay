@@ -3,28 +3,22 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { FloatingCart } from '@/components/cart/floating-cart';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
-import { Questrial, JetBrains_Mono, Archivo_Black } from 'next/font/google';
+import { Poppins, Open_Sans } from 'next/font/google';
 
 import 'swiper/css';
 
 import './globals.css';
 
-const questrial = Questrial({
-  variable: '--font-inter',
-  weight: '400',
+const poppins = Poppins({
+  variable: '--font-poppins',
+  weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   display: 'swap',
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
-  subsets: ['latin'],
-  display: 'swap',
-});
-
-const archivoBlack = Archivo_Black({
-  variable: '--font-archivo-black',
-  weight: '400',
+const openSans = Open_Sans({
+  variable: '--font-open-sans',
+  weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   display: 'swap',
 });
@@ -48,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${questrial.variable} ${jetbrainsMono.variable} ${archivoBlack.variable} font-sans antialiased`}
+        className={`${poppins.variable} ${openSans.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <NuqsAdapter>
