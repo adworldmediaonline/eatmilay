@@ -62,7 +62,7 @@ export async function getProductById(
       // If any error occurs (likely migration not run), fall back to basic query
       // This handles: missing tables, missing columns, missing relations, etc.
       console.log('Fallback to basic query (variants may not be available):', relationError?.message?.substring(0, 100));
-      
+
       product = await prisma.product.findUnique({
         where: { id },
         include: {
@@ -114,7 +114,7 @@ export async function getProductBySlug(
       // If any error occurs (likely migration not run), fall back to basic query
       // This handles: missing tables, missing columns, missing relations, etc.
       console.log('Fallback to basic query (variants may not be available):', relationError?.message?.substring(0, 100));
-      
+
       product = await prisma.product.findUnique({
         where: { slug },
         include: {
@@ -212,11 +212,11 @@ export async function getFilteredProducts(filters: ProductFilters) {
     ...(categoryIds?.length && { categoryId: { in: categoryIds } }),
     ...(minPrice !== undefined || maxPrice !== undefined
       ? {
-          price: {
-            ...(minPrice !== undefined && { gte: minPrice }),
-            ...(maxPrice !== undefined && { lte: maxPrice }),
-          },
-        }
+        price: {
+          ...(minPrice !== undefined && { gte: minPrice }),
+          ...(maxPrice !== undefined && { lte: maxPrice }),
+        },
+      }
       : {}),
   };
 
