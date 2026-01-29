@@ -556,14 +556,20 @@ export default function ProductCard({
 
         {/* Price Section */}
         <div className="flex items-baseline gap-2 mb-4">
-          {product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-sm text-gray-500 line-through">
-              ₹{product.originalPrice.toLocaleString()}
+          {product.originalPrice && product.originalPrice > product.price ? (
+            <>
+              <span className="text-lg font-bold text-gray-500 line-through">
+                ₹{product.originalPrice.toLocaleString()}
+              </span>
+              <span className="text-lg font-bold text-primary">
+                ₹{product.price.toLocaleString()}
+              </span>
+            </>
+          ) : (
+            <span className="text-lg font-bold text-gray-900">
+              ₹{product.price.toLocaleString()}
             </span>
           )}
-          <span className="text-lg font-bold text-gray-900">
-            ₹{product.price.toLocaleString()}
-          </span>
         </div>
 
         {/* Add to Cart / Choose Options Button */}

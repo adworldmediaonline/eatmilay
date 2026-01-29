@@ -45,6 +45,7 @@ const productBundleSchema = z.object({
   sellingPrice: z.number().min(0.01, 'Selling price must be greater than 0').max(999999.99, 'Price is too high'),
   badge: z.nativeEnum(BundleBadge).optional().default(BundleBadge.NONE),
   isDefault: z.boolean().optional().default(false),
+  isSecondaryDefault: z.boolean().optional().default(false),
   active: z.boolean().optional().default(true),
 }).refine(
   (data) => {
@@ -96,7 +97,7 @@ export const createProductSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   mainImage: imageSchema.optional(),
   additionalImages: z.array(imageSchema).optional(),
-  
+
   // Bundle & Save Feature
   enableBundlePricing: z.boolean().default(false),
   variants: z.array(productVariantSchema.extend({
@@ -147,7 +148,7 @@ export const updateProductSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   mainImage: imageSchema.optional(),
   additionalImages: z.array(imageSchema).optional(),
-  
+
   // Bundle & Save Feature
   enableBundlePricing: z.boolean().default(false),
   variants: z.array(productVariantSchema.extend({

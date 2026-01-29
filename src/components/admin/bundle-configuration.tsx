@@ -34,6 +34,7 @@ export interface BundleInput {
   sellingPrice: number;
   badge?: BundleBadge;
   isDefault?: boolean;
+  isSecondaryDefault?: boolean;
   active?: boolean;
   originalPrice?: number;
   savingsAmount?: number;
@@ -85,6 +86,7 @@ export function BundleConfiguration({
         sellingPrice: 0,
         badge: BundleBadge.NONE,
         isDefault: false,
+        isSecondaryDefault: false,
         active: true,
       } as BundleInput,
     ];
@@ -100,14 +102,14 @@ export function BundleConfiguration({
     const updated = [...variants];
     const variant = updated[variantIndex];
     const bundle = (variant.bundles || [])[bundleIndex];
-    
+
     // Calculate original price and savings when quantity or selling price changes
     if (field === 'quantity' || field === 'sellingPrice') {
       const quantity = field === 'quantity' ? value : bundle.quantity;
       const sellingPrice = field === 'sellingPrice' ? value : bundle.sellingPrice;
       const originalPrice = variant.price * quantity;
       const savingsAmount = originalPrice - sellingPrice;
-      
+
       if (!updated[variantIndex].bundles) {
         updated[variantIndex].bundles = [];
       }
@@ -127,7 +129,17 @@ export function BundleConfiguration({
           }
         });
       }
-      
+
+      // Handle isSecondaryDefault - only one bundle can be secondary default per variant
+      if (field === 'isSecondaryDefault' && value === true) {
+        // Unset other secondary defaults in this variant
+        (variant.bundles || []).forEach((b, i) => {
+          if (i !== bundleIndex) {
+            b.isSecondaryDefault = false;
+          }
+        });
+      }
+
       if (!updated[variantIndex].bundles) {
         updated[variantIndex].bundles = [];
       }
@@ -136,7 +148,7 @@ export function BundleConfiguration({
         [field]: value,
       };
     }
-    
+
     onVariantsChange(updated);
   };
 
@@ -470,7 +482,7 @@ export function BundleConfiguration({
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-4 pt-2">
+                              <div className="flex items-center gap-4 pt-2 flex-wrap">
                                 <div className="flex items-center gap-2">
                                   <input
                                     type="radio"
@@ -491,6 +503,28 @@ export function BundleConfiguration({
                                     className="text-sm cursor-pointer"
                                   >
                                     Set as Default Bundle
+                                  </Label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`bundle-secondary-default-${variantIndex}-${bundleIndex}`}
+                                    checked={bundle.isSecondaryDefault ?? false}
+                                    onChange={(e) =>
+                                      handleBundleChange(
+                                        variantIndex,
+                                        bundleIndex,
+                                        'isSecondaryDefault',
+                                        e.target.checked
+                                      )
+                                    }
+                                    className="w-4 h-4"
+                                  />
+                                  <Label
+                                    htmlFor={`bundle-secondary-default-${variantIndex}-${bundleIndex}`}
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    Set as Secondary Default (for home page cards)
                                   </Label>
                                 </div>
                                 {(bundle.badge || BundleBadge.NONE) !== BundleBadge.NONE && (

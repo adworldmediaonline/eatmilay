@@ -243,16 +243,42 @@ export async function getFilteredProducts(filters: ProductFilters) {
       break;
   }
 
-  const [products, totalCount] = await Promise.all([
-    prisma.product.findMany({
+  const countPromise = prisma.product.count({ where });
+
+  let products;
+  try {
+    products = await prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        variants: {
+          where: { active: true },
+          include: {
+            bundles: {
+              where: { active: true },
+              orderBy: { quantity: 'asc' },
+            },
+          },
+          orderBy: { price: 'asc' },
+        },
+      },
+      orderBy,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  } catch (relationError: unknown) {
+    const msg = relationError instanceof Error ? relationError.message : String(relationError);
+    console.log('getFilteredProducts: fallback without variants:', msg.substring(0, 100));
+    products = await prisma.product.findMany({
       where,
       include: { category: true },
       orderBy,
       skip: (page - 1) * limit,
       take: limit,
-    }),
-    prisma.product.count({ where }),
-  ]);
+    });
+  }
+
+  const totalCount = await countPromise;
 
   return {
     products: serializeProducts(products),

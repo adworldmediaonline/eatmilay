@@ -129,6 +129,7 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
                     savingsAmount,
                     badge: bundle.badge || 'NONE',
                     isDefault: bundle.isDefault || false,
+                    isSecondaryDefault: bundle.isSecondaryDefault || false,
                     active: bundle.active !== false,
                   };
                 }),
@@ -359,6 +360,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
                     savingsAmount,
                     badge: bundle.badge || 'NONE',
                     isDefault: bundle.isDefault || false,
+                    isSecondaryDefault: bundle.isSecondaryDefault || false,
                     active: bundle.active !== false,
                   },
                 });

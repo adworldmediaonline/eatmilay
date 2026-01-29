@@ -34,6 +34,7 @@ export type SerializedBundle = {
   savingsAmount: number;
   badge: string;
   isDefault: boolean;
+  isSecondaryDefault: boolean;
   active: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -105,14 +106,17 @@ function serializeVariants(variants: any[] | undefined | null): SerializedVarian
   if (!variants || !Array.isArray(variants)) {
     return undefined;
   }
-  
+
   return variants.map((variant) => ({
     ...variant,
-    price: typeof variant.price === 'object' && variant.price?.toNumber 
-      ? variant.price.toNumber() 
+    price: typeof variant.price === 'object' && variant.price?.toNumber
+      ? variant.price.toNumber()
       : variant.price,
     bundles: variant.bundles?.map((bundle: any) => ({
-      ...bundle,
+      id: bundle.id,
+      variantId: bundle.variantId,
+      label: bundle.label,
+      quantity: bundle.quantity,
       sellingPrice: typeof bundle.sellingPrice === 'object' && bundle.sellingPrice?.toNumber
         ? bundle.sellingPrice.toNumber()
         : bundle.sellingPrice,
@@ -122,6 +126,12 @@ function serializeVariants(variants: any[] | undefined | null): SerializedVarian
       savingsAmount: typeof bundle.savingsAmount === 'object' && bundle.savingsAmount?.toNumber
         ? bundle.savingsAmount.toNumber()
         : bundle.savingsAmount,
+      badge: bundle.badge || 'NONE',
+      isDefault: bundle.isDefault ?? false,
+      isSecondaryDefault: bundle.isSecondaryDefault ?? false,
+      active: bundle.active ?? true,
+      createdAt: bundle.createdAt,
+      updatedAt: bundle.updatedAt,
     })) || [],
   }));
 }
@@ -156,10 +166,10 @@ export function serializeProduct<
   const mainImage: ImageData | undefined =
     product.mainImageUrl && product.mainImagePublicId
       ? {
-          url: product.mainImageUrl,
-          publicId: product.mainImagePublicId,
-          altText: product.mainImageAlt || undefined,
-        }
+        url: product.mainImageUrl,
+        publicId: product.mainImagePublicId,
+        altText: product.mainImageAlt || undefined,
+      }
       : undefined;
 
   // Process additional images
