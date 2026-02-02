@@ -107,10 +107,6 @@ model Product {
   additionalImages  Json? // Store array of image objects
 
   // New Content Fields
-  tagline     String? @db.Text // Short tagline
-  whyLoveIt   String? @db.Text // Rich text content
-  whatsInside String? @db.Text // Rich text content
-  howToUse    String? @db.Text // Rich text content
   ingredients String? @db.Text // Rich text content
 
   // SEO Fields

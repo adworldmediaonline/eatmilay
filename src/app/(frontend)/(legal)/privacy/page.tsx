@@ -30,7 +30,7 @@ const privacyContent = {
 export default async function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-white">
-      <Header cartItemCount={0} />
+
 
       <LegalPageLayout {...privacyContent}>
         <div className="space-y-12">
@@ -420,7 +420,7 @@ export default async function PrivacyPolicyPage() {
         </div>
       </LegalPageLayout>
 
-      <Footer />
+
     </div>
   );
 }

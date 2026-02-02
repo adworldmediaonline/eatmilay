@@ -79,10 +79,6 @@ export const createProductSchema = z.object({
     ),
 
   // New Content Fields
-  tagline: z.string().max(100, 'Tagline must be less than 100 characters').optional(),
-  whyLoveIt: z.string().optional(),
-  whatsInside: z.string().optional(),
-  howToUse: z.string().optional(),
   ingredients: z.string().optional(),
 
   // SEO Fields
@@ -130,10 +126,6 @@ export const updateProductSchema = z.object({
     ),
 
   // New Content Fields
-  tagline: z.string().max(100, 'Tagline must be less than 100 characters').optional(),
-  whyLoveIt: z.string().optional(),
-  whatsInside: z.string().optional(),
-  howToUse: z.string().optional(),
   ingredients: z.string().optional(),
 
   // SEO Fields

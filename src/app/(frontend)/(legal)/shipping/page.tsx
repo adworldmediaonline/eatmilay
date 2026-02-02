@@ -24,7 +24,6 @@ const shippingContent = {
 export default async function ShippingCancellationPage() {
   return (
     <div className="min-h-screen bg-white">
-      <Header cartItemCount={0} />
 
       <LegalPageLayout {...shippingContent}>
         <div className="space-y-12">
@@ -487,7 +486,7 @@ export default async function ShippingCancellationPage() {
         </div>
       </LegalPageLayout>
 
-      <Footer />
+
     </div>
   );
 }

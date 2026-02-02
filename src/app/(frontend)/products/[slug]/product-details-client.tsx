@@ -4,6 +4,12 @@ import ProductReviews from '@/components/products/product-reviews';
 import { ProductOptionsContent } from '@/components/products/product-options-content';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import type { SerializedProductWithCategory } from '@/server/queries/product';
 import type { ReviewData, ReviewAggregates } from '@/types/review';
 
@@ -11,8 +17,11 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
   Star,
+  FileText,
+  FlaskConical,
+  MessageSquare,
+  HelpCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -46,13 +55,11 @@ export default function ProductDetailsClient({
   );
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState('description');
   const [showImageZoom, setShowImageZoom] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-24 pb-4 lg:pb-8 relative overflow-visible">
+    <div className="min-h-screen bg-white">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-24 pb-4 lg:pb-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4 lg:mb-8 overflow-x-auto scrollbar-hide">
           <Link href="/" className="hover:text-primary whitespace-nowrap">
@@ -80,7 +87,7 @@ export default function ProductDetailsClient({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 mb-6 lg:mb-10 lg:items-start">
           {/* Product Images - Sticky on desktop */}
-          <div className="space-y-3 lg:space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="space-y-3 lg:space-y-4 lg:sticky lg:top-20 lg:self-start">
             {/* Main Image */}
             <div className="relative w-full bg-gray-50 rounded-2xl lg:rounded-3xl overflow-hidden group aspect-square">
               <div
@@ -242,11 +249,6 @@ export default function ProductDetailsClient({
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-2 lg:mb-3 leading-tight">
                 {product.name}
               </h1>
-              {product.tagline && (
-                <p className="text-sm lg:text-base text-gray-600 italic mb-2">
-                  {product.tagline}
-                </p>
-              )}
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
@@ -286,142 +288,94 @@ export default function ProductDetailsClient({
               id="add-to-cart-section"
             />
 
-            {/* Key Benefits / Why You'll Love It */}
-            {product.whyLoveIt && (
-              <div className="bg-[#ffffff]/10 rounded-xl p-4">
-                <h3 className="font-bold text-primary mb-2 flex items-center text-sm lg:text-base">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Why You'll Love It
-                </h3>
-                <div
-                  className="text-gray-700 text-sm prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: product.whyLoveIt }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Product Details Tabs */}
-        <div className="mb-8 lg:mb-12">
-          {/* Mobile Tab Navigation */}
-          <div className="border-b border-gray-200 mb-6 lg:mb-8 overflow-x-auto">
-            <nav className="flex space-x-1 lg:space-x-8 min-w-max lg:min-w-0">
-              {[
-                { id: 'description', label: 'Description' },
-                { id: 'usage', label: 'How to Use' },
-                { id: 'ingredients', label: 'Ingredients' },
-                { id: 'reviews', label: `Reviews (${reviewAggregates.totalReviews})` },
-                { id: 'faq', label: 'FAQ' },
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-3 lg:py-4 px-4 lg:px-2 border-b-2 font-medium text-sm lg:text-base transition-colors whitespace-nowrap touch-manipulation ${activeTab === tab.id
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          <div className="max-w-4xl">
-            {activeTab === 'description' && (
-              <div className="space-y-4 lg:space-y-6">
+            {/* Product Details Accordion */}
+            <div className="mt-6 lg:mt-8">
+              <Accordion type="single" collapsible className="w-full space-y-3">
+                {/* Description */}
                 {product.description && (
-                  <div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-primary mb-3 lg:mb-4">
-                      Product Description
-                    </h3>
-                    <div
-                      className="text-gray-700 leading-relaxed mb-4 lg:mb-6 text-sm lg:text-base prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: product.description }}
+                  <AccordionItem
+                    value="description"
+                    className="border border-gray-200 rounded-xl px-5 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                  >
+                    <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline py-5 [&[data-state=open]]:text-primary">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span>Description</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-0 pb-5">
+                      <div
+                        className="text-gray-700 leading-relaxed text-sm lg:text-base prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: product.description }}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {/* Ingredients */}
+                <AccordionItem
+                  value="ingredients"
+                  className="border border-gray-200 rounded-xl px-5 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                >
+                  <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline py-5 [&[data-state=open]]:text-primary">
+                    <div className="flex items-center gap-3">
+                      <FlaskConical className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span>Ingredients</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-0 pb-5">
+                    {product.ingredients ? (
+                      <div
+                        className="text-gray-700 leading-relaxed text-sm lg:text-base prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: product.ingredients }}
+                      />
+                    ) : (
+                      <p className="text-gray-600 text-sm">Ingredient information will be available soon.</p>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Reviews */}
+                <AccordionItem
+                  value="reviews"
+                  className="border border-gray-200 rounded-xl px-5 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                >
+                  <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline py-5 [&[data-state=open]]:text-primary">
+                    <div className="flex items-center gap-3">
+                      <MessageSquare className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span>Reviews ({reviewAggregates.totalReviews})</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-0 pb-5">
+                    <ProductReviews
+                      productId={product.id}
+                      productName={product.name}
+                      reviews={reviews}
+                      aggregates={reviewAggregates}
+                      canWriteReview={canWriteReview}
+                      isAuthenticated={isAuthenticated}
                     />
-                  </div>
-                )}
+                  </AccordionContent>
+                </AccordionItem>
 
-                {product.whyLoveIt && (
-                  <div>
-                    <h4 className="text-base lg:text-lg font-semibold text-primary mb-3">
-                      Why You'll Love It
-                    </h4>
-                    <div
-                      className="text-gray-700 text-sm lg:text-base prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: product.whyLoveIt }}
-                    />
-                  </div>
-                )}
+                {/* FAQ */}
+                <AccordionItem
+                  value="faq"
+                  className="border border-gray-200 rounded-xl px-5 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                >
+                  <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline py-5 [&[data-state=open]]:text-primary">
+                    <div className="flex items-center gap-3">
+                      <HelpCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span>FAQ</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-0 pb-5">
+                    <p className="text-gray-600 text-sm">FAQ section will be available soon.</p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
 
-                {product.whatsInside && (
-                  <div>
-                    <h4 className="text-base lg:text-lg font-semibold text-primary mb-3">
-                      What's Inside
-                    </h4>
-                    <div
-                      className="text-gray-700 leading-relaxed text-sm lg:text-base prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: product.whatsInside }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'usage' && (
-              <div>
-                <h3 className="text-xl lg:text-2xl font-bold text-primary mb-3 lg:mb-4">
-                  How to Use
-                </h3>
-                {product.howToUse ? (
-                  <div className="bg-[#ffffff]/10 rounded-xl lg:rounded-2xl p-4 lg:p-6">
-                    <div
-                      className="text-gray-700 leading-relaxed text-sm lg:text-base prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: product.howToUse }}
-                    />
-                  </div>
-                ) : (
-                  <p className="text-gray-600 text-sm">Usage instructions will be available soon.</p>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'ingredients' && (
-              <div>
-                <h3 className="text-xl lg:text-2xl font-bold text-primary mb-3 lg:mb-4">
-                  Ingredients
-                </h3>
-                {product.ingredients ? (
-                  <div
-                    className="text-gray-700 leading-relaxed text-sm lg:text-base prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: product.ingredients }}
-                  />
-                ) : (
-                  <p className="text-gray-600 text-sm">Ingredient information will be available soon.</p>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'reviews' && (
-              <ProductReviews
-                productId={product.id}
-                productName={product.name}
-                reviews={reviews}
-                aggregates={reviewAggregates}
-                canWriteReview={canWriteReview}
-                isAuthenticated={isAuthenticated}
-              />
-            )}
-
-            {activeTab === 'faq' && (
-              <div>
-                <h3 className="text-xl lg:text-2xl font-bold text-primary mb-3 lg:mb-4">
-                  Frequently Asked Questions
-                </h3>
-                <p className="text-gray-600 text-sm">FAQ section will be available soon.</p>
-              </div>
-            )}
           </div>
         </div>
 

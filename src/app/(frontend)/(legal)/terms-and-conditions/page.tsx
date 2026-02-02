@@ -30,7 +30,7 @@ const termsContent = {
 export default async function TermsConditionsPage() {
   return (
     <div className="min-h-screen bg-white">
-      <Header cartItemCount={0} />
+
 
       <LegalPageLayout {...termsContent}>
         <div className="space-y-12">
@@ -758,7 +758,7 @@ export default async function TermsConditionsPage() {
         </div>
       </LegalPageLayout>
 
-      <Footer />
+
     </div>
   );
 }

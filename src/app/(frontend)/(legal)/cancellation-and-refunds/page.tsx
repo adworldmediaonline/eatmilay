@@ -24,7 +24,7 @@ const returnsContent = {
 export default async function ReturnsRefundPage() {
   return (
     <div className="min-h-screen bg-white">
-      <Header cartItemCount={0} />
+
 
       <LegalPageLayout {...returnsContent}>
         <div className="space-y-12">
