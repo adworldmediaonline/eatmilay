@@ -312,7 +312,7 @@ export default function ProductDetailsClient({
                   </AccordionItem>
                 )}
 
-                {/* Ingredients */}
+                {/* Ingredients & Benefits */}
                 <AccordionItem
                   value="ingredients"
                   className="border border-gray-200 rounded-xl px-5 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
@@ -320,7 +320,7 @@ export default function ProductDetailsClient({
                   <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline py-5 [&[data-state=open]]:text-primary">
                     <div className="flex items-center gap-3">
                       <FlaskConical className="w-5 h-5 text-primary flex-shrink-0" />
-                      <span>Ingredients</span>
+                      <span>Ingredients & Benefits</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-0 pb-5">
@@ -330,7 +330,7 @@ export default function ProductDetailsClient({
                         dangerouslySetInnerHTML={{ __html: product.ingredients }}
                       />
                     ) : (
-                      <p className="text-gray-600 text-sm">Ingredient information will be available soon.</p>
+                      <p className="text-gray-600 text-sm">Ingredient and benefit information will be available soon.</p>
                     )}
                   </AccordionContent>
                 </AccordionItem>

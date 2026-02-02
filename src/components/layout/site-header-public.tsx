@@ -103,6 +103,14 @@ export default function SiteHeaderPublic() {
                     </Link>
 
                     <Link
+                      href="/about"
+                      className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="font-medium">About Us</span>
+                    </Link>
+
+                    <Link
                       href="/contact-us"
                       className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
@@ -187,6 +195,17 @@ export default function SiteHeaderPublic() {
                     className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-lg text-header-foreground hover:text-header-foreground/80 bg-transparent hover:bg-white/10 focus:bg-white/10 focus:text-header-foreground`}
                   >
                     Home
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/about"
+                    className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-lg text-header-foreground hover:text-header-foreground/80 bg-transparent hover:bg-white/10 focus:bg-white/10 focus:text-header-foreground`}
+                  >
+                    About Us
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>

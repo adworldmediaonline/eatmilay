@@ -50,7 +50,7 @@ export default function ContactPage() {
                 href="tel:+919873890047"
                 className="text-gray-700 hover:text-primary text-base lg:text-lg font-semibold underline underline-offset-4 transition-colors"
               >
-                +91 98738 90047
+                +9199999 99999
               </a>
             </div>
           </div>

@@ -82,7 +82,6 @@ export default function Footer({ className = '' }: FooterProps) {
   const info = [
     { name: 'Our Story', href: '/about' },
     { name: 'Contact Us', href: '/contact-us' },
-    { name: 'FAQs', href: '/faqs' },
   ];
 
   const socialLinks = [

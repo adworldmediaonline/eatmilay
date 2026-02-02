@@ -1,4 +1,3 @@
-import { Heart, Leaf, Sparkles, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -11,85 +10,34 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Our Story */}
         <section className="mb-12">
+          <h2 className="text-2xl lg:text-3xl font-bold text-primary mb-8 text-center">
+            Our Story
+          </h2>
           <div className="prose prose-lg max-w-none space-y-6">
             <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              eatmilay was born out of a passion for creating effective, natural skincare solutions that truly nourish and enhance your skin's health. We believe that beauty comes not just from appearance but from the quality and purity of the products you use every day.
+              eatmilay is more than a brand, it's a story of love, hope, and a commitment to healthy living. It all started in a small kitchen with a big dream. Our founder, Shivali Garg, a mother on a mission. She wanted to ensure her family enjoyed snacks that weren't just tasty but also truly nourishing.
             </p>
 
             <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              Our journey started with a commitment to harness the power of nature combined with scientific innovation. Each product is crafted with carefully selected ingredients to ensure maximum benefits without compromising on safety or integrity.
-            </p>
-
-            <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              At eatmilay, we value transparency, quality, and sustainability. We strive to empower our customers with products that are gentle yet powerful, helping you embrace your natural beauty with confidence.
-            </p>
-
-            <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-              Join us on this journey to healthier skin and a happier you. Because at eatmilay, it's not just about what we make, it's about the story behind every bottle.
+              As she looked around, she realized the market was flooded with junk foods. Instead of settling for what was available, Shivali got to work in her kitchen. What started as a personal endeavor has now grown into eatmilay.
             </p>
           </div>
         </section>
 
-        {/* Our Values */}
+        {/* Our Vision */}
         <section className="mb-12">
-          <h2 className="text-2xl lg:text-3xl font-bold text-primary mb-8 text-center">
-            What We Stand For
-          </h2>
-
-          <div className="grid sm:grid-cols-3 gap-6">
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                  <Leaf className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-primary mb-3">
-                Transparency
-              </h3>
-              <p className="text-gray-600 text-sm lg:text-base">
-                We believe in being open about our ingredients and processes.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-primary mb-3">
-                Quality
-              </h3>
-              <p className="text-gray-600 text-sm lg:text-base">
-                Every product is crafted with the highest standards of excellence.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-primary mb-3">
-                Sustainability
-              </h3>
-              <p className="text-gray-600 text-sm lg:text-base">
-                We care for the planet as much as we care for your skin.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Mission Statement */}
-        <section className="mb-12">
-          <div className="bg-primary text-white rounded-2xl p-8 lg:p-12 text-center">
-            <h2 className="text-2xl lg:text-3xl font-bold mb-6">
-              Our Mission
+          <div className="bg-primary text-white rounded-2xl p-8 lg:p-12">
+            <h2 className="text-2xl lg:text-3xl font-bold mb-6 text-center">
+              Our Vision
             </h2>
-            <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-              To empower every individual with natural, effective skincare solutions that celebrate authentic beauty and promote healthier, happier skin for life.
-            </p>
+            <div className="space-y-4">
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                At eatmilay, we dream of a world where healthy snacking is not just a choice, but a way of life. A world where every home, from bustling cities to quiet villages, embraces the joy of healthy snacks.
+              </p>
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                We want to bring wholesome, India-inspired snacks to families everywhere, creating a global community united by the love of snacks that's both delicious and good for you.
+              </p>
+            </div>
           </div>
         </section>
 
