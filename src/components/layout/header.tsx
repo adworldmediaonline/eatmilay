@@ -150,17 +150,6 @@ export default function Header({
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
                       <Link
-                        href="/products"
-                        className={`${navigationMenuTriggerStyle()} ${currentTheme.navText
-                          } ${currentTheme.navHover} font-medium`}
-                      >
-                        Products
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link
                         href="/categories"
                         className={`${navigationMenuTriggerStyle()} ${currentTheme.navText
                           } ${currentTheme.navHover} font-medium`}
@@ -404,13 +393,6 @@ export default function Header({
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <span>Home</span>
-                        </Link>
-                        <Link
-                          href="/products"
-                          className="flex items-center space-x-3 text-lg font-medium py-2 hover:text-primary transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <span>Products</span>
                         </Link>
                         <Link
                           href="/categories"
