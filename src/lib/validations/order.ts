@@ -103,6 +103,8 @@ export const createOrderSchema = z.object({
           .number()
           .min(0.01, 'Price must be greater than 0')
           .max(999999.99, 'Price is too high'),
+        variantId: z.string().optional(), // Optional variant ID for bundle pricing
+        bundleId: z.string().optional(), // Optional bundle ID for bundle pricing
       })
     )
     .min(1, 'At least one item is required'),

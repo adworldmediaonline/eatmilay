@@ -103,6 +103,14 @@ export default function SiteHeaderPublic() {
                     </Link>
 
                     <Link
+                      href="/about"
+                      className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="font-medium">About Us</span>
+                    </Link>
+
+                    <Link
                       href="/contact-us"
                       className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
@@ -119,7 +127,7 @@ export default function SiteHeaderPublic() {
                           className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <UserIcon className="w-5 h-5" />
+                          <UserIcon className="w-5 h-5 text-white" />
                           <span className="font-medium">Dashboard</span>
                         </Link>
                         <Link
@@ -127,7 +135,7 @@ export default function SiteHeaderPublic() {
                           className="flex items-center gap-3 text-white hover:bg-white/10 px-4 py-3 rounded-lg transition-colors"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <Package className="w-5 h-5" />
+                          <Package className="w-5 h-5 text-white" />
                           <span className="font-medium">Orders</span>
                         </Link>
                       </>
@@ -151,7 +159,7 @@ export default function SiteHeaderPublic() {
                           });
                         }}
                       >
-                        <LogOut className="mr-2 h-5 w-5" />
+                        <LogOut className="mr-2 h-5 w-5 text-red-500" />
                         <span className="font-medium">Log out</span>
                       </Button>
                     ) : (
@@ -187,6 +195,17 @@ export default function SiteHeaderPublic() {
                     className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-lg text-header-foreground hover:text-header-foreground/80 bg-transparent hover:bg-white/10 focus:bg-white/10 focus:text-header-foreground`}
                   >
                     Home
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/about"
+                    className={`${navigationMenuTriggerStyle()} transition-colors duration-300 font-medium text-lg text-header-foreground hover:text-header-foreground/80 bg-transparent hover:bg-white/10 focus:bg-white/10 focus:text-header-foreground`}
+                  >
+                    About Us
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -254,14 +273,14 @@ export default function SiteHeaderPublic() {
 
                 <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
                   <Link href={session.user.role === 'admin' ? '/dashboard/admin/' : '/dashboard/user/'}>
-                    <UserIcon className="mr-2 h-4 w-4" />
+                    <UserIcon className="mr-2 h-4 w-4 text-white" />
                     <span>Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
                   <Link href={session.user.role === 'admin' ? '/dashboard/admin/orders' : '/dashboard/user/orders'}>
-                    <Package className="mr-2 h-4 w-4" />
+                    <Package className="mr-2 h-4 w-4 text-white" />
                     <span>Orders</span>
                   </Link>
                 </DropdownMenuItem>
@@ -280,7 +299,7 @@ export default function SiteHeaderPublic() {
                   }}
                   disabled={false}
                 >
-                  <LogOut className="mr-2 h-4 w-4" /> <span>Log out</span>
+                  <LogOut className="mr-2 h-4 w-4 text-red-500" /> <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -293,7 +312,7 @@ export default function SiteHeaderPublic() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="relative p-2 rounded-full transition-all duration-300 hover:bg-white/10 text-header-foreground"
+                    className="relative p-2 rounded-full transition-all duration-300 hover:bg-white text-white"
                   >
                     <User className="w-6 h-6" />
                   </Button>

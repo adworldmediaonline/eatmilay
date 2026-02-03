@@ -23,11 +23,11 @@ export default function FrontendLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Suspense fallback={<SiteHeaderStandard />}>
         <ConditionalHeader />
       </Suspense>
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );

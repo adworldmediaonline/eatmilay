@@ -31,6 +31,7 @@ import type { CategoryWithCount } from '@/server/queries/category';
 import { createProductSchema } from '@/lib/validations/product';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { BundleConfiguration, type VariantInput } from '@/components/admin/bundle-configuration';
 
 type FormData = z.infer<typeof createProductSchema>;
 
@@ -42,7 +43,7 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const form = useForm<FormData>({
+  const form = useForm({
     resolver: zodResolver(createProductSchema),
     mode: 'onChange', // Trigger validation on change
     defaultValues: {
@@ -50,10 +51,6 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
       sku: '',
       excerpt: '',
       description: '',
-      tagline: '',
-      whyLoveIt: '',
-      whatsInside: '',
-      howToUse: '',
       ingredients: '',
       metaTitle: '',
       metaDescription: '',
@@ -62,6 +59,8 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
       categoryId: '',
       mainImage: undefined,
       additionalImages: undefined,
+      enableBundlePricing: false,
+      variants: [],
     },
   });
 
@@ -201,105 +200,6 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
           <div className="border-t pt-6">
             <h3 className="text-lg font-semibold mb-4">Content Fields</h3>
 
-            <FormField
-              control={form.control}
-              name="tagline"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Tagline</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter a catchy tagline..."
-                      {...field}
-                      maxLength={100}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Brief, compelling tagline (max 100 characters) - {field.value?.length || 0}/100
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="whyLoveIt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Why You'll Love It</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        form.trigger('whyLoveIt');
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Describe why customers will love this product..."
-                      size="lg"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Highlight the key benefits and features that make this product special
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="whatsInside"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>What's Inside</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        form.trigger('whatsInside');
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Describe what's included in the product..."
-                      size="lg"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Detail what customers will receive with their purchase
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="howToUse"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>How to Use</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        form.trigger('howToUse');
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Provide usage instructions and tips..."
-                      size="lg"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Step-by-step instructions on how to use the product effectively
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -355,6 +255,32 @@ export function CreateProductForm({ categories }: CreateProductFormProps) {
               <FormDescription>
                 Enter the price in dollars (e.g., 29.99)
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Bundle & Save Configuration */}
+        <FormField
+          control={form.control}
+          name="enableBundlePricing"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <BundleConfiguration
+                  enableBundlePricing={field.value || false}
+                  variants={form.watch('variants') || []}
+                  onEnableChange={(enabled) => {
+                    field.onChange(enabled);
+                    if (!enabled) {
+                      form.setValue('variants', []);
+                    }
+                  }}
+                  onVariantsChange={(variants) => {
+                    form.setValue('variants', variants as VariantInput[]);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

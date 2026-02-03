@@ -20,6 +20,41 @@ const imageSchema = z.object({
   altText: z.string().optional(),
 });
 
+// Bundle Badge enum
+export enum BundleBadge {
+  NONE = 'NONE',
+  BEST_SELLER = 'BEST_SELLER',
+  SUPER_SAVER = 'SUPER_SAVER',
+}
+
+// Product Variant schema
+const productVariantSchema = z.object({
+  id: z.string().optional(), // For updates
+  name: z.string().min(1, 'Variant name is required').max(100, 'Variant name is too long'),
+  price: z.number().min(0.01, 'Price must be greater than 0').max(999999.99, 'Price is too high'),
+  sku: z.string().max(100).optional().nullable(),
+  active: z.boolean().optional().default(true),
+});
+
+// Product Bundle schema
+const productBundleSchema = z.object({
+  id: z.string().optional(), // For updates
+  variantId: z.string().optional(), // Will be set when creating
+  label: z.string().min(1, 'Bundle label is required').max(100, 'Bundle label is too long'),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+  sellingPrice: z.number().min(0.01, 'Selling price must be greater than 0').max(999999.99, 'Price is too high'),
+  badge: z.nativeEnum(BundleBadge).optional().default(BundleBadge.NONE),
+  isDefault: z.boolean().optional().default(false),
+  isSecondaryDefault: z.boolean().optional().default(false),
+  active: z.boolean().optional().default(true),
+}).refine(
+  (data) => {
+    // Selling price must be less than original price (will be validated in action)
+    return true;
+  },
+  { message: 'Selling price must be less than original price' }
+);
+
 export const createProductSchema = z.object({
   name: z
     .string()
@@ -44,10 +79,6 @@ export const createProductSchema = z.object({
     ),
 
   // New Content Fields
-  tagline: z.string().max(100, 'Tagline must be less than 100 characters').optional(),
-  whyLoveIt: z.string().optional(),
-  whatsInside: z.string().optional(),
-  howToUse: z.string().optional(),
   ingredients: z.string().optional(),
 
   // SEO Fields
@@ -62,6 +93,12 @@ export const createProductSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   mainImage: imageSchema.optional(),
   additionalImages: z.array(imageSchema).optional(),
+
+  // Bundle & Save Feature
+  enableBundlePricing: z.boolean().default(false),
+  variants: z.array(productVariantSchema.extend({
+    bundles: z.array(productBundleSchema).optional().default([]),
+  })).default([]),
 });
 
 export const updateProductSchema = z.object({
@@ -89,10 +126,6 @@ export const updateProductSchema = z.object({
     ),
 
   // New Content Fields
-  tagline: z.string().max(100, 'Tagline must be less than 100 characters').optional(),
-  whyLoveIt: z.string().optional(),
-  whatsInside: z.string().optional(),
-  howToUse: z.string().optional(),
   ingredients: z.string().optional(),
 
   // SEO Fields
@@ -107,7 +140,19 @@ export const updateProductSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   mainImage: imageSchema.optional(),
   additionalImages: z.array(imageSchema).optional(),
+
+  // Bundle & Save Feature
+  enableBundlePricing: z.boolean().default(false),
+  variants: z.array(productVariantSchema.extend({
+    bundles: z.array(productBundleSchema).optional().default([]),
+  })).default([]),
 });
+
+// Helper type for bundle data with calculated fields
+export type BundleInput = z.infer<typeof productBundleSchema> & {
+  originalPrice?: number;
+  savingsAmount?: number;
+};
 
 export const deleteProductSchema = z.object({
   id: z.string().min(1, 'Product ID is required'),

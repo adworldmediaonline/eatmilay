@@ -41,67 +41,10 @@ export function EmptyCartRedirect() {
               </Button>
             </Link>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/products">
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="w-full sm:w-auto"
-                >
-                  Browse Products
-                </Button>
-              </Link>
 
-              <Link href="/categories">
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="w-full sm:w-auto"
-                >
-                  View Categories
-                </Button>
-              </Link>
-            </div>
           </div>
 
-          {/* Feature Highlights */}
-          <div className="mt-12 pt-8 border-t border-muted">
-            <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wide">
-              Why Shop With Us?
-            </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-              <div className="space-y-2">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-green-600 font-bold">✓</span>
-                </div>
-                <p className="font-medium">Secure Checkout</p>
-                <p className="text-muted-foreground text-xs">
-                  SSL encrypted & secure payment
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-blue-600 font-bold">🚚</span>
-                </div>
-                <p className="font-medium">Fast Delivery</p>
-                <p className="text-muted-foreground text-xs">
-                  Free shipping over ₹500
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-purple-600 font-bold">💳</span>
-                </div>
-                <p className="font-medium">Multiple Payment Options</p>
-                <p className="text-muted-foreground text-xs">
-                  Cards, UPI, Wallets & more
-                </p>
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -97,7 +97,7 @@ export function SignInForm({
                 <GoogleSignIn text="Sign in with Google" />
               </div>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                <span className="bg-card text-muted-foreground relative z-10 px-2">
+                <span className="bg-white text-gray-600 relative z-10 px-2">
                   Or continue with
                 </span>
               </div>
@@ -148,7 +148,7 @@ export function SignInForm({
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-[hsl(var(--primary))] hover:bg-[#1e7a1e] text-white transition-all duration-300"
+                  className="w-full bg-[#19302a] hover:bg-[#1a3a2f] text-white transition-all duration-300"
                   disabled={isLoading}
                 >
                   {isLoading && (
@@ -163,14 +163,14 @@ export function SignInForm({
                   <button
                     type="button"
                     onClick={onSwitchToSignUp}
-                    className="underline underline-offset-4 text-[hsl(var(--primary))] hover:text-[#1e7a1e] font-medium transition-colors"
+                    className="underline underline-offset-4 font-medium transition-colors text-white py-1 px-2"
                   >
                     Sign up
                   </button>
                 ) : (
                   <Link
                     href="/sign-up"
-                    className="underline underline-offset-4 text-[hsl(var(--primary))] hover:text-[#1e7a1e] font-medium transition-colors"
+                    className="underline underline-offset-4 font-medium transition-colors text-white py-1 px-2"
                   >
                     Sign up
                   </Link>
@@ -192,7 +192,7 @@ export function SignInForm({
                     <GoogleSignIn text="Sign in with Google" />
                   </div>
                   <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                    <span className="bg-card text-muted-foreground relative z-10 px-2">
+                    <span className="bg-white text-gray-600 relative z-10 px-2">
                       Or continue with
                     </span>
                   </div>
@@ -248,11 +248,11 @@ export function SignInForm({
                       {isLoading ? 'Signing in...' : 'Sign in'}
                     </Button>
                   </div>
-                  <div className="text-center text-sm">
+                  <div className="text-center text-sm text-gray-700">
                     Don&apos;t have an account?{' '}
                     <Link
                       href="/sign-up"
-                      className="underline underline-offset-4 text-[hsl(var(--primary))] hover:text-[#1e7a1e] font-medium transition-colors"
+                      className="underline underline-offset-4 text-[#19302a] hover:text-[#1a3a2f] font-medium transition-colors"
                     >
                       Sign up
                     </Link>
@@ -264,7 +264,7 @@ export function SignInForm({
         </Card>
       )}
       {!inDialog && (
-        <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+        <div className="text-gray-600 *:[a]:hover:text-[#19302a] text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
           By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
           and <a href="#">Privacy Policy</a>.
         </div>

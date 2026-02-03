@@ -15,6 +15,9 @@ export interface CartProduct {
     name: string;
     slug: string;
   };
+  // Bundle & Save support
+  bundleId?: string;
+  variantId?: string;
 }
 
 export interface CartItem {
@@ -32,15 +35,15 @@ export interface CartState {
 export interface CartActions {
   // Core cart actions
   addItem: (product: CartProduct, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeItem: (productId: string, variantId?: string, bundleId?: string) => void;
+  updateQuantity: (productId: string, quantity: number, variantId?: string, bundleId?: string) => void;
   clearCart: () => void;
 
   // Utility actions
-  getItem: (productId: string) => CartItem | undefined;
+  getItem: (productId: string, variantId?: string, bundleId?: string) => CartItem | undefined;
   getItemCount: () => number;
   getTotalPrice: () => number;
-  isInCart: (productId: string) => boolean;
+  isInCart: (productId: string, variantId?: string, bundleId?: string) => boolean;
 
   // Loading states
   setLoading: (loading: boolean) => void;

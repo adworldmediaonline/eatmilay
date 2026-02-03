@@ -82,7 +82,6 @@ export default function Footer({ className = '' }: FooterProps) {
   const info = [
     { name: 'Our Story', href: '/about' },
     { name: 'Contact Us', href: '/contact-us' },
-    { name: 'FAQs', href: '/faqs' },
   ];
 
   const socialLinks = [
@@ -95,7 +94,7 @@ export default function Footer({ className = '' }: FooterProps) {
   return (
     <footer className={`bg-white font-sans ${className}`}>
       {/* Trust Features Section */}
-      <div className="bg-gray-50 py-8 border-t border-gray-200">
+      {/* <div className="bg-gray-50 py-8 border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {trustFeatures.map((feature, index) => {
@@ -118,7 +117,7 @@ export default function Footer({ className = '' }: FooterProps) {
             })}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Footer Content */}
       <div className="bg-primary py-12">

@@ -40,7 +40,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
 
     setIsUpdating(true);
     try {
-      updateQuantity(item.product.id, newQuantity);
+      updateQuantity(item.product.id, newQuantity, item.product.variantId, item.product.bundleId);
       toast.success('Quantity updated');
     } catch {
       toast.error('Failed to update quantity');
@@ -50,7 +50,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
   };
 
   const handleRemoveItem = () => {
-    removeItem(item.product.id);
+    removeItem(item.product.id, item.product.variantId, item.product.bundleId);
     toast.success(`${item.product.name} removed from cart`);
   };
 

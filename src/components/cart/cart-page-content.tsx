@@ -123,7 +123,7 @@ export function CartPageContent() {
         {/* Cart Items */}
         <div className="space-y-4">
           {items.map(item => (
-            <CartItemCard key={item.product.id} item={item} />
+            <CartItemCard key={`${item.product.id}-${item.product.variantId || 'no-variant'}-${item.product.bundleId || 'no-bundle'}`} item={item} />
           ))}
         </div>
 

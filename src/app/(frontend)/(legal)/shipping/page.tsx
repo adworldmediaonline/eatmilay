@@ -24,7 +24,6 @@ const shippingContent = {
 export default async function ShippingCancellationPage() {
   return (
     <div className="min-h-screen bg-white">
-      <Header cartItemCount={0} />
 
       <LegalPageLayout {...shippingContent}>
         <div className="space-y-12">
@@ -46,40 +45,40 @@ export default async function ShippingCancellationPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               1. Shipping Information
             </h2>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+              <h3 className="font-semibold text-green-800 mb-2 text-lg">
+                🎉 FREE Delivery PAN India
+              </h3>
+              <p className="text-green-700 font-medium">
+                Enjoy free delivery on all orders above ₹699 across India. No hidden charges, no conditions—just free shipping to your doorstep!
+              </p>
+            </div>
             <p className="text-gray-700 leading-relaxed mb-4">
-              We offer comprehensive shipping services across India to ensure
-              your skincare products reach you safely and securely.
+              At eatmilay, we're committed to delivering your favorite skincare products safely and swiftly across India. We work with trusted logistics partners to ensure your products reach you in perfect condition, every time.
             </p>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>We ship across India for all our skincare products</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                 <span>
-                  Free shipping available on prepaid orders above ₹899
+                  <strong>Fast Processing:</strong> 100% of orders are shipped within one business day of order confirmation
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                 <span>
-                  All products are carefully packaged to prevent damage during
-                  transit
+                  <strong>Weekend Orders:</strong> Orders placed over the weekend are processed and dispatched on Mondays
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                 <span>
-                  We use trusted courier partners including Blue Dart, DTDC, and
-                  India Post
+                  <strong>Secure Packaging:</strong> All products are carefully packaged with protective materials to prevent damage during transit
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                 <span>
-                  Tracking number provided via email and SMS once your order
-                  ships
+                  <strong>Real-Time Tracking:</strong> Receive shipment notifications via WhatsApp and SMS with tracking information and online tracking links
                 </span>
               </li>
             </ul>
@@ -90,66 +89,36 @@ export default async function ShippingCancellationPage() {
               2. Delivery Timeframes
             </h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Our delivery timeframes vary based on your location and the
-              shipping method selected:
+              We understand you're excited to receive your products! Here's what you can expect:
             </p>
             <div className="space-y-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  Standard Delivery
+              <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-3 text-lg">
+                  Standard Shipping
                 </h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>
-                      <strong>Metro Cities:</strong> 2-3 business days (Mumbai,
-                      Delhi, Bangalore, Chennai, Kolkata, Hyderabad)
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>
-                      <strong>Tier 1 Cities:</strong> 3-4 business days (Pune,
-                      Ahmedabad, Jaipur, Lucknow, etc.)
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>
-                      <strong>Tier 2/3 Cities:</strong> 4-6 business days
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>
-                      <strong>Remote Areas:</strong> 5-8 business days (subject
-                      to courier availability)
-                    </span>
-                  </li>
-                </ul>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  Express Delivery
-                </h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>
-                      Available in select metro cities with next-day delivery
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>Additional charges apply for express delivery</span>
-                  </li>
-                </ul>
+                <p className="text-gray-700 mb-3">
+                  Orders placed before 12:00 PM are typically received within <strong>5-7 working business days</strong> across India. Local deliveries may happen on the same day or the next day.
+                </p>
+                <div className="bg-white rounded-lg p-4 mt-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Important Notes:</h4>
+                  <ul className="space-y-2 text-gray-700 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-1">•</span>
+                      <span>Working days exclude Sundays and public holidays</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-1">•</span>
+                      <span>Orders placed on Saturdays, Sundays, or public holidays are processed on the next working day (Monday or the first working day after)</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <p className="text-gray-700 leading-relaxed mt-4">
-              <strong>Note:</strong> Delivery times may vary during festivals,
-              peak seasons, and due to weather conditions.
-            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+              <p className="text-gray-700">
+                <strong>💡 Pro Tip:</strong> Place your order before 12:00 PM on weekdays for the fastest delivery experience!
+              </p>
+            </div>
           </section>
 
           <section id="shipping-locations">
@@ -237,44 +206,40 @@ export default async function ShippingCancellationPage() {
 
           <section id="order-processing">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              5. Order Processing
+              5. Order Processing & Potential Delays
             </h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Our order processing is designed to be quick and efficient:
+              We strive to process and ship your orders as quickly as possible. However, certain circumstances may cause delays:
             </p>
-            <ul className="space-y-3 text-gray-700">
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Orders placed before 2:00 PM are processed the same day
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Orders placed after 2:00 PM are processed the next business
-                  day
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Order confirmation email sent immediately after placing your
-                  order
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Shipping confirmation with tracking details sent once order is
-                  dispatched
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>No processing on Sundays and national holidays</span>
-              </li>
-            </ul>
+            <div className="space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Payment Information Issues
+                </h3>
+                <p className="text-gray-700">
+                  If we are unable to process your order due to inaccurate or incomplete payment information, your order processing may be delayed by an additional <strong>2 business days</strong>. Please ensure all payment details are correct at checkout.
+                </p>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Out-of-Stock Items
+                </h3>
+                <p className="text-gray-700">
+                  Orders containing out-of-stock item(s) may take an additional <strong>7-15 business days</strong> to process and ship. We'll notify you immediately if any items in your order are temporarily unavailable and provide you with options.
+                </p>
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Incorrect or Incomplete Address
+                </h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>Important:</strong> If your package is returned to us due to an incorrect or incomplete address provided at checkout, you will be responsible for all delivery costs to re-deliver your order to the corrected address.
+                </p>
+                <p className="text-gray-700">
+                  We are not responsible for the loss of your order if the address provided is incomplete or incorrect. Please double-check your shipping address before completing your purchase.
+                </p>
+              </div>
+            </div>
           </section>
 
           <section id="cancellation-policy">
@@ -334,80 +299,60 @@ export default async function ShippingCancellationPage() {
 
           <section id="tracking-orders">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              7. Tracking Your Orders
+              7. How Do I Know That My Order Has Been Shipped?
             </h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Stay updated on your order status with our comprehensive tracking
-              system:
+              We keep you informed every step of the way! Once your order has been shipped, you will receive a shipment notification via:
             </p>
-            <ul className="space-y-3 text-gray-700">
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Tracking number sent via email and SMS once order is shipped
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Real-time updates on order status through your account
-                  dashboard
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Track packages on our website or courier partner's website
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Delivery notifications and updates via SMS and email
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>Customer support available for tracking assistance</span>
-              </li>
-            </ul>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-4">
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <span>
+                    <strong>WhatsApp Notification:</strong> Instant shipment alert with tracking details
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <span>
+                    <strong>SMS Notification:</strong> Text message with tracking information and a direct link to track your package online
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <span>
+                    <strong>Email Confirmation:</strong> Detailed shipping confirmation sent to your registered email address
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
+              You can track your package in real-time using the tracking number provided. Simply click the tracking link in your notification or visit our website to check your order status.
+            </p>
           </section>
 
           <section id="damaged-packages">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              8. Damaged or Lost Packages
+              8. Damaged or Delayed Packages
             </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              In the rare event of package damage or loss:
-            </p>
-            <ul className="space-y-3 text-gray-700">
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>Report damaged packages within 24 hours of delivery</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Report undelivered packages within 7 days of expected delivery
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  Provide photos of damaged packaging and products if applicable
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  We'll provide replacement or full refund as appropriate
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span>No questions asked policy for damaged or lost items</span>
-              </li>
-            </ul>
+            <div className="space-y-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Damaged Parcels
+                </h3>
+                <p className="text-gray-700">
+                  If your parcel is received in damaged condition, please contact us immediately. We will provide a full refund or arrange to ship a new parcel at no additional cost to you. Your satisfaction is our priority!
+                </p>
+              </div>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Delayed Parcels
+                </h3>
+                <p className="text-gray-700">
+                  While we ensure timely dispatch of all orders, we cannot take responsibility for delays caused by courier partners or external factors beyond our control. In such cases, customers are requested to wait until the parcel is delivered. We recommend tracking your order using the provided tracking number and contacting the courier partner directly for delivery updates.
+                </p>
+              </div>
+            </div>
           </section>
 
           <section id="special-circumstances">
@@ -487,7 +432,7 @@ export default async function ShippingCancellationPage() {
         </div>
       </LegalPageLayout>
 
-      <Footer />
+
     </div>
   );
 }

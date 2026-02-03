@@ -64,6 +64,8 @@ export async function GET(
         price: item.price.toNumber(),
         quantity: item.quantity,
         total: item.total.toNumber(),
+        variantId: item.variantId || null,
+        bundleId: item.bundleId || null,
         productSnapshot: item.productSnapshot,
         product: {
           id: item.product.id,
@@ -71,9 +73,9 @@ export async function GET(
           slug: item.product.slug,
           mainImage: item.product.mainImageUrl
             ? {
-                url: item.product.mainImageUrl,
-                altText: item.product.mainImageAlt,
-              }
+              url: item.product.mainImageUrl,
+              altText: item.product.mainImageAlt,
+            }
             : null,
         },
       })),

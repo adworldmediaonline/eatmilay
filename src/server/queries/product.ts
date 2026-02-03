@@ -41,21 +41,48 @@ export async function getProductById(
 ): Promise<SerializedProductWithCategory | null> {
   'use cache';
   try {
-    const product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        category: true,
-      },
-    });
+    // First, try to fetch with variants (if migration has been run)
+    let product;
+    try {
+      product = await prisma.product.findUnique({
+        where: { id },
+        include: {
+          category: true,
+          variants: {
+            include: {
+              bundles: {
+                orderBy: { quantity: 'asc' },
+              },
+            },
+            orderBy: { price: 'asc' },
+          },
+        },
+      });
+    } catch (relationError: any) {
+      // If any error occurs (likely migration not run), fall back to basic query
+      // This handles: missing tables, missing columns, missing relations, etc.
+      console.log('Fallback to basic query (variants may not be available):', relationError?.message?.substring(0, 100));
+
+      product = await prisma.product.findUnique({
+        where: { id },
+        include: {
+          category: true,
+        },
+      });
+    }
 
     if (!product) {
       return null;
     }
 
     return serializeProduct(product);
-  } catch (error) {
-    console.error('Failed to fetch product:', error);
-    throw new Error('Failed to fetch product');
+  } catch (error: any) {
+    console.error('Failed to fetch product:', {
+      error: error?.message,
+      code: error?.code,
+      name: error?.name,
+    });
+    throw new Error(`Failed to fetch product: ${error?.message || 'Unknown error'}`);
   }
 }
 
@@ -64,17 +91,50 @@ export async function getProductBySlug(
 ): Promise<SerializedProductWithCategory | null> {
   'use cache';
   try {
-    const product = await prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: true,
-      },
-    });
+    // First, try to fetch with variants (if migration has been run)
+    let product;
+    try {
+      product = await prisma.product.findUnique({
+        where: { slug },
+        include: {
+          category: true,
+          variants: {
+            where: { active: true },
+            include: {
+              bundles: {
+                where: { active: true },
+                orderBy: { quantity: 'asc' },
+              },
+            },
+            orderBy: { price: 'asc' },
+          },
+        },
+      });
+    } catch (relationError: any) {
+      // If any error occurs (likely migration not run), fall back to basic query
+      // This handles: missing tables, missing columns, missing relations, etc.
+      console.log('Fallback to basic query (variants may not be available):', relationError?.message?.substring(0, 100));
 
-    return product ? serializeProduct(product) : null;
-  } catch (error) {
-    console.error('Failed to fetch product by slug:', error);
-    throw new Error('Failed to fetch product by slug');
+      product = await prisma.product.findUnique({
+        where: { slug },
+        include: {
+          category: true,
+        },
+      });
+    }
+
+    if (!product) {
+      return null;
+    }
+
+    return serializeProduct(product);
+  } catch (error: any) {
+    console.error('Failed to fetch product by slug:', {
+      error: error?.message,
+      code: error?.code,
+      name: error?.name,
+    });
+    throw new Error(`Failed to fetch product by slug: ${error?.message || 'Unknown error'}`);
   }
 }
 
@@ -144,7 +204,6 @@ export async function getFilteredProducts(filters: ProductFilters) {
       OR: [
         { name: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { tagline: { contains: search, mode: 'insensitive' } },
         { excerpt: { contains: search, mode: 'insensitive' } },
         { metaKeywords: { contains: search, mode: 'insensitive' } },
       ],
@@ -152,11 +211,11 @@ export async function getFilteredProducts(filters: ProductFilters) {
     ...(categoryIds?.length && { categoryId: { in: categoryIds } }),
     ...(minPrice !== undefined || maxPrice !== undefined
       ? {
-          price: {
-            ...(minPrice !== undefined && { gte: minPrice }),
-            ...(maxPrice !== undefined && { lte: maxPrice }),
-          },
-        }
+        price: {
+          ...(minPrice !== undefined && { gte: minPrice }),
+          ...(maxPrice !== undefined && { lte: maxPrice }),
+        },
+      }
       : {}),
   };
 
@@ -183,16 +242,42 @@ export async function getFilteredProducts(filters: ProductFilters) {
       break;
   }
 
-  const [products, totalCount] = await Promise.all([
-    prisma.product.findMany({
+  const countPromise = prisma.product.count({ where });
+
+  let products;
+  try {
+    products = await prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        variants: {
+          where: { active: true },
+          include: {
+            bundles: {
+              where: { active: true },
+              orderBy: { quantity: 'asc' },
+            },
+          },
+          orderBy: { price: 'asc' },
+        },
+      },
+      orderBy,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  } catch (relationError: unknown) {
+    const msg = relationError instanceof Error ? relationError.message : String(relationError);
+    console.log('getFilteredProducts: fallback without variants:', msg.substring(0, 100));
+    products = await prisma.product.findMany({
       where,
       include: { category: true },
       orderBy,
       skip: (page - 1) * limit,
       take: limit,
-    }),
-    prisma.product.count({ where }),
-  ]);
+    });
+  }
+
+  const totalCount = await countPromise;
 
   return {
     products: serializeProducts(products),

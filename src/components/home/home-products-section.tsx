@@ -1,15 +1,44 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAddItem } from '@/store/cart-store';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from 'react';
 import ProductCard from '@/components/products/product-card';
+import { ProductOptionsDialog } from '@/components/products/product-options-dialog';
 import { ProductsHeader } from '@/components/products/products-header';
-import type { SerializedProductWithCategory } from '@/lib/serializers';
+import type { SerializedProductWithCategory, SerializedVariant, SerializedBundle } from '@/lib/serializers';
 import type { ReviewAggregates } from '@/types/review';
 
 interface ProductWithReviews extends SerializedProductWithCategory {
   reviewStats?: ReviewAggregates;
+}
+
+/**
+ * Simple: Get secondary default bundle price for home page cards.
+ */
+function getDisplayPriceForProduct(p: ProductWithReviews): { price: number; originalPrice?: number } {
+  const firstVariant = (p as { variants?: SerializedVariant[] }).variants?.[0];
+  if (!firstVariant?.bundles?.length) {
+    return { price: firstVariant?.price ?? p.price };
+  }
+
+  // Find secondary default bundle - use it directly
+  const bundle = firstVariant.bundles.find((b) => b.isSecondaryDefault && b.active);
+  if (bundle) {
+    return {
+      price: bundle.sellingPrice,
+      originalPrice: bundle.originalPrice > bundle.sellingPrice ? bundle.originalPrice : undefined,
+    };
+  }
+
+  // Fallback to primary default bundle
+  const defaultBundle = firstVariant.bundles.find((b) => b.isDefault && b.active);
+  if (defaultBundle) {
+    return {
+      price: defaultBundle.sellingPrice,
+      originalPrice: defaultBundle.originalPrice > defaultBundle.sellingPrice ? defaultBundle.originalPrice : undefined,
+    };
+  }
+
+  return { price: firstVariant.price ?? p.price };
 }
 
 interface HomeProductsSectionProps {
@@ -27,7 +56,13 @@ export default function HomeProductsSection({
   const [sortBy, setSortBy] = useState('featured');
   const [availability, setAvailability] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
-  const addItem = useAddItem();
+  const [optionsDialogOpen, setOptionsDialogOpen] = useState(false);
+  const [optionsDialogSlug, setOptionsDialogSlug] = useState<string | null>(null);
+
+  const openOptionsDialog = (slug: string) => {
+    setOptionsDialogSlug(slug);
+    setOptionsDialogOpen(true);
+  };
 
   // Map price range to min/max prices
   const getPriceRange = (range: string): { minPrice?: number; maxPrice?: number } => {
@@ -45,8 +80,17 @@ export default function HomeProductsSection({
     }
   };
 
-  // Fetch products when filters change
+  // Track if this is the initial mount to prevent unnecessary fetch
+  const isInitialMountRef = React.useRef(true);
+
+  // Fetch products when filters change (but not on initial mount)
   useEffect(() => {
+    // Skip fetch on initial mount - use initialProducts from SSR
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      return;
+    }
+
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -83,26 +127,16 @@ export default function HomeProductsSection({
     return () => clearTimeout(timeoutId);
   }, [sortBy, availability, priceRange]);
 
-  const handleAddToCart = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-
-    const cartProduct = {
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      excerpt: product.excerpt || undefined,
-      mainImage: product.mainImage,
-      category: product.category,
-    };
-
-    addItem(cartProduct, 1);
-    toast.success(`${product.name} added to cart!`);
-  };
-
   return (
     <div className="space-y-6">
+      <ProductOptionsDialog
+        open={optionsDialogOpen}
+        onOpenChange={(open) => {
+          setOptionsDialogOpen(open);
+          if (!open) setOptionsDialogSlug(null);
+        }}
+        productSlug={optionsDialogSlug}
+      />
       <ProductsHeader
         totalCount={totalCount}
         sortBy={sortBy}
@@ -124,6 +158,7 @@ export default function HomeProductsSection({
           {products.map((product) => {
             const rating = product.reviewStats?.averageRating || 0;
             const reviewCount = product.reviewStats?.totalReviews || 0;
+            const { price, originalPrice } = getDisplayPriceForProduct(product);
 
             return (
               <ProductCard
@@ -132,7 +167,8 @@ export default function HomeProductsSection({
                   id: product.id,
                   name: product.name,
                   slug: product.slug,
-                  price: product.price,
+                  price,
+                  ...(originalPrice != null && { originalPrice }),
                   images: product.mainImage
                     ? [{ url: product.mainImage.url, alt: product.mainImage.altText }]
                     : [],
@@ -141,7 +177,8 @@ export default function HomeProductsSection({
                   rating: rating > 0 ? rating : undefined,
                   reviewCount: reviewCount > 0 ? reviewCount : undefined,
                 }}
-                onAddToCart={handleAddToCart}
+                showChooseOptions
+                onChooseOptions={openOptionsDialog}
               />
             );
           })}

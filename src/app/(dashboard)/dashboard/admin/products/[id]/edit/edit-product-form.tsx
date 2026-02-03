@@ -25,13 +25,14 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { updateProduct } from '@/app/actions/product';
-import { updateProductSchema } from '@/lib/validations/product';
+import { updateProductSchema, BundleBadge } from '@/lib/validations/product';
 import { toast } from 'sonner';
 import slugify from 'slugify';
 import type { SerializedProductWithCategory } from '@/server/queries/product';
 import type { CategoryWithCount } from '@/server/queries/category';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { BundleConfiguration, type VariantInput } from '@/components/admin/bundle-configuration';
 type FormData = z.infer<typeof updateProductSchema>;
 
 interface EditProductFormProps {
@@ -43,7 +44,7 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const form = useForm<FormData>({
+  const form = useForm({
     resolver: zodResolver(updateProductSchema),
     mode: 'onChange', // Trigger validation on change
     defaultValues: {
@@ -54,17 +55,31 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
       categoryId: product.categoryId,
       excerpt: product.excerpt || '',
       description: product.description || '',
-      tagline: product.tagline || '',
-      whyLoveIt: product.whyLoveIt || '',
-      whatsInside: product.whatsInside || '',
-      howToUse: product.howToUse || '',
       ingredients: product.ingredients || '',
       metaTitle: product.metaTitle || '',
       metaDescription: product.metaDescription || '',
       metaKeywords: product.metaKeywords || '',
       mainImage: product.mainImage,
       additionalImages: product.additionalImages,
-    },
+      enableBundlePricing: Boolean((product as any).enableBundlePricing ?? false),
+      variants: (product as any).variants?.map((variant: any) => ({
+        id: variant.id,
+        name: variant.name,
+        price: variant.price,
+        sku: variant.sku,
+        active: Boolean(variant.active ?? true),
+        bundles: variant.bundles?.map((bundle: any) => ({
+          id: bundle.id,
+          variantId: bundle.variantId,
+          label: bundle.label,
+          quantity: bundle.quantity,
+          sellingPrice: bundle.sellingPrice,
+          badge: bundle.badge || 'NONE',
+          isDefault: Boolean(bundle.isDefault ?? false),
+          active: Boolean(bundle.active ?? true),
+        })) || [],
+      })) || [],
+    } as FormData,
   });
 
   const watchedName = form.watch('name');
@@ -79,8 +94,25 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
       // Get current form values
       const formData = form.getValues();
 
+      // Ensure enableBundlePricing is always a boolean and normalize variants
+      const submitData = {
+        ...formData,
+        enableBundlePricing: Boolean(formData.enableBundlePricing ?? false),
+        variants: (formData.variants ?? []).map(variant => ({
+          ...variant,
+          active: Boolean(variant.active ?? true),
+          bundles: (variant.bundles ?? []).map(bundle => ({
+            ...bundle,
+            badge: (bundle.badge as BundleBadge) || BundleBadge.NONE,
+            isDefault: Boolean(bundle.isDefault ?? false),
+            isSecondaryDefault: Boolean(bundle.isSecondaryDefault ?? false),
+            active: Boolean(bundle.active ?? true),
+          })),
+        })),
+      };
+
       // Update product with current form data (including deleted image)
-      const result = await updateProduct(formData);
+      const result = await updateProduct(submitData);
 
       if (result.success) {
         // Refresh the page to refetch data from server
@@ -95,7 +127,23 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
     setIsSubmitting(true);
 
     try {
-      const result = await updateProduct(data);
+      // Ensure enableBundlePricing is always a boolean and normalize variants
+      const submitData = {
+        ...data,
+        enableBundlePricing: Boolean(data.enableBundlePricing ?? false),
+        variants: (data.variants ?? []).map(variant => ({
+          ...variant,
+          active: Boolean(variant.active ?? true),
+          bundles: (variant.bundles ?? []).map(bundle => ({
+            ...bundle,
+            badge: (bundle.badge as BundleBadge) || BundleBadge.NONE,
+            isDefault: Boolean(bundle.isDefault ?? false),
+            isSecondaryDefault: Boolean(bundle.isSecondaryDefault ?? false),
+            active: Boolean(bundle.active ?? true),
+          })),
+        })),
+      };
+      const result = await updateProduct(submitData);
 
       if (result.success) {
         toast.success('Product updated successfully!');
@@ -228,105 +276,6 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
           <div className="border-t pt-6">
             <h3 className="text-lg font-semibold mb-4">Content Fields</h3>
 
-            <FormField
-              control={form.control}
-              name="tagline"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Tagline</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter a catchy tagline..."
-                      {...field}
-                      maxLength={100}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Brief, compelling tagline (max 100 characters) - {field.value?.length || 0}/100
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="whyLoveIt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Why You'll Love It</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        form.trigger('whyLoveIt');
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Describe why customers will love this product..."
-                      size="lg"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Highlight the key benefits and features that make this product special
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="whatsInside"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>What's Inside</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        form.trigger('whatsInside');
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Describe what's included in the product..."
-                      size="lg"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Detail what customers will receive with their purchase
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="howToUse"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>How to Use</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        form.trigger('howToUse');
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Provide usage instructions and tips..."
-                      size="lg"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Step-by-step instructions on how to use the product effectively
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -382,6 +331,32 @@ export function EditProductForm({ product, categories }: EditProductFormProps) {
               <FormDescription>
                 Enter the price in dollars (e.g., 29.99)
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Bundle & Save Configuration */}
+        <FormField
+          control={form.control}
+          name="enableBundlePricing"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <BundleConfiguration
+                  enableBundlePricing={field.value || false}
+                  variants={form.watch('variants') || []}
+                  onEnableChange={(enabled) => {
+                    field.onChange(enabled);
+                    if (!enabled) {
+                      form.setValue('variants', []);
+                    }
+                  }}
+                  onVariantsChange={(variants) => {
+                    form.setValue('variants', variants as VariantInput[]);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
