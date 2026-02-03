@@ -215,6 +215,8 @@ export function CheckoutForm({
           productId: item.product.id,
           quantity: item.quantity,
           price: item.product.price,
+          variantId: item.product.variantId,
+          bundleId: item.product.bundleId,
         })),
         customerInfo: {
           fullName: data.shippingAddress.fullName,

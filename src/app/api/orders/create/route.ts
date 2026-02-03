@@ -39,7 +39,17 @@ export async function POST(request: NextRequest) {
     for (const item of items) {
       const product = await prisma.product.findUnique({
         where: { id: item.productId },
-        include: { category: true },
+        include: {
+          category: true,
+          variants: {
+            where: { active: true },
+            include: {
+              bundles: {
+                where: { active: true },
+              },
+            },
+          },
+        },
       });
 
       if (!product) {
@@ -49,20 +59,79 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const itemTotal = product.price.toNumber() * item.quantity;
+      // Validate variant if provided
+      let variant = null;
+      if (item.variantId) {
+        variant = product.variants.find(v => v.id === item.variantId);
+        if (!variant) {
+          return NextResponse.json(
+            { error: `Variant not found: ${item.variantId}` },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Validate bundle if provided
+      let bundle = null;
+      if (item.bundleId) {
+        if (!variant) {
+          return NextResponse.json(
+            { error: 'Bundle requires a variant to be specified' },
+            { status: 400 }
+          );
+        }
+        bundle = variant.bundles.find(b => b.id === item.bundleId);
+        if (!bundle) {
+          return NextResponse.json(
+            { error: `Bundle not found: ${item.bundleId}` },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Use the price from the request (which is the bundle price if bundle is selected)
+      // This price is already calculated correctly in the cart
+      const itemPrice = new Decimal(item.price);
+      const itemTotal = itemPrice.toNumber() * item.quantity;
       subtotal += itemTotal;
+
+      // Build product name with variant and bundle info
+      let productName = product.name;
+      if (variant) {
+        productName += ` - ${variant.name}`;
+      }
+      if (bundle) {
+        productName += ` (${bundle.label})`;
+      }
 
       orderItems.push({
         productId: product.id,
-        name: product.name,
-        price: product.price,
+        variantId: item.variantId || null,
+        bundleId: item.bundleId || null,
+        name: productName,
+        price: itemPrice, // Use the price from request (bundle price if applicable)
         quantity: item.quantity,
         total: new Decimal(itemTotal),
         productSnapshot: {
           id: product.id,
           name: product.name,
           slug: product.slug,
-          price: product.price.toNumber(),
+          price: itemPrice.toNumber(), // Store the actual price paid
+          variantId: item.variantId || null,
+          bundleId: item.bundleId || null,
+          variant: variant ? {
+            id: variant.id,
+            name: variant.name,
+            price: variant.price.toNumber(),
+          } : null,
+          bundle: bundle ? {
+            id: bundle.id,
+            label: bundle.label,
+            quantity: bundle.quantity,
+            sellingPrice: bundle.sellingPrice.toNumber(),
+            originalPrice: bundle.originalPrice.toNumber(),
+            savingsAmount: bundle.savingsAmount.toNumber(),
+          } : null,
           category: product.category,
           mainImage: product.mainImageUrl
             ? {

@@ -245,9 +245,13 @@ model OrderItem {
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
+  // Bundle & Save support
+  variantId String? // Optional variant ID (e.g., "500 gm")
+  bundleId  String? // Optional bundle ID (e.g., "Pack of 2")
+
   // Item details (snapshot at time of order)
   name     String // Product name at time of order
-  price    Decimal @db.Decimal(10, 2) // Price at time of order
+  price    Decimal @db.Decimal(10, 2) // Price at time of order (bundle price if bundle selected)
   quantity Int
   total    Decimal @db.Decimal(10, 2) // price * quantity
 
@@ -257,6 +261,8 @@ model OrderItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([variantId])
+  @@index([bundleId])
   @@map("order_item")
 }
 
