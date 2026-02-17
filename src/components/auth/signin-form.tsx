@@ -62,17 +62,21 @@ export function SignInForm({
         },
         onSuccess: () => {
           setIsLoading(false);
-          toast.success('Sign in successful');
+          toast.success('Sign in successful!');
           if (onSuccess) {
             onSuccess();
           }
           if (!inDialog) {
+            // Redirect based on role (will be handled by middleware)
             router.push('/dashboard');
+            router.refresh(); // Refresh to get updated session
           }
         },
         onError: ctx => {
           setIsLoading(false);
-          toast.error(ctx.error.message);
+          // Generic error message to prevent account enumeration
+          const errorMessage = ctx.error.message || 'Invalid email or password. Please try again.';
+          toast.error(errorMessage);
         },
       }
     );

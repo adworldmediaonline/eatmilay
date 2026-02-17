@@ -3,23 +3,11 @@ import { AppSidebarAdmin } from '@/components/app-sidebar-admin';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { requireAdmin } from '@/lib/auth/middleware';
 
 async function AuthCheck({ children }: { children: React.ReactNode }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect('/sign-in');
-  }
-
-  if (session.user.role !== 'admin') {
-    redirect('/sign-in');
-  }
-
+  // This will redirect if not authenticated or not admin/super admin
+  await requireAdmin();
   return <>{children}</>;
 }
 

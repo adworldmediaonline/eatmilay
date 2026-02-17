@@ -1,38 +1,26 @@
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
-import { Suspense } from 'react';
+import { requireAuth } from '@/lib/auth/middleware';
+import { UserRole, hasRole } from '@/lib/auth/roles';
+import type { Session } from '@/lib/auth';
 
-async function DashboardRedirect() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+// Type helper for user with additionalFields
+type UserWithRole = Session['user'] & { role?: string; initials?: string };
 
-  if (!session?.session) {
-    redirect('/sign-in');
-  }
+export default async function DashboardPage() {
+  const session = await requireAuth();
+  const user = session.user as UserWithRole;
+  const role = user.role;
 
-  if (session?.user.role === 'admin') {
+  // Redirect based on role - Admin and Super Admin go to admin dashboard
+  if (hasRole(role, UserRole.ADMIN)) {
     redirect('/dashboard/admin');
   }
 
-  if (session?.user.role === 'user') {
+  // Regular users go to user dashboard
+  if (hasRole(role, UserRole.USER)) {
     redirect('/dashboard/user');
   }
 
-  return null;
-}
-
-export default async function DashboardPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-        </div>
-      }
-    >
-      <DashboardRedirect />
-    </Suspense>
-  );
+  // Default fallback - redirect to sign-in if no valid role
+  redirect('/sign-in');
 }

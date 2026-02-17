@@ -44,6 +44,7 @@ export const auth = betterAuth({
           }
           return { data: { ...user, initials: getInitials(user.name) } };
         },
+
       },
     },
   },
