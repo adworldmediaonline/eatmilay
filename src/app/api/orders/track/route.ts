@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { connection, NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { calculateDeliveryDate } from '@/lib/utils/order-utils';
 import { shiprocketClient } from '@/lib/shiprocket/shiprocket-client';
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const { searchParams } = new URL(request.url);
     const orderNumber = searchParams.get('orderNumber');

@@ -4,6 +4,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { auth } from '@/lib/auth';
+import { hasRole, UserRole } from '@/lib/auth/roles';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -12,14 +13,12 @@ async function AuthCheck({ children }: { children: React.ReactNode }) {
     headers: await headers(),
   });
 
-  console.log(session);
-
   if (!session) {
     redirect('/sign-in');
   }
 
-  if (session.user.role !== 'user') {
-    redirect('/sign-in');
+  if (hasRole(session.user.role, UserRole.ADMIN)) {
+    redirect('/dashboard/admin');
   }
 
   return <>{children}</>;
