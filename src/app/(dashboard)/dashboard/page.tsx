@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { connection } from 'next/server';
 import { redirect } from 'next/navigation';
 import { requireAuth } from '@/lib/auth/middleware';
 import { UserRole, hasRole } from '@/lib/auth/roles';
@@ -7,6 +8,7 @@ import type { Session } from '@/lib/auth';
 type UserWithRole = Session['user'] & { role?: string; initials?: string };
 
 async function DashboardRedirect(): Promise<React.ReactNode> {
+  await connection();
   const session = await requireAuth();
   const user = session.user as UserWithRole;
   const role = user.role;

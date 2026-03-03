@@ -1,3 +1,5 @@
+import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { getProducts } from '@/server/queries/product';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,25 +7,14 @@ import { Plus, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { DataTable } from '@/components/data-table/data-table';
 import { productColumns } from './columns';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function ProductsPage() {
+async function ProductsContent() {
+  await connection();
   const products = await getProducts();
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-muted-foreground">Manage your products</p>
-        </div>
-        <Button asChild>
-          <Link href="/dashboard/admin/products/create">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
-          </Link>
-        </Button>
-      </div>
-
+    <>
       {products.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -48,6 +39,37 @@ export default async function ProductsPage() {
           searchPlaceholder="Search products..."
         />
       )}
+    </>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
+          <p className="text-muted-foreground">Manage your products</p>
+        </div>
+        <Button asChild>
+          <Link href="/dashboard/admin/products/create">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </Link>
+        </Button>
+      </div>
+
+      <Suspense
+        fallback={
+          <Card>
+            <CardContent className="py-12">
+              <Skeleton className="h-64 w-full" />
+            </CardContent>
+          </Card>
+        }
+      >
+        <ProductsContent />
+      </Suspense>
     </div>
   );
 }

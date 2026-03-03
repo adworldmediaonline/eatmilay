@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import { getCategoryById } from '@/server/queries/category';
 import {
   Card,
@@ -80,6 +81,7 @@ async function CategoryContent({ id }: { id: string }) {
 export default async function EditCategoryPage({
   params,
 }: EditCategoryPageProps) {
+  await connection();
   const { id } = await params;
 
   return (
