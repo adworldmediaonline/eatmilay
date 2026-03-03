@@ -1,10 +1,12 @@
 import { Metadata } from 'next';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/data-table/data-table';
 import { orderColumns } from './columns';
 import { getOrders } from '@/server/queries/order';
 import { OrderAnalytics } from '@/components/orders/order-analytics';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
   title: 'Orders | Dashboard',
@@ -21,7 +23,18 @@ interface OrdersPageProps {
   }>;
 }
 
-export default async function OrdersPage({ searchParams }: OrdersPageProps) {
+async function UserOrdersContent({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    status?: string;
+    paymentStatus?: string;
+    search?: string;
+  }>;
+}) {
+  await connection();
   const resolvedSearchParams = await searchParams;
   const page = parseInt(resolvedSearchParams.page || '1');
   const limit = parseInt(resolvedSearchParams.limit || '10');
@@ -40,21 +53,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   });
 
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
-        <p className="text-muted-foreground">
-          Manage and track customer orders and payments
-        </p>
-      </div>
-
-      {/* Analytics Overview */}
+    <>
       <Suspense fallback={<div>Loading analytics...</div>}>
         <OrderAnalytics analytics={analytics} />
       </Suspense>
 
-      {/* Orders Table */}
       <Card>
         <CardHeader>
           <CardTitle>All Orders</CardTitle>
@@ -68,6 +71,23 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           />
         </CardContent>
       </Card>
+    </>
+  );
+}
+
+export default function UserOrdersPage({ searchParams }: OrdersPageProps) {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+        <p className="text-muted-foreground">
+          Manage and track customer orders and payments
+        </p>
+      </div>
+
+      <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+        <UserOrdersContent searchParams={searchParams} />
+      </Suspense>
     </div>
   );
 }

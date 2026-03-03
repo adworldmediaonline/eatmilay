@@ -1,14 +1,20 @@
+import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getOrderById } from '@/server/queries/order';
 import { OrderDetailsContent } from '@/components/orders/order-details-content';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface OrderDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function OrderDetailsPage({
+async function UserOrderDetailsContentWrapper({
   params,
-}: OrderDetailsPageProps) {
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  await connection();
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
@@ -19,13 +25,21 @@ export default async function OrderDetailsPage({
       notFound();
     }
 
-    return (
-      <div className="container mx-auto py-6">
-        <OrderDetailsContent order={order} />
-      </div>
-    );
+    return <OrderDetailsContent order={order} />;
   } catch (error) {
     console.error('Error fetching order:', error);
     notFound();
   }
+}
+
+export default function UserOrderDetailsPage({
+  params,
+}: OrderDetailsPageProps) {
+  return (
+    <div className="container mx-auto py-6">
+      <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+        <UserOrderDetailsContentWrapper params={params} />
+      </Suspense>
+    </div>
+  );
 }

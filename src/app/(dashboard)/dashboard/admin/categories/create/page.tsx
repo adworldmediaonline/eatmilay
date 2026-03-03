@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import {
   Card,
   CardContent,
@@ -10,7 +11,8 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { CreateCategoryForm } from './create-category-form';
 
-export default function CreateCategoryPage() {
+export default async function CreateCategoryPage() {
+  await connection();
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center gap-4">

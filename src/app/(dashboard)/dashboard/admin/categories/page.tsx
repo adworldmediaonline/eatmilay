@@ -1,3 +1,5 @@
+import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { getCategories } from '@/server/queries/category';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,27 +7,14 @@ import { Plus, Package } from 'lucide-react';
 import Link from 'next/link';
 import { DataTable } from '@/components/data-table/data-table';
 import { categoryColumns } from './columns';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function CategoriesPage() {
+async function CategoriesContent() {
+  await connection();
   const categories = await getCategories();
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
-          <p className="text-muted-foreground">
-            Manage your product categories
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/dashboard/admin/categories/create">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Category
-          </Link>
-        </Button>
-      </div>
-
+    <>
       {categories.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -50,6 +39,39 @@ export default async function CategoriesPage() {
           searchPlaceholder="Search categories..."
         />
       )}
+    </>
+  );
+}
+
+export default function CategoriesPage() {
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
+          <p className="text-muted-foreground">
+            Manage your product categories
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/dashboard/admin/categories/create">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Category
+          </Link>
+        </Button>
+      </div>
+
+      <Suspense
+        fallback={
+          <Card>
+            <CardContent className="py-12">
+              <Skeleton className="h-64 w-full" />
+            </CardContent>
+          </Card>
+        }
+      >
+        <CategoriesContent />
+      </Suspense>
     </div>
   );
 }

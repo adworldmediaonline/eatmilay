@@ -1,34 +1,34 @@
+import React, { Suspense } from 'react';
+import { connection } from 'next/server';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
-import { Suspense } from 'react';
+import { requireAuth } from '@/lib/auth/middleware';
+import { UserRole, hasRole } from '@/lib/auth/roles';
+import type { Session } from '@/lib/auth';
 
-async function DashboardRedirect() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+type UserWithRole = Session['user'] & { role?: string; initials?: string };
 
-  if (!session?.session) {
-    redirect('/sign-in');
-  }
+async function DashboardRedirect(): Promise<React.ReactNode> {
+  await connection();
+  const session = await requireAuth();
+  const user = session.user as UserWithRole;
+  const role = user.role;
 
-  if (session?.user.role === 'admin') {
+  if (hasRole(role, UserRole.ADMIN)) {
     redirect('/dashboard/admin');
   }
-
-  if (session?.user.role === 'user') {
+  if (hasRole(role, UserRole.USER)) {
     redirect('/dashboard/user');
   }
-
+  redirect('/sign-in');
   return null;
 }
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       }
     >

@@ -1,3 +1,5 @@
+import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { getCategories } from '@/server/queries/category';
 import { getProducts } from '@/server/queries/product';
 import {
@@ -10,22 +12,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Plus, Package, FolderOpen, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function DashboardPage() {
+async function DashboardContent() {
+  await connection();
   const [categories, products] = await Promise.all([
     getCategories(),
     getProducts(),
   ]);
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage your categories and products
-        </p>
-      </div>
-
+    <>
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -195,6 +192,31 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+    </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Manage your categories and products
+        </p>
+      </div>
+
+      <Suspense
+        fallback={
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+        }
+      >
+        <DashboardContent />
+      </Suspense>
     </div>
   );
 }

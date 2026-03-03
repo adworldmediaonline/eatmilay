@@ -1,9 +1,12 @@
 import { Metadata } from 'next';
+import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/data-table/data-table';
 import { reviewColumns } from './columns';
 import { getAllReviewsForAdmin, getReviewStats } from '@/server/queries/review';
 import { Star, MessageSquare, Clock, CheckCircle2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
   title: 'Reviews | Dashboard',
@@ -21,7 +24,19 @@ interface ReviewsPageProps {
   }>;
 }
 
-export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
+async function ReviewsContent({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    status?: string;
+    rating?: string;
+    verified?: string;
+    search?: string;
+  }>;
+}) {
+  await connection();
   const resolvedSearchParams = await searchParams;
   const page = parseInt(resolvedSearchParams.page || '1');
   const limit = parseInt(resolvedSearchParams.limit || '20');
@@ -43,16 +58,7 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
   ]);
 
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Reviews</h1>
-        <p className="text-muted-foreground">
-          Manage and moderate customer reviews across all products
-        </p>
-      </div>
-
-      {/* Stats Cards */}
+    <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -115,7 +121,6 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
         </Card>
       </div>
 
-      {/* Reviews Table */}
       <Card>
         <CardHeader>
           <CardTitle>All Reviews</CardTitle>
@@ -135,7 +140,31 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
           )}
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
 
+export default function ReviewsPage({ searchParams }: ReviewsPageProps) {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Reviews</h1>
+        <p className="text-muted-foreground">
+          Manage and moderate customer reviews across all products
+        </p>
+      </div>
+
+      <Suspense
+        fallback={
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+        }
+      >
+        <ReviewsContent searchParams={searchParams} />
+      </Suspense>
+    </div>
+  );
+}

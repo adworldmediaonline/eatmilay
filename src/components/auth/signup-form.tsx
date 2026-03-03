@@ -28,9 +28,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { authClient } from '../../lib/auth-client';
 import { GoogleSignIn } from './google-signin';
+import { isSignUpAllowed } from '@/app/actions/auth';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 interface SignUpFormProps extends React.ComponentProps<'div'> {
   onSuccess?: () => void;
@@ -46,8 +49,27 @@ export function SignUpForm({
   ...props
 }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [signUpAllowed, setSignUpAllowed] = useState<boolean | null>(null);
+  const [isCheckingPermission, setIsCheckingPermission] = useState(true);
 
   const router = useRouter();
+
+  // Check if sign-up is allowed
+  useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const allowed = await isSignUpAllowed();
+        setSignUpAllowed(allowed);
+      } catch (error) {
+        console.error('Error checking sign-up permission:', error);
+        setSignUpAllowed(false);
+      } finally {
+        setIsCheckingPermission(false);
+      }
+    };
+
+    checkPermission();
+  }, []);
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -58,6 +80,12 @@ export function SignUpForm({
   });
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
+    // Double-check permission before submitting
+    if (!signUpAllowed) {
+      toast.error('Sign-up is currently restricted. Please contact an administrator.');
+      return;
+    }
+
     await authClient.signUp.email(
       {
         email: values.email,
@@ -71,7 +99,7 @@ export function SignUpForm({
         },
         onSuccess: () => {
           setIsLoading(false);
-          toast.success('Sign up successful');
+          toast.success('Sign up successful! Please check your email to verify your account.');
           if (onSuccess) {
             onSuccess();
           }
@@ -81,11 +109,47 @@ export function SignUpForm({
           );
         },
         onError: ctx => {
-          console.log(ctx);
           setIsLoading(false);
-          toast.error(ctx.error.message);
+          // Generic error message to prevent account enumeration
+          const errorMessage = ctx.error.message || 'An error occurred during sign-up. Please try again.';
+          toast.error(errorMessage);
         },
       }
+    );
+  }
+
+  // Show loading state while checking permission
+  if (isCheckingPermission) {
+    return (
+      <div className={cn('flex flex-col gap-6', className)} {...props}>
+        <div className="flex items-center justify-center p-8">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if sign-up is not allowed
+  if (signUpAllowed === false) {
+    return (
+      <div className={cn('flex flex-col gap-6', className)} {...props}>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Sign-up is currently restricted. Only Super Administrators can create new accounts.
+            {onSwitchToSignIn && (
+              <div className="mt-2">
+                <button
+                  onClick={onSwitchToSignIn}
+                  className="text-sm underline hover:no-underline"
+                >
+                  Sign in instead
+                </button>
+              </div>
+            )}
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 

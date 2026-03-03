@@ -1,33 +1,18 @@
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { AppSidebarAdmin } from '@/components/app-sidebar-admin';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { requireAdmin } from '@/lib/auth/middleware';
 
-async function AuthCheck({ children }: { children: React.ReactNode }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect('/sign-in');
-  }
-
-  if (session.user.role !== 'admin') {
-    redirect('/sign-in');
-  }
-
-  return <>{children}</>;
-}
-
-export default async function DashboardLayout({
+async function AdminLayoutContent({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await connection();
+  await requireAdmin();
   return (
     <SidebarProvider
       style={
@@ -42,19 +27,29 @@ export default async function DashboardLayout({
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col">
-            <main className="flex-1 px-3">
-              <Suspense fallback={
-                <div className="flex items-center justify-center min-h-screen">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-                </div>
-              }>
-                <AuthCheck>{children}</AuthCheck>
-              </Suspense>
-            </main>
+            <main className="flex-1 px-3">{children}</main>
           </div>
         </div>
       </SidebarInset>
       <Toaster richColors />
     </SidebarProvider>
+  );
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      }
+    >
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </Suspense>
   );
 }

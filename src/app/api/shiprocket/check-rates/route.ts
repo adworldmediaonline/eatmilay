@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { connection, NextRequest, NextResponse } from 'next/server';
 import { shiprocketClient } from '@/lib/shiprocket/shiprocket-client';
 import { z } from 'zod';
 
@@ -15,6 +15,7 @@ const checkRatesSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const searchParams = request.nextUrl.searchParams;
 
